@@ -1,24 +1,16 @@
-<section class="gh-archive gh-outer">
-    <div class="gh-archive-inner gh-inner">
-        <header class="gh-archive-header">
-            <h1 class="gh-archive-title">{{name}}</h1>
-            {{#if description}}
-                <p class="gh-archive-description">{{description}}</p>
-            {{/if}}
-        </header>
-        {{#if feature_image}}
-            <figure class="gh-archive-image">
-                <img
-                    srcset="{{img_url feature_image size="s"}} 300w,
-                            {{img_url feature_image size="m"}} 720w,
-                            {{img_url feature_image size="l"}} 960w,
-                            {{img_url feature_image size="xl"}} 1200w,
-                            {{img_url feature_image size="xxl"}} 2000w"
-                    sizes="(max-width: 1200px) 100vw, 1200px"
-                    src="{{img_url feature_image size="xl"}}"
-                    alt="{{name}}"
-                >
-            </figure>
+{{!--
+    Wonder Cabinet Tag Archive Header
+    Hero section with galaxy background for tag pages
+--}}
+
+<section class="wc-tag-hero">
+    <div class="wc-tag-hero-bg">
+        <img src="{{asset "images/bg-galaxy-spiral-1200w@2x.png"}}" alt="" class="wc-tag-hero-galaxy">
+    </div>
+    <div class="wc-tag-hero-content gh-inner">
+        <h1 class="wc-tag-hero-title">{{name}}</h1>
+        {{#if description}}
+            <p class="wc-tag-hero-description">{{description}}</p>
         {{/if}}
     </div>
 </section>

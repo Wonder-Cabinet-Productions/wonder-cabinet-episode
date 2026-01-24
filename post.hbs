@@ -2,8 +2,20 @@
 
 {{#post}}
 
-<main class="gh-main">
-    {{> "components/article" showPublishedAt=true hideFeatureImage=true showComments=true}}
+<main class="gh-main wc-episode-page">
+    {{!-- Audio Player Hero - Renders on ALL posts --}}
+    {{> "audio-player-hero"}}
+
+    {{!-- Episode Notes Section --}}
+    <section class="wc-episode-notes gh-outer">
+        <div class="wc-episode-notes-inner gh-inner">
+            <h2 class="wc-episode-notes-heading">Episode Notes</h2>
+            <div class="wc-episode-notes-content gh-content">
+                {{content}}
+            </div>
+        </div>
+    </section>
+
     {{> "components/cta" title=@custom.email_signup_text}}
 </main>
 

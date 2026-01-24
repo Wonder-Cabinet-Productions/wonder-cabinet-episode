@@ -1,6 +1,6 @@
 {
-    "name": "episode",
-    "description": "A Ghost theme",
+    "name": "wonder-cabinet-episode",
+    "description": "A Ghost theme for Wonder Cabinet podcast",
     "version": "1.0.0",
     "private": true,
     "engines": {
@@ -8,16 +8,16 @@
     },
     "license": "MIT",
     "author": {
-        "name": "Ghost Foundation",
-        "email": "hello@ghost.org",
-        "url": "https://ghost.org"
+        "name": "Wonder Cabinet Productions",
+        "email": "hello@wondercabinet.org",
+        "url": "https://wondercabinet.org"
     },
     "keywords": [
         "ghost",
         "theme",
-        "ghost-theme"
+        "ghost-theme",
+        "podcast"
     ],
-    "docs": "https://episode.ghost.io/about/",
     "config": {
         "posts_per_page": 3,
         "image_sizes": {
@@ -42,36 +42,13 @@
         },
         "card_assets": true,
         "custom": {
-            "typography": {
-                "type": "select",
-                "options": ["Wide", "Narrow"],
-                "default": "Wide"
-            },
             "background_color": {
                 "type": "color",
-                "default": "#ebebeb"
-            },
-            "navigation_layout": {
-                "type": "select",
-                "options": ["Logo on the left", "Logo in the middle", "Stacked"],
-                "default": "Logo on the left"
+                "default": "#000000"
             },
             "email_signup_text": {
                 "type": "text",
-                "default": "Get the latest episodes directly in your inbox"
-            },
-            "footer_text": {
-                "type": "text"
-            },
-            "primary_header": {
-                "type": "text",
-                "default": "A weekly podcast about creativity, design, and building the things we love.",
-                "group": "homepage"
-            },
-            "secondary_header": {
-                "type": "text",
-                "default": "Subscribe below to never miss an episode.",
-                "group": "homepage"
+                "default": "Subscribe to make sure you never miss an episode."
             },
             "apple_podcasts_link": {
                 "type": "text",

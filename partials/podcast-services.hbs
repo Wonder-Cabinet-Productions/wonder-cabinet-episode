@@ -1,23 +1,35 @@
-<div class="gh-podcast-service-list gh-outer">
-    {{#if @custom.apple_podcasts_link}}
-        <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer">
-            {{> "icons/apple"}}
-            <span>Listen on</span>
-            <span>Apple Podcasts</span>
-        </a>
-    {{/if}}
-    {{#if @custom.spotify_link}}
-        <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer">
-            {{> "icons/spotify"}}
-            <span>Listen on</span>
-            <span>Spotify</span>
-        </a>
-    {{/if}}
-    {{#if @custom.youtube_music_link}}
-        <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer">
-            {{> "icons/youtube-music"}}
-            <span>Listen on</span>
-            <span>YouTube Music</span>
-        </a>
-    {{/if}}
-</div>
+{{!--
+    Wonder Cabinet Podcast Services
+    Platform links with description
+--}}
+
+<section class="wc-podcast-services gh-outer">
+    <div class="wc-podcast-services-inner gh-inner">
+        <p class="wc-podcast-services-desc">
+            Intimate conversations about the mysteries of the cosmos and life on a sentient planet with writers, philosophers and scientists who are dazzled by it all.
+        </p>
+        <div class="wc-podcast-services-links">
+            {{#if @custom.apple_podcasts_link}}
+                <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                    {{> "icons/apple"}}
+                    <span class="wc-podcast-service-label">Listen on</span>
+                    <span class="wc-podcast-service-name">Apple Podcasts</span>
+                </a>
+            {{/if}}
+            {{#if @custom.spotify_link}}
+                <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                    {{> "icons/spotify"}}
+                    <span class="wc-podcast-service-label">Listen on</span>
+                    <span class="wc-podcast-service-name">Spotify</span>
+                </a>
+            {{/if}}
+            {{#if @custom.youtube_music_link}}
+                <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                    {{> "icons/youtube-music"}}
+                    <span class="wc-podcast-service-label">Listen on</span>
+                    <span class="wc-podcast-service-name">YouTube Music</span>
+                </a>
+            {{/if}}
+        </div>
+    </div>
+</section>

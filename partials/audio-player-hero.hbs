@@ -1,0 +1,69 @@
+{{!--
+    Wonder Cabinet Audio Player Hero
+    Full-width audio player with galaxy background for episode pages
+    Renders on ALL posts unconditionally
+--}}
+
+<section class="wc-audio-hero" id="wc-audio-player">
+    <div class="wc-audio-hero-bg">
+        <img src="{{asset "images/bg-galaxy-spiral-1200w@2x.png"}}" alt="" class="wc-audio-hero-galaxy">
+    </div>
+
+    <div class="wc-audio-hero-inner gh-inner">
+        {{!-- Episode artwork --}}
+        <div class="wc-audio-hero-artwork">
+            {{#if feature_image}}
+                <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+            {{else}}
+                <img src="{{asset "images/Show_Cover-Wonder-Cabinet.png"}}" alt="Wonder Cabinet">
+            {{/if}}
+        </div>
+
+        {{!-- Episode info and player --}}
+        <div class="wc-audio-hero-content">
+            <span class="wc-audio-hero-date">{{date published_at format="MMDDYY"}}</span>
+            <h1 class="wc-audio-hero-title">{{title}}</h1>
+            {{#if custom_excerpt}}
+                <p class="wc-audio-hero-subtitle">{{custom_excerpt}}</p>
+            {{/if}}
+
+            {{!-- Waveform visualization --}}
+            <div class="wc-audio-waveform-container">
+                <div id="wc-waveform" class="wc-audio-waveform"></div>
+            </div>
+
+            {{!-- Player controls --}}
+            <div class="wc-audio-controls">
+                <button class="wc-audio-skip" id="wc-skip-back" aria-label="Skip back 15 seconds">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V1L7 6L12 11V7C15.31 7 18 9.69 18 13C18 16.31 15.31 19 12 19C8.69 19 6 16.31 6 13H4C4 17.42 7.58 21 12 21C16.42 21 20 17.42 20 13C20 8.58 16.42 5 12 5Z" fill="currentColor"/>
+                        <text x="9" y="15" font-size="6" fill="currentColor" font-family="sans-serif">15</text>
+                    </svg>
+                </button>
+
+                <button class="wc-audio-play" id="wc-play-btn" aria-label="Play episode">
+                    <svg id="wc-play-icon" width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+                        <path d="M10.667 6.853v18.667l14.667-9.333-14.667-9.333z"/>
+                    </svg>
+                    <svg id="wc-pause-icon" width="32" height="32" viewBox="0 0 32 32" fill="currentColor" style="display: none;">
+                        <rect x="8" y="6" width="5" height="20"/>
+                        <rect x="19" y="6" width="5" height="20"/>
+                    </svg>
+                </button>
+
+                <button class="wc-audio-skip" id="wc-skip-forward" aria-label="Skip forward 30 seconds">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V1L17 6L12 11V7C8.69 7 6 9.69 6 13C6 16.31 8.69 19 12 19C15.31 19 18 16.31 18 13H20C20 17.42 16.42 21 12 21C7.58 21 4 17.42 4 13C4 8.58 7.58 5 12 5Z" fill="currentColor"/>
+                        <text x="8" y="15" font-size="6" fill="currentColor" font-family="sans-serif">30</text>
+                    </svg>
+                </button>
+
+                <div class="wc-audio-time">
+                    <span id="wc-current-time">0:00</span>
+                    <span class="wc-audio-time-sep">/</span>
+                    <span id="wc-duration">0:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

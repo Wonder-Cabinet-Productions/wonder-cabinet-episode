@@ -1,20 +1,22 @@
 {{!--
-    Parameters:
-    * footerText (text)
+    Wonder Cabinet Footer
+    Footer with cabinet illustration and copyright
 --}}
 
-<footer class="gh-foot gh-outer">
-    <div class="gh-foot-inner gh-inner">
-        <nav class="gh-foot-menu">
-            {{navigation type="secondary"}}
-        </nav>
+<footer class="wc-footer gh-outer">
+    <div class="wc-footer-inner gh-inner">
+        <div class="wc-footer-illustration">
+            <img src="{{asset "images/illustration-footer-cabinet-table.svg"}}" alt="Wonder Cabinet" class="wc-footer-cabinet">
+        </div>
 
-        <div class="gh-copyright">
-            {{#unless footerText}}
-                {{@site.title}} &copy; {{date format="YYYY"}}. Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
-            {{else}}
-                {{footerText}}
-            {{/unless}}
+        {{#if @site.secondary_navigation}}
+            <nav class="wc-footer-nav">
+                {{navigation type="secondary"}}
+            </nav>
+        {{/if}}
+
+        <div class="wc-footer-copyright">
+            Wonder Cabinet Productions {{date format="YYYY"}} &copy;
         </div>
     </div>
 </footer>

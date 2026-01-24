@@ -1,39 +1,51 @@
-<article class="gh-list-item {{post_class}}">
-    <a class="gh-list-item-inner" href="{{url}}">
+{{!--
+    Wonder Cabinet Episode Card
+    Displays episode with green border, artwork, and bracket button
+--}}
+
+<article class="gh-list-item wc-episode-card {{post_class}}">
+    <a class="gh-list-item-inner wc-episode-card-inner" href="{{url}}">
         {{#if feature_image}}
-            <figure class="gh-list-item-image">
+            <figure class="gh-list-item-image wc-episode-card-image">
                 <img
                     srcset="{{img_url feature_image size="s"}} 300w,
                             {{img_url feature_image size="m"}} 720w,
-                            {{img_url feature_image size="l"}} 960w,
-                            {{img_url feature_image size="xl"}} 1200w,
-                            {{img_url feature_image size="xxl"}} 2000w"
-                    sizes="(max-width: 1200px) 100vw, 1200px"
+                            {{img_url feature_image size="l"}} 960w"
+                    sizes="(max-width: 767px) 100vw, 229px"
                     src="{{img_url feature_image size="m"}}"
                     alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
                 >
             </figure>
         {{/if}}
-        <div class="gh-list-item-content">
-            {{#if showPrimaryTag}}
-                {{#if primary_tag.name}}
-                    <span class="gh-list-item-primary-tag" {{#if primary_tag.accent_color}}style="color: {{primary_tag.accent_color}};"{{/if}}>{{primary_tag.name}}</span>
-                {{/if}}
+        <div class="gh-list-item-content wc-episode-card-content">
+            {{#if showPublishedAt}}
+                <span class="gh-list-item-published-at wc-episode-card-date">{{date published_at format="MMDDYY"}}</span>
             {{/if}}
 
-            <h3 class="gh-list-item-title">{{title}}</h3>
+            <h3 class="gh-list-item-title wc-episode-card-title">{{title}}</h3>
 
             {{#if showExcerpt}}
-                <p class="gh-list-item-excerpt">{{excerpt}}</p>
+                <p class="gh-list-item-excerpt wc-episode-card-excerpt">{{excerpt}}</p>
             {{/if}}
 
-            {{#if showPrimaryAuthor}}
-                <span class="gh-list-item-primary-author">{{primary_author.name}}</span>
-            {{/if}}
-
-            {{#if showPublishedAt}}
-                <span class="gh-list-item-published-at">{{date published_at format="DD MMM YYYY"}}</span>
-            {{/if}}
+            <div class="wc-episode-card-btn">
+                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--top-left">
+                    <img src="{{asset "images/ui-bracket-corner-top-left.svg"}}" alt="">
+                </span>
+                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--top-right">
+                    <img src="{{asset "images/ui-bracket-corner-top-right.svg"}}" alt="">
+                </span>
+                <span class="wc-episode-card-btn-text">
+                    <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-episode-card-btn-icon">
+                    View Episode
+                </span>
+                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--bottom-left">
+                    <img src="{{asset "images/ui-bracket-corner-bottom-left.svg"}}" alt="">
+                </span>
+                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--bottom-right">
+                    <img src="{{asset "images/ui-bracket-corner-bottom-right.svg"}}" alt="">
+                </span>
+            </div>
         </div>
     </a>
 </article>

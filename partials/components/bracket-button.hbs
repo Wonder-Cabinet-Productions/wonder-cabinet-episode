@@ -1,0 +1,32 @@
+{{!--
+    Bracket Button Component
+    A decorative button with bracket corner ornaments for the Wonder Cabinet brand.
+
+    Parameters:
+    * href (required) - Link destination
+    * text (required) - Button text
+    * portal (optional) - Ghost Portal action (e.g., "signup", "signin")
+    * icon (optional) - Include play icon before text
+    * class (optional) - Additional CSS classes
+--}}
+
+<a class="wc-bracket-btn{{#if class}} {{class}}{{/if}}" href="{{href}}"{{#if portal}} data-portal="{{portal}}"{{/if}}>
+    <span class="wc-bracket-btn-corner wc-bracket-btn-corner--top-left">
+        <img src="{{asset "images/ui-bracket-corner-top-left.svg"}}" alt="">
+    </span>
+    <span class="wc-bracket-btn-corner wc-bracket-btn-corner--top-right">
+        <img src="{{asset "images/ui-bracket-corner-top-right.svg"}}" alt="">
+    </span>
+    <span class="wc-bracket-btn-text">
+        {{#if icon}}
+            <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-bracket-btn-icon">
+        {{/if}}
+        {{text}}
+    </span>
+    <span class="wc-bracket-btn-corner wc-bracket-btn-corner--bottom-left">
+        <img src="{{asset "images/ui-bracket-corner-bottom-left.svg"}}" alt="">
+    </span>
+    <span class="wc-bracket-btn-corner wc-bracket-btn-corner--bottom-right">
+        <img src="{{asset "images/ui-bracket-corner-bottom-right.svg"}}" alt="">
+    </span>
+</a>
