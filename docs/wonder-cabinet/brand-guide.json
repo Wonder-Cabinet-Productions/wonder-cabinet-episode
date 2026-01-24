@@ -1,0 +1,36 @@
+{
+  "title": "Wonder Cabinet Brand Guide",
+  "source": "PDF Brand Guide",
+  "source_path": "/Users/markriechers/Developer/ghost-dev/design/mockups/WonderCabinet_BrandGuide.pdf",
+  "processed_images_path": "/Users/markriechers/Developer/ghost-dev/design/mockups/WonderCabinet_BrandGuide-pages/",
+  "designer": "Art & Sons",
+  "designer_url": "https://artandsons.com",
+  "document_date": "2025-12-20",
+  "retrieved_at": "2026-01-22T23:35:00.000000+00:00",
+  "pages": 7,
+  "content_type": "brand-guide",
+  "project": "Wonder Cabinet",
+  "tagline": "From the creators of To The Best Of Our Knowledge",
+  "colors": {
+    "black": {
+      "hex": "#000000",
+      "rgb": "0, 0, 38",
+      "cmyk": "40, 30, 20, 100"
+    },
+    "green": {
+      "hex": "#10A544",
+      "rgb": "16, 165, 68",
+      "cmyk": "82, 7, 100, 0"
+    },
+    "cream": {
+      "hex": "#FFFAEB",
+      "rgb": "255, 250, 235",
+      "cmyk": "0, 1, 7, 0"
+    }
+  },
+  "typography": {
+    "headline": "Futura Bold",
+    "secondary": "Adobe Garamond"
+  },
+  "notes": "Visual brand identity guide for Wonder Cabinet podcast/media project. Features distinctive cabinet icon with cosmic spiral element. Includes logo variants, color specifications, typography guidelines, and secondary graphics."
+}
