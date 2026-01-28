@@ -60,11 +60,11 @@
         <nav class="wc-pagination gh-outer" aria-label="Episode pagination">
             <div class="wc-pagination-inner gh-inner">
                 {{#if pagination.prev}}
-                    <a class="wc-pagination-link wc-pagination-prev" href="{{pagination.prev}}">
+                    <a class="wc-pagination-link wc-pagination-prev" href="{{page_url pagination.prev}}">
                         ← Newer Episodes
                     </a>
                 {{else}}
-                    <span class="wc-pagination-link wc-pagination-prev is-disabled"></span>
+                    <span class="wc-pagination-link wc-pagination-prev is-disabled" aria-hidden="true"></span>
                 {{/if}}
 
                 <span class="wc-pagination-count">
@@ -72,11 +72,11 @@
                 </span>
 
                 {{#if pagination.next}}
-                    <a class="wc-pagination-link wc-pagination-next" href="{{pagination.next}}">
+                    <a class="wc-pagination-link wc-pagination-next" href="{{page_url pagination.next}}">
                         Older Episodes →
                     </a>
                 {{else}}
-                    <span class="wc-pagination-link wc-pagination-next is-disabled"></span>
+                    <span class="wc-pagination-link wc-pagination-next is-disabled" aria-hidden="true"></span>
                 {{/if}}
             </div>
         </nav>

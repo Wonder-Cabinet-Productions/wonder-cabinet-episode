@@ -1,6 +1,6 @@
 {{!--
     Wonder Cabinet Episode Card
-    Displays episode with green border, artwork, and bracket button
+    Displays episode with green border, artwork, and solid green button
 --}}
 
 <article class="gh-list-item wc-episode-card {{post_class}}">
@@ -19,7 +19,7 @@
         {{/if}}
         <div class="gh-list-item-content wc-episode-card-content">
             {{#if showPublishedAt}}
-                <span class="gh-list-item-published-at wc-episode-card-date">{{date published_at format="MMDDYY"}}</span>
+                <span class="gh-list-item-published-at wc-episode-card-date">{{date published_at format="DD MMM YYYY"}}</span>
             {{/if}}
 
             <h3 class="gh-list-item-title wc-episode-card-title">{{title}}</h3>
@@ -28,24 +28,10 @@
                 <p class="gh-list-item-excerpt wc-episode-card-excerpt">{{excerpt}}</p>
             {{/if}}
 
-            <div class="wc-episode-card-btn">
-                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--top-left">
-                    <img src="{{asset "images/ui-bracket-corner-top-left.svg"}}" alt="">
-                </span>
-                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--top-right">
-                    <img src="{{asset "images/ui-bracket-corner-top-right.svg"}}" alt="">
-                </span>
-                <span class="wc-episode-card-btn-text">
-                    <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-episode-card-btn-icon">
-                    View Episode
-                </span>
-                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--bottom-left">
-                    <img src="{{asset "images/ui-bracket-corner-bottom-left.svg"}}" alt="">
-                </span>
-                <span class="wc-bracket-btn-corner wc-bracket-btn-corner--bottom-right">
-                    <img src="{{asset "images/ui-bracket-corner-bottom-right.svg"}}" alt="">
-                </span>
-            </div>
+            <span class="wc-episode-card-btn">
+                <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-episode-card-btn-icon">
+                View Episode
+            </span>
         </div>
     </a>
 </article>

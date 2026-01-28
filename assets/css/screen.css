@@ -687,8 +687,18 @@ body {
    Episode List / Cards
    ============================================ */
 
+/* Override shared-theme-assets clamp gap — wireframe shows tight ~24px spacing */
+.gh-list.simple .gh-list-feed {
+    gap: var(--wc-spacing-md); /* 24px — matches wireframe card spacing */
+}
+
+/* Override base 40px gap in list-inner (between header and feed) */
+.gh-list-inner {
+    gap: var(--wc-spacing-sm); /* 16px */
+}
+
 .wc-episode-card {
-    margin-bottom: var(--wc-spacing-md);
+    margin-bottom: 0; /* Gap property handles inter-card spacing */
 }
 
 .wc-episode-card-inner {
@@ -750,6 +760,7 @@ body {
     font-weight: 700;
     font-size: 2.3rem; /* Figma: 23px */
     line-height: 1.2;
+    text-transform: uppercase;
     color: var(--wc-cream);
     margin: 0;
 }
@@ -766,66 +777,41 @@ body {
     -webkit-box-orient: vertical;
 }
 
-/* Episode card bracket button */
+/* Episode card button — matches .wc-head-subscribe style */
 .wc-episode-card-btn {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    align-self: flex-start;
-    padding: 10px 28px;
-    margin-top: auto;
-    padding-top: var(--wc-spacing-md);
-}
-
-.wc-episode-card-btn .wc-bracket-btn-corner {
-    position: absolute;
-    width: 32px;
-    height: 11px;
-    pointer-events: none;
-}
-
-.wc-episode-card-btn .wc-bracket-btn-corner img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.wc-episode-card-btn .wc-bracket-btn-corner--top-left {
-    top: var(--wc-spacing-md);
-    left: 0;
-}
-
-.wc-episode-card-btn .wc-bracket-btn-corner--top-right {
-    top: var(--wc-spacing-md);
-    right: 0;
-}
-
-.wc-episode-card-btn .wc-bracket-btn-corner--bottom-left {
-    bottom: 0;
-    left: 0;
-}
-
-.wc-episode-card-btn .wc-bracket-btn-corner--bottom-right {
-    bottom: 0;
-    right: 0;
-}
-
-.wc-episode-card-btn-text {
-    display: flex;
-    align-items: center;
     gap: 8px;
-    font-family: var(--font-heading);
-    font-size: 1.8rem; /* Figma: 18px */
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    align-self: flex-start;
+    margin-top: auto;
+    min-height: 45px;
+    padding: 0 20px;
+    background-color: var(--wc-green);
     color: var(--wc-cream);
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+    border-radius: var(--wc-radius); /* 0 — sharp rectangle per brand */
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+}
+
+.wc-episode-card-btn:hover {
+    opacity: 0.85;
+}
+
+.wc-episode-card-btn:focus-visible {
+    outline: 2px solid var(--wc-cream);
+    outline-offset: 2px;
 }
 
 .wc-episode-card-btn-icon {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
 }
 
 .gh-more {
@@ -858,7 +844,9 @@ body {
     }
 
     .wc-episode-card-btn {
-        align-self: center;
+        align-self: stretch; /* Full-width tap target on mobile */
+        justify-content: center;
+        min-height: 45px; /* Matches header button height; exceeds 44px iOS minimum */
     }
 }
 
@@ -1037,11 +1025,11 @@ body {
 /* Archive */
 
 .gh-archive {
-    margin-bottom: 48px;
+    margin-bottom: var(--wc-spacing-md); /* 24px — tighter header-to-list gap */
 }
 
 .wc-podcast-services + .gh-archive {
-    margin-top: clamp(6.4rem, 4.09vw + 4.76rem, 10rem);
+    margin-top: var(--wc-spacing-lg); /* 40px — modest gap after podcast services */
 }
 
 /* ============================================
@@ -1110,7 +1098,7 @@ body {
 
 .wc-audio-hero-date {
     font-family: var(--font-heading);
-    font-size: 0.85rem;
+    font-size: 1.1rem; /* Matches episode card date */
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -1120,18 +1108,17 @@ body {
 
 .wc-audio-hero-title {
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: 3.2rem; /* Larger h1 for post page prominence */
     font-weight: 700;
     line-height: 1.2;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
     color: var(--wc-cream);
     margin: 0 0 0.75rem;
 }
 
 .wc-audio-hero-subtitle {
     font-family: var(--font-heading);
-    font-size: 1.2rem;
+    font-size: 1.5rem; /* Matches episode card excerpt */
     font-style: normal;
     color: rgba(255, 250, 235, 0.9);
     line-height: 1.5;
@@ -1270,7 +1257,7 @@ body {
     }
 
     .wc-audio-hero-title {
-        font-size: 1.5rem;
+        font-size: 2.4rem; /* Scaled down for mobile but still larger than cards */
     }
 
     .wc-audio-actions {
@@ -1770,7 +1757,7 @@ body {
 /* Archive header */
 .wc-archive-header {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) 0 var(--wc-spacing-lg);
+    padding: var(--wc-spacing-md) 0 var(--wc-spacing-sm); /* Tighter: 24px top, 16px bottom */
 }
 
 .wc-archive-title {
@@ -1781,12 +1768,13 @@ body {
     letter-spacing: 0.1em;
     color: var(--wc-cream);
     margin: 0;
+    text-align: center; /* Center the section header */
 }
 
 /* List styling for archive pages */
 .gh-list {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-lg) 0;
+    padding: var(--wc-spacing-sm) 0; /* 16px — tighter container */
 }
 
 /* ============================================
