@@ -1,71 +1,59 @@
 {{!--
     Wonder Cabinet Navigation
-    Custom layout: Centered logo with nav links split below
+    Single-row layout: Nav links left, centered logo, actions right (matching Figma spec)
 --}}
 
 <header id="gh-head" class="gh-head gh-outer wc-head{{#if isTransparent}} is-head-transparent{{/if}}">
-    <div class="gh-head-inner{{#unless fullWidth}} gh-inner{{/unless}}">
-        {{!-- Logo row - centered --}}
-        <div class="wc-head-logo-row">
-            <a class="gh-head-logo wc-head-logo" href="{{@site.url}}">
-                <img src="{{asset "images/logo-primary-wordmark-dark-bg-800w.png"}}" alt="{{@site.title}}">
-            </a>
-        </div>
+    <div class="gh-head-inner{{#unless fullWidth}} gh-inner{{/unless}} wc-head-row">
+        {{!-- Left nav links (uses {{navigation}} helper which loads partials/navigation.hbs) --}}
+        <nav class="wc-head-nav wc-head-nav--left">
+            {{navigation}}
+        </nav>
 
-        {{!-- Navigation row - split layout --}}
-        <div class="wc-head-nav-row">
-            {{!-- Left nav links --}}
-            <nav class="wc-head-nav wc-head-nav--left">
-                {{#foreach navigation}}
-                    <a class="wc-head-nav-link" href="{{url}}">{{label}}</a>
-                {{/foreach}}
-            </nav>
+        {{!-- Centered logo (spiral icon only per Figma) --}}
+        <a class="gh-head-logo wc-head-logo" href="{{@site.url}}">
+            <img src="{{asset "images/logo-primary-dark-bg-800w.png"}}" alt="{{@site.title}}">
+        </a>
 
-            {{!-- Right actions --}}
-            <div class="wc-head-nav wc-head-nav--right">
-                <button class="gh-search wc-head-search" aria-label="Search this site" data-ghost-search>
-                    <img src="{{asset "images/icon-search.svg"}}" alt="Search" width="20" height="20">
-                </button>
-                {{#if @site.members_enabled}}
-                    {{#unless @member}}
-                        <a class="wc-head-signin" href="#/portal/signin" data-portal="signin">Sign in</a>
-                        {{#unless @site.members_invite_only}}
-                            {{> "components/bracket-button" href="#/portal/signup" text="Subscribe" portal="signup"}}
-                        {{/unless}}
-                    {{else}}
-                        <a class="wc-head-signin" href="#/portal/account" data-portal="account">Account</a>
+        {{!-- Right actions --}}
+        <div class="wc-head-nav wc-head-nav--right">
+            <button class="gh-search wc-head-search" aria-label="Search this site" data-ghost-search>
+                <img src="{{asset "images/icon-search.svg"}}" alt="Search" width="20" height="20">
+            </button>
+            {{#if @site.members_enabled}}
+                {{#unless @member}}
+                    <a class="wc-head-signin" href="#/portal/signin" data-portal="signin">Sign in</a>
+                    {{#unless @site.members_invite_only}}
+                        <a class="wc-head-subscribe" href="#/portal/signup" data-portal="signup">Subscribe</a>
                     {{/unless}}
-                {{/if}}
-            </div>
+                {{else}}
+                    <a class="wc-head-signin" href="#/portal/account" data-portal="account">Account</a>
+                {{/unless}}
+            {{/if}}
         </div>
 
         {{!-- Mobile burger --}}
         <button class="gh-burger wc-burger" aria-label="Toggle menu"></button>
     </div>
 
-    {{!-- Wave divider --}}
-    <div class="wc-wave-divider">
-        <img src="{{asset "images/ui-wave-divider-light.svg"}}" alt="">
+    {{!-- Mobile menu overlay (inside header so .is-head-open toggle works) --}}
+    <div class="wc-mobile-menu" id="wc-mobile-menu">
+        <nav class="wc-mobile-nav wc-mobile-nav-links">
+            {{navigation}}
+        </nav>
+        <nav class="wc-mobile-nav">
+            {{#if @site.members_enabled}}
+                <div class="wc-mobile-actions">
+                    {{#unless @member}}
+                        <a class="wc-mobile-signin" href="#/portal/signin" data-portal="signin">Sign in</a>
+                        {{#unless @site.members_invite_only}}
+                            <a class="wc-head-subscribe wc-head-subscribe--mobile" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                        {{/unless}}
+                    {{else}}
+                        <a class="wc-mobile-signin" href="#/portal/account" data-portal="account">Account</a>
+                    {{/unless}}
+                </div>
+            {{/if}}
+        </nav>
     </div>
 </header>
-
-{{!-- Mobile menu overlay --}}
-<div class="wc-mobile-menu" id="wc-mobile-menu">
-    <nav class="wc-mobile-nav">
-        {{#foreach navigation}}
-            <a class="wc-mobile-nav-link" href="{{url}}">{{label}}</a>
-        {{/foreach}}
-        {{#if @site.members_enabled}}
-            <div class="wc-mobile-actions">
-                {{#unless @member}}
-                    <a class="wc-mobile-signin" href="#/portal/signin" data-portal="signin">Sign in</a>
-                    {{#unless @site.members_invite_only}}
-                        {{> "components/bracket-button" href="#/portal/signup" text="Subscribe" portal="signup"}}
-                    {{/unless}}
-                {{else}}
-                    <a class="wc-mobile-signin" href="#/portal/account" data-portal="account">Account</a>
-                {{/unless}}
-            </div>
-        {{/if}}
-    </nav>
-</div>

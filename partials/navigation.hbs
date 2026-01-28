@@ -1,0 +1,7 @@
+{{!--
+    Navigation partial - required by Ghost for {{#foreach navigation}} to work
+    This file must be named exactly "navigation.hbs" in the partials folder
+--}}
+{{#foreach navigation}}
+    <a class="wc-head-nav-link" href="{{url}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a>
+{{/foreach}}

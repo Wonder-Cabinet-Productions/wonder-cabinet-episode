@@ -3,14 +3,30 @@
 <main class="gh-main wc-main">
     {{> "components/home-hero"}}
     {{> "podcast-services"}}
+
+    {{!-- Cabinet frame divider after services --}}
+    <div class="wc-divider gh-outer">
+        <div class="gh-inner">
+            <img src="{{asset "images/ui-divider-thick.png"}}" alt="" class="wc-divider-img">
+        </div>
+    </div>
+
     <section class="gh-archive gh-outer">
         <div class="gh-archive-inner gh-inner">
             <header class="gh-archive-header">
-                <h1 class="gh-archive-title">Latest episodes</h1>
+                <h1 class="gh-archive-title">LATEST EPISODES</h1>
             </header>
         </div>
     </section>
     {{> "components/list" layout="simple" count="3" showExcerpt=true showPublishedAt=true}}
+
+    {{!-- Cabinet frame divider after episodes --}}
+    <div class="wc-divider gh-outer">
+        <div class="gh-inner">
+            <img src="{{asset "images/ui-divider-thin.png"}}" alt="" class="wc-divider-img">
+        </div>
+    </div>
+
     {{#match pagination.pages ">" 1}}
         <div class="gh-more gh-outer">
             <div class="gh-inner">

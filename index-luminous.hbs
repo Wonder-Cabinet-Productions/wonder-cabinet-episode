@@ -1,0 +1,22 @@
+{{!< default}}
+
+<main class="gh-main wc-main">
+    {{!-- Simple header matching Episode theme style --}}
+    <header class="gh-header gh-outer">
+        <div class="gh-header-inner gh-inner">
+            <h1 class="gh-header-primary">Luminous</h1>
+            {{#if tag.description}}
+                <p class="gh-header-secondary">{{tag.description}}</p>
+            {{/if}}
+        </div>
+    </header>
+
+    {{!-- Episode list without Wonder Cabinet cabinet-frame styling --}}
+    <section class="gh-archive gh-outer">
+        <div class="gh-inner">
+            {{> "components/list" layout="simple" count="all" showExcerpt=true showPublishedAt=true hasPagination=true}}
+        </div>
+    </section>
+
+    {{> "components/cta"}}
+</main>

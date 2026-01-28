@@ -3,7 +3,84 @@
 <main class="gh-main wc-main">
     {{#tag}}
         {{> "components/tag-header"}}
+
+        {{!-- Series Info Zone (shown when description exists) --}}
+        {{#if description}}
+            <section class="wc-series-info gh-outer">
+                <div class="wc-series-info-inner gh-inner">
+                    <p class="wc-series-description">{{description}}</p>
+
+                    {{!-- Podcast Services --}}
+                    <div class="wc-series-services">
+                        {{#if @custom.apple_podcasts_link}}
+                            <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                                {{> "icons/apple"}}
+                                <span class="wc-podcast-service-label">Listen on</span>
+                                <span class="wc-podcast-service-name">Apple Podcasts</span>
+                            </a>
+                        {{/if}}
+                        {{#if @custom.spotify_link}}
+                            <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                                {{> "icons/spotify"}}
+                                <span class="wc-podcast-service-label">Listen on</span>
+                                <span class="wc-podcast-service-name">Spotify</span>
+                            </a>
+                        {{/if}}
+                        {{#if @custom.youtube_music_link}}
+                            <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                                {{> "icons/youtube-music"}}
+                                <span class="wc-podcast-service-label">Listen on</span>
+                                <span class="wc-podcast-service-name">YouTube Music</span>
+                            </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </section>
+
+            {{!-- Visual Divider --}}
+            <div class="wc-series-divider gh-outer">
+                <div class="gh-inner">
+                    <img src="{{asset "images/ui-divider-thick.png"}}" alt="" class="wc-divider-img">
+                </div>
+            </div>
+        {{/if}}
     {{/tag}}
+
+    {{!-- Episodes Section Header --}}
+    <section class="wc-episodes-header gh-outer">
+        <div class="gh-inner">
+            <h2 class="wc-section-heading">Episodes{{#if pagination.total}} <span class="wc-episode-count">({{pagination.total}} available)</span>{{/if}}</h2>
+        </div>
+    </section>
+
     {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
+
+    {{!-- Pagination --}}
+    {{#match pagination.pages ">" 1}}
+        <nav class="wc-pagination gh-outer" aria-label="Episode pagination">
+            <div class="wc-pagination-inner gh-inner">
+                {{#if pagination.prev}}
+                    <a class="wc-pagination-link wc-pagination-prev" href="{{pagination.prev}}">
+                        ← Newer Episodes
+                    </a>
+                {{else}}
+                    <span class="wc-pagination-link wc-pagination-prev is-disabled"></span>
+                {{/if}}
+
+                <span class="wc-pagination-count">
+                    Page {{pagination.page}} of {{pagination.pages}}
+                </span>
+
+                {{#if pagination.next}}
+                    <a class="wc-pagination-link wc-pagination-next" href="{{pagination.next}}">
+                        Older Episodes →
+                    </a>
+                {{else}}
+                    <span class="wc-pagination-link wc-pagination-next is-disabled"></span>
+                {{/if}}
+            </div>
+        </nav>
+    {{/match}}
+
     {{> "components/cta"}}
 </main>

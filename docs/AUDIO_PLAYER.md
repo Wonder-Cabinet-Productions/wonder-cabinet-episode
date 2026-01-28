@@ -1,366 +1,209 @@
-# Audio Player Integration (WaveSurfer.js)
+# Wonder Cabinet Audio Player
 
-Guide to integrating WaveSurfer.js for podcast episode audio players in the wonder-cabinet theme.
+Full-featured podcast audio player using WaveSurfer.js v7 for waveform visualization.
 
-## Overview
+## Features
 
-[WaveSurfer.js](https://wavesurfer.xyz/) is a customizable audio waveform visualization library. It creates interactive waveform displays that users can click to seek through audio.
+| Feature | Description |
+|---------|-------------|
+| **Waveform Visualization** | Interactive WaveSurfer.js waveform with brand colors |
+| **Play/Pause** | Central play button with visual state toggle |
+| **Skip Controls** | Skip back 15s, skip forward 30s |
+| **Speed Control** | 7 speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 1.75x, 2x |
+| **Keyboard Shortcuts** | Space/K (play), J/L (skip), arrows (speed), M (mute), Home/0/End |
+| **Screen Reader Support** | ARIA live region announces all player actions |
+| **Time Display** | MM:SS or HH:MM:SS (automatic for episodes > 60min) |
+| **Transcript Toggle** | Auto-detects "Transcript" headings, creates collapsible section |
+| **Analytics** | Plausible, Simple Analytics, GA4 event tracking |
+| **Mobile Responsive** | Shorter waveform (48px vs 64px), no keyboard hints |
+| **Error States** | Placeholder and error UI with retry button |
 
-## Installation
+## Files
 
-### Via npm
+| File | Purpose |
+|------|---------|
+| `assets/js/audio-player.js` | Main player JavaScript (~800 lines) |
+| `partials/audio-player-hero.hbs` | Player HTML template |
+| `assets/css/screen.css` | Player styles (search for "Audio Player") |
 
-```bash
-npm install wavesurfer.js
+## HTML Structure
+
+The player is rendered in `partials/audio-player-hero.hbs`:
+
+```handlebars
+<section class="wc-audio-hero" id="wc-audio-player">
+    <div class="wc-audio-hero-bg">...</div>
+    <div class="wc-audio-hero-inner gh-inner">
+        <!-- Episode artwork -->
+        <div class="wc-audio-hero-artwork">...</div>
+
+        <!-- Episode info and player -->
+        <div class="wc-audio-hero-content">
+            <span class="wc-audio-hero-date">{{date}}</span>
+            <h1 class="wc-audio-hero-title">{{title}}</h1>
+
+            <!-- Waveform -->
+            <div id="wc-waveform" class="wc-audio-waveform"></div>
+
+            <!-- Controls -->
+            <div class="wc-audio-controls">
+                <button id="wc-skip-back">...</button>
+                <button id="wc-play-btn">...</button>
+                <button id="wc-skip-forward">...</button>
+                <button id="wc-speed-btn">1x</button>
+                <div class="wc-audio-time">
+                    <span id="wc-current-time">0:00</span>
+                    <span>/</span>
+                    <span id="wc-duration">0:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 ```
 
-Then import in your JavaScript:
+## Element IDs
+
+| ID | Element |
+|----|---------|
+| `#wc-audio-player` | Main container |
+| `#wc-waveform` | WaveSurfer container |
+| `#wc-play-btn` | Play/pause button |
+| `#wc-skip-back` | Skip back button |
+| `#wc-skip-forward` | Skip forward button |
+| `#wc-speed-btn` | Speed control button |
+| `#wc-speed-display` | Speed text (inside speed button) |
+| `#wc-current-time` | Current time display |
+| `#wc-duration` | Duration display |
+| `#wc-player-announcer` | Screen reader announcements (auto-created) |
+
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Space` or `K` | Play/Pause |
+| `J` or `←` | Skip back 15 seconds |
+| `L` or `→` | Skip forward 30 seconds |
+| `↑` | Increase speed |
+| `↓` | Decrease speed |
+| `M` | Toggle mute |
+| `Home` or `0` | Jump to start |
+| `End` | Jump to end |
+
+Shortcuts are disabled when an input field is focused.
+
+## Audio URL Detection
+
+The player automatically finds audio from (in order):
+
+1. `data-audio-url` attribute on `#wc-audio-player`
+2. Any element with `[data-audio-url]` attribute
+3. Ghost's `.kg-audio-card audio` element
+4. Standard `audio` element in `.gh-content` or `.wc-episode-notes-content`
+
+## Analytics Events
+
+The player fires these analytics events (to Plausible, Simple Analytics, or GA4):
+
+| Event | Data | When |
+|-------|------|------|
+| `episode_view` | title, url | Page load (once) |
+| `play` | episode | First play only |
+| `pause` | episode, position | Each pause |
+| `complete` | episode | Playback reaches end |
+| `speed_change` | speed | Speed button clicked |
+| `skip_back` | seconds | Skip back triggered |
+| `skip_forward` | seconds | Skip forward triggered |
+
+On localhost, events log to browser console.
+
+## Transcript Toggle
+
+If the episode notes contain a heading with "transcript" in the text:
+
+1. The heading and all following content (until next H2) are wrapped
+2. A toggle button replaces the heading
+3. Content is collapsed by default
+4. Click to expand/collapse with smooth animation
+
+Example headings that trigger the toggle:
+- "Transcript"
+- "Full Transcript"
+- "Episode Transcript"
+
+## WaveSurfer Configuration
 
 ```javascript
-// assets/js/index.js
-import WaveSurfer from 'wavesurfer.js';
+const CONFIG = {
+    skipBackSeconds: 15,
+    skipForwardSeconds: 30,
+    speedOptions: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
+    waveformHeight: 64,        // Desktop
+    waveformHeightMobile: 48,  // Mobile (< 768px)
+    waveColor: 'rgba(255, 250, 235, 0.4)',
+    progressColor: '#10A544',
+    cursorColor: '#10A544'
+};
 ```
 
-### Via CDN (Alternative)
+## Styling Classes
 
-Add to `default.hbs` before `{{ghost_foot}}`:
+| Class | Purpose |
+|-------|---------|
+| `.wc-audio-hero` | Main section container |
+| `.wc-audio-controls` | Control buttons container |
+| `.wc-audio-play` | Play button |
+| `.wc-audio-play.is-playing` | Playing state |
+| `.wc-audio-skip` | Skip buttons |
+| `.wc-audio-speed` | Speed button |
+| `.wc-audio-time` | Time display container |
+| `.wc-player-keyboard-hints` | Keyboard hints (desktop only) |
+| `.wc-player-placeholder` | No audio placeholder |
+| `.wc-player-error` | Error state |
+| `.wc-transcript-section` | Transcript wrapper |
+| `.wc-transcript-toggle` | Transcript toggle button |
+| `.wc-transcript-content` | Collapsible transcript |
+| `.sr-only` | Screen reader only utility |
+
+## Error States
+
+### No Audio Available
+
+If no audio URL is found, displays a placeholder with play icon and message.
+
+### Audio Load Error
+
+If WaveSurfer fails to load audio, displays error message with "Try Again" button.
+
+## Accessibility
+
+- All buttons have `aria-label` attributes
+- Speed button updates `aria-label` when speed changes
+- Screen reader announcements for:
+  - "Playing" / "Paused"
+  - "Skipped back/forward X seconds"
+  - "Speed increased/decreased to Xx"
+  - "Muted" / "Unmuted"
+  - "Jumped to start/end"
+- Keyboard hints use `aria-hidden="true"`
+- Transcript toggle uses `aria-expanded` and `aria-controls`
+
+## Building
+
+After modifying CSS or JS:
+
+```bash
+npx gulp build
+```
+
+This compiles `assets/css/screen.css` → `assets/built/screen.css`.
+
+## Loading WaveSurfer
+
+WaveSurfer.js is loaded via CDN in `default.hbs` (or `post.hbs`):
 
 ```html
 <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
 ```
 
-## Basic Implementation
-
-### HTML Structure
-
-Add a container in your post template:
-
-```handlebars
-{{!-- post.hbs or a custom template --}}
-{{#post}}
-    {{#if feature_image}}
-        {{!-- Check if post has audio tag for podcast episodes --}}
-        {{#has tag="hash-audio"}}
-            <div class="audio-player" data-audio="{{feature_image}}">
-                <div id="waveform-{{id}}"></div>
-                <div class="audio-controls">
-                    <button class="play-pause">Play</button>
-                    <span class="current-time">0:00</span>
-                    <span class="duration">0:00</span>
-                </div>
-            </div>
-        {{/has}}
-    {{/if}}
-{{/post}}
-```
-
-### JavaScript Initialization
-
-```javascript
-// assets/js/audioPlayer.js
-import WaveSurfer from 'wavesurfer.js';
-
-export default function initAudioPlayer() {
-    const containers = document.querySelectorAll('.audio-player');
-
-    containers.forEach(container => {
-        const waveformId = container.querySelector('[id^="waveform-"]').id;
-        const audioUrl = container.dataset.audio;
-
-        const wavesurfer = WaveSurfer.create({
-            container: `#${waveformId}`,
-            waveColor: '#4F4A85',
-            progressColor: '#383351',
-            url: audioUrl,
-            height: 80,
-            barWidth: 2,
-            barGap: 1,
-            barRadius: 2,
-        });
-
-        // Play/pause button
-        const playButton = container.querySelector('.play-pause');
-        playButton.addEventListener('click', () => {
-            wavesurfer.playPause();
-        });
-
-        // Update button text
-        wavesurfer.on('play', () => playButton.textContent = 'Pause');
-        wavesurfer.on('pause', () => playButton.textContent = 'Play');
-
-        // Update time displays
-        wavesurfer.on('audioprocess', () => {
-            container.querySelector('.current-time').textContent =
-                formatTime(wavesurfer.getCurrentTime());
-        });
-
-        wavesurfer.on('ready', () => {
-            container.querySelector('.duration').textContent =
-                formatTime(wavesurfer.getDuration());
-        });
-    });
-}
-
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-}
-```
-
-### Import in Main Entry
-
-```javascript
-// assets/js/index.js
-import '../css/index.css';
-import initAudioPlayer from './audioPlayer';
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initAudioPlayer);
-```
-
-## Getting Audio URL from Ghost
-
-Ghost stores audio in several ways. Here's how to access it:
-
-### From Post HTML Content
-
-If audio is embedded via Ghost's audio card:
-
-```javascript
-// Extract audio URL from Ghost's audio card
-const audioCard = document.querySelector('.kg-audio-card audio');
-if (audioCard) {
-    const audioUrl = audioCard.src;
-}
-```
-
-### From Custom Field (via Code Injection)
-
-Store audio URL in post code injection, then read it:
-
-```handlebars
-{{!-- In post template --}}
-<div id="audio-player"
-     data-audio-url="{{#if @custom.audio_url}}{{@custom.audio_url}}{{/if}}">
-</div>
-```
-
-### From Tag Metadata
-
-Use a specific tag pattern:
-
-```handlebars
-{{#has tag="hash-podcast"}}
-    {{!-- This post is a podcast episode --}}
-{{/has}}
-```
-
-## Styling
-
-### Basic CSS
-
-```css
-/* assets/css/components/audio-player.css */
-.audio-player {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--color-surface);
-    border-radius: 8px;
-}
-
-.audio-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.play-pause {
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    background: var(--ghost-accent-color);
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.play-pause:hover {
-    opacity: 0.9;
-}
-
-.current-time,
-.duration {
-    font-family: monospace;
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-}
-```
-
-### Waveform Customization
-
-WaveSurfer accepts many styling options:
-
-```javascript
-WaveSurfer.create({
-    container: '#waveform',
-
-    // Colors
-    waveColor: '#ddd',           // Unplayed portion
-    progressColor: '#3eb0ef',     // Played portion
-    cursorColor: '#333',         // Playhead
-
-    // Dimensions
-    height: 80,                  // Waveform height in pixels
-    barWidth: 2,                 // Width of each bar
-    barGap: 1,                   // Gap between bars
-    barRadius: 2,                // Rounded corners
-
-    // Behavior
-    normalize: true,             // Normalize volume peaks
-    hideScrollbar: true,         // Hide horizontal scrollbar
-    autoCenter: true,            // Keep playhead centered
-
-    // Responsive
-    responsive: true,            // Redraw on window resize
-    fillParent: true,            // Fill container width
-});
-```
-
-## WaveSurfer Plugins
-
-### Minimap
-
-Show a small overview of the entire waveform:
-
-```javascript
-import WaveSurfer from 'wavesurfer.js';
-import Minimap from 'wavesurfer.js/dist/plugins/minimap.esm.js';
-
-const wavesurfer = WaveSurfer.create({
-    container: '#waveform',
-    plugins: [
-        Minimap.create({
-            height: 20,
-            waveColor: '#ddd',
-            progressColor: '#999',
-        }),
-    ],
-});
-```
-
-### Regions
-
-Allow users to select and loop portions:
-
-```javascript
-import Regions from 'wavesurfer.js/dist/plugins/regions.esm.js';
-
-const regions = wavesurfer.registerPlugin(Regions.create());
-
-// Add a region
-regions.addRegion({
-    start: 10,      // Start time in seconds
-    end: 30,        // End time
-    color: 'rgba(0, 123, 255, 0.2)',
-    drag: true,
-    resize: true,
-});
-```
-
-### Timeline
-
-Show time markers below waveform:
-
-```javascript
-import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm.js';
-
-const wavesurfer = WaveSurfer.create({
-    container: '#waveform',
-    plugins: [
-        Timeline.create({
-            container: '#timeline',
-        }),
-    ],
-});
-```
-
-## Performance Considerations
-
-### Lazy Loading
-
-Only initialize players when visible:
-
-```javascript
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            initializePlayer(entry.target);
-            observer.unobserve(entry.target);
-        }
-    });
-});
-
-document.querySelectorAll('.audio-player').forEach(el => {
-    observer.observe(el);
-});
-```
-
-### Pre-computed Peaks
-
-For large files, pre-compute waveform peaks server-side:
-
-```javascript
-WaveSurfer.create({
-    container: '#waveform',
-    url: '/audio/episode.mp3',
-    peaks: [/* pre-computed peak data */],
-});
-```
-
-## Integration with Ghost Audio Card
-
-If using Ghost's native audio card, enhance it with WaveSurfer:
-
-```javascript
-document.querySelectorAll('.kg-audio-card').forEach(card => {
-    const audio = card.querySelector('audio');
-    if (!audio) return;
-
-    // Create waveform container
-    const waveformDiv = document.createElement('div');
-    waveformDiv.className = 'wavesurfer-container';
-    card.insertBefore(waveformDiv, audio);
-
-    // Initialize WaveSurfer with existing audio element
-    const wavesurfer = WaveSurfer.create({
-        container: waveformDiv,
-        media: audio,  // Use existing audio element
-        height: 60,
-    });
-
-    // Hide original audio controls
-    audio.controls = false;
-});
-```
-
-## Events Reference
-
-Common WaveSurfer events:
-
-| Event | Description |
-|-------|-------------|
-| `ready` | Waveform is drawn, audio is ready |
-| `play` | Playback started |
-| `pause` | Playback paused |
-| `finish` | Playback reached end |
-| `audioprocess` | Fires during playback (for time updates) |
-| `seeking` | User is seeking |
-| `interaction` | User clicked on waveform |
-| `error` | Error loading audio |
-
-```javascript
-wavesurfer.on('ready', () => console.log('Ready to play'));
-wavesurfer.on('error', (error) => console.error('Error:', error));
-```
+The player script checks for `typeof WaveSurfer` before initializing.

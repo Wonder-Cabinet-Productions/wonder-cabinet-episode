@@ -1,69 +1,75 @@
 {{!--
     Wonder Cabinet Audio Player Hero
-    Full-width audio player with galaxy background for episode pages
+    Green gradient card with galaxy background + service buttons inline
     Renders on ALL posts unconditionally
 --}}
 
-<section class="wc-audio-hero" id="wc-audio-player">
+<section class="wc-audio-hero-wrapper">
+    {{!-- Galaxy background (same pattern as home hero) --}}
     <div class="wc-audio-hero-bg">
         <img src="{{asset "images/bg-galaxy-spiral-1200w@2x.png"}}" alt="" class="wc-audio-hero-galaxy">
     </div>
 
-    <div class="wc-audio-hero-inner gh-inner">
-        {{!-- Episode artwork --}}
-        <div class="wc-audio-hero-artwork">
-            {{#if feature_image}}
-                <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
-            {{else}}
-                <img src="{{asset "images/Show_Cover-Wonder-Cabinet.png"}}" alt="Wonder Cabinet">
-            {{/if}}
-        </div>
-
-        {{!-- Episode info and player --}}
-        <div class="wc-audio-hero-content">
-            <span class="wc-audio-hero-date">{{date published_at format="MMDDYY"}}</span>
-            <h1 class="wc-audio-hero-title">{{title}}</h1>
-            {{#if custom_excerpt}}
-                <p class="wc-audio-hero-subtitle">{{custom_excerpt}}</p>
-            {{/if}}
-
-            {{!-- Waveform visualization --}}
-            <div class="wc-audio-waveform-container">
-                <div id="wc-waveform" class="wc-audio-waveform"></div>
+    {{!-- Green player card --}}
+    <section class="wc-audio-hero" id="wc-audio-player">
+        <div class="wc-audio-hero-inner gh-inner">
+            {{!-- Episode artwork --}}
+            <div class="wc-audio-hero-artwork">
+                {{#if feature_image}}
+                    <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                {{else}}
+                    <img src="{{asset "images/Show_Cover-Wonder-Cabinet.png"}}" alt="Wonder Cabinet">
+                {{/if}}
             </div>
 
-            {{!-- Player controls --}}
-            <div class="wc-audio-controls">
-                <button class="wc-audio-skip" id="wc-skip-back" aria-label="Skip back 15 seconds">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V1L7 6L12 11V7C15.31 7 18 9.69 18 13C18 16.31 15.31 19 12 19C8.69 19 6 16.31 6 13H4C4 17.42 7.58 21 12 21C16.42 21 20 17.42 20 13C20 8.58 16.42 5 12 5Z" fill="currentColor"/>
-                        <text x="9" y="15" font-size="6" fill="currentColor" font-family="sans-serif">15</text>
-                    </svg>
-                </button>
+            {{!-- Episode info and player --}}
+            <div class="wc-audio-hero-content">
+                <span class="wc-audio-hero-date">{{date published_at format="DD MMM YYYY"}}</span>
+                <h1 class="wc-audio-hero-title">{{title}}</h1>
+                {{#if custom_excerpt}}
+                    <p class="wc-audio-hero-subtitle">{{custom_excerpt}}</p>
+                {{/if}}
 
-                <button class="wc-audio-play" id="wc-play-btn" aria-label="Play episode">
-                    <svg id="wc-play-icon" width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                        <path d="M10.667 6.853v18.667l14.667-9.333-14.667-9.333z"/>
-                    </svg>
-                    <svg id="wc-pause-icon" width="32" height="32" viewBox="0 0 32 32" fill="currentColor" style="display: none;">
-                        <rect x="8" y="6" width="5" height="20"/>
-                        <rect x="19" y="6" width="5" height="20"/>
-                    </svg>
-                </button>
+                {{!-- Player controls with service icons --}}
+                <div class="wc-audio-actions">
+                    <button class="wc-audio-play" id="wc-play-btn" aria-label="Play episode">
+                        <svg id="wc-play-icon" class="play-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <svg id="wc-pause-icon" class="pause-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                    </button>
 
-                <button class="wc-audio-skip" id="wc-skip-forward" aria-label="Skip forward 30 seconds">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 5V1L17 6L12 11V7C8.69 7 6 9.69 6 13C6 16.31 8.69 19 12 19C15.31 19 18 16.31 18 13H20C20 17.42 16.42 21 12 21C7.58 21 4 17.42 4 13C4 8.58 7.58 5 12 5Z" fill="currentColor"/>
-                        <text x="8" y="15" font-size="6" fill="currentColor" font-family="sans-serif">30</text>
-                    </svg>
-                </button>
-
-                <div class="wc-audio-time">
-                    <span id="wc-current-time">0:00</span>
-                    <span class="wc-audio-time-sep">/</span>
-                    <span id="wc-duration">0:00</span>
+                    {{!-- Service/Subscribe icons inline with play button --}}
+                    <div class="wc-service-icons">
+                        {{#if @custom.apple_podcasts_link}}
+                        <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener" class="wc-service-icon" aria-label="Apple Podcasts" title="Apple Podcasts">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.34 0A5.328 5.328 0 000 5.34v13.32A5.328 5.328 0 005.34 24h13.32A5.328 5.328 0 0024 18.66V5.34A5.328 5.328 0 0018.66 0zm6.525 2.568c2.336 0 4.448.902 6.056 2.587 1.224 1.272 1.912 2.619 2.264 4.392.12.59.12 2.2.007 2.864a8.506 8.506 0 01-3.24 5.296c-.608.46-2.096 1.261-2.336 1.261-.088 0-.096-.091-.056-.46.072-.592.144-.715.48-.856.536-.224 1.448-.874 2.008-1.435a7.644 7.644 0 002.008-3.536c.208-.824.184-2.656-.048-3.504-.728-2.696-2.928-4.792-5.624-5.352-.784-.16-2.208-.16-3 0-2.728.56-4.984 2.76-5.672 5.528-.184.752-.184 2.584 0 3.336.456 1.832 1.64 3.512 3.192 4.512.304.2.672.408.824.472.336.144.408.264.472.856.04.36.03.464-.056.464-.056 0-.464-.176-.896-.384l-.04-.03c-2.472-1.216-4.056-3.274-4.632-6.012-.144-.706-.168-2.392-.03-3.04.36-1.74 1.048-3.1 2.192-4.304 1.648-1.737 3.768-2.656 6.128-2.656zm.134 2.81c.409.004.803.04 1.106.106 2.784.62 4.76 3.408 4.376 6.174-.152 1.114-.536 2.03-1.216 2.88-.336.43-1.152 1.15-1.296 1.15-.023 0-.048-.272-.048-.603v-.605l.416-.496c1.568-1.878 1.456-4.502-.256-6.224-.664-.67-1.432-1.064-2.424-1.246-.64-.118-.776-.118-1.448-.008-1.02.167-1.81.562-2.512 1.256-1.72 1.704-1.832 4.342-.264 6.222l.413.496v.608c0 .336-.027.608-.06.608-.03 0-.264-.16-.512-.36l-.034-.011c-.832-.664-1.568-1.842-1.872-2.997-.184-.698-.184-2.024.008-2.72.504-1.878 1.888-3.335 3.808-4.019.41-.145 1.133-.22 1.814-.211zm-.13 2.99c.31 0 .62.06.844.178.488.253.888.745 1.04 1.259.464 1.578-1.208 2.96-2.72 2.254h-.015c-.712-.331-1.096-.956-1.104-1.77 0-.733.408-1.371 1.112-1.745.224-.117.534-.176.844-.176zm-.011 4.728c.988-.004 1.706.349 1.97.97.198.464.124 1.932-.218 4.302-.232 1.656-.36 2.074-.68 2.356-.44.39-1.064.498-1.656.288h-.003c-.716-.257-.87-.605-1.164-2.644-.341-2.37-.416-3.838-.218-4.302.262-.616.974-.966 1.97-.97z"/></svg>
+                        </a>
+                        {{/if}}
+                        {{#if @custom.spotify_link}}
+                        <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener" class="wc-service-icon" aria-label="Spotify" title="Spotify">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                        </a>
+                        {{/if}}
+                        {{#if @custom.youtube_music_link}}
+                        <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener" class="wc-service-icon" aria-label="YouTube" title="YouTube">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        {{/if}}
+                        <a href="https://pod.link/wondercabinet" target="_blank" rel="noopener" class="wc-service-icon" aria-label="More podcast apps" title="More podcast apps">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        {{!-- Waveform section --}}
+        <div class="wc-audio-waveform-section gh-inner">
+            <div id="wc-waveform" class="wc-audio-waveform"></div>
+            <span class="wc-audio-time" id="wc-time-display">0:00 / 0:00</span>
+        </div>
+    </section>
 </section>
