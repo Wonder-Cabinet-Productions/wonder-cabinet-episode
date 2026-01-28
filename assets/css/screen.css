@@ -978,11 +978,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--wc-spacing-lg);
+    gap: 80px;
     width: max-content;
 }
 
-/* Secondary navigation */
+/* Secondary navigation — bare <a> tags are direct children (no .nav ul) */
 .wc-footer-nav {
     display: flex;
     justify-content: center;
@@ -1083,7 +1083,7 @@ body {
     position: relative;
     z-index: 1;
     background: var(--wc-green);
-    padding: 2rem 0;
+    padding: 2rem 15px;
     border-radius: 16px;
     overflow: hidden;
     max-width: 810px;
@@ -1140,7 +1140,7 @@ body {
 .wc-audio-hero-subtitle {
     font-family: var(--font-heading);
     font-size: 1.2rem;
-    font-style: italic;
+    font-style: normal;
     color: rgba(255, 250, 235, 0.9);
     line-height: 1.5;
     margin: 0 0 1.5rem;
@@ -1263,7 +1263,7 @@ body {
     }
 
     .wc-audio-hero {
-        padding: 1.5rem 0;
+        padding: 1.5rem 15px;
         border-radius: 12px;
     }
 
