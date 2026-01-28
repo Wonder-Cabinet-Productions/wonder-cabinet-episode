@@ -1053,29 +1053,21 @@ body {
 .wc-audio-hero-wrapper {
     position: relative;
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) var(--wc-spacing-md);
-    overflow: hidden;
+    padding: 120px var(--wc-spacing-md);
 }
 
-/* Galaxy background layer (same pattern as .wc-hero-bg) */
-.wc-audio-hero-bg {
+/* Galaxy background layer — ::before for opacity without affecting content */
+.wc-audio-hero-wrapper::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.wc-audio-hero-galaxy {
-    width: 100%;
-    max-width: 945px;
-    height: auto;
+    background: url(../images/bg-galaxy-spiral-1200w@2x.png) no-repeat center center;
+    background-size: 687px 687px;
     opacity: 0.45;
-    object-fit: contain;
+    pointer-events: none;
 }
 
 /* Green player card — elevated above galaxy */
@@ -1255,10 +1247,10 @@ body {
 /* Mobile responsive */
 @media (max-width: 767px) {
     .wc-audio-hero-wrapper {
-        padding: var(--wc-spacing-lg) var(--wc-spacing-sm);
+        padding: var(--wc-spacing-xl) var(--wc-spacing-sm);
     }
 
-    .wc-audio-hero-galaxy {
+    .wc-audio-hero-wrapper::before {
         opacity: 0.35;
     }
 
