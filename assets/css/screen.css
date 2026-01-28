@@ -146,7 +146,7 @@ body {
 .wc-head {
     position: relative;
     background-color: var(--wc-black);
-    padding: 0;
+    padding: 20px 0 0; /* Top padding for space below announcement bar */
     height: auto;
 }
 
@@ -249,7 +249,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
-    color: #fff;
+    color: var(--wc-cream);
     background-color: var(--wc-green);
     text-decoration: none;
     border: none;
@@ -424,23 +424,23 @@ body {
    Wonder Cabinet Home Hero
    ============================================ */
 
-/* Hero zone wrapper — galaxy extends behind wave divider + hero */
+/* Hero zone wrapper — galaxy via ::before pseudo-element for opacity control */
 .wc-hero-zone {
     position: relative;
     background-color: var(--wc-black);
-    overflow: hidden;
 }
 
-.wc-hero-zone-bg {
+/* Galaxy background layer — uses ::before so we can apply opacity without affecting content */
+.wc-hero-zone::before {
+    content: '';
     position: absolute;
-    top: -50px; /* Allows galaxy to bleed upward toward navbar */
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    overflow: hidden;
+    background: url(../images/bg-galaxy-spiral-1200w@2x.png) no-repeat center center;
+    background-size: 687px 687px; /* Figma spec: 687x687px */
+    opacity: 0.45; /* Figma spec */
     pointer-events: none;
 }
 
@@ -450,17 +450,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: auto;
+    min-height: 480px; /* Vertical space for galaxy to display */
     padding: var(--wc-spacing-md) var(--wc-spacing-md);
-    margin-top: -40px; /* Tuck "Welcome to" up under the wave divider per Figma */
-}
-
-.wc-hero-galaxy {
-    width: 100%;
-    max-width: 687px; /* Figma spec: 687x687px */
-    height: auto;
-    opacity: 0.45; /* Figma spec */
-    object-fit: contain;
+    margin-top: -50px; /* Tuck "Welcome to" up under the wave divider per Figma */
 }
 
 .wc-hero-content {
@@ -491,25 +483,20 @@ body {
 }
 
 .wc-hero-tagline {
-    font-family: var(--font-body);
+    font-family: var(--font-heading);
     font-size: 2.3rem; /* Figma: 23px */
-    font-style: italic;
     color: var(--wc-cream);
     margin: 0;
 }
 
-.wc-hero-tagline em {
-    font-style: italic;
-}
-
 @media (max-width: 767px) {
     .wc-hero {
-        min-height: auto;
+        min-height: 340px; /* Proportional mobile galaxy space */
         padding: var(--wc-spacing-sm) var(--wc-spacing-sm);
         margin-top: -25px; /* Proportional mobile overlap */
     }
 
-    .wc-hero-galaxy {
+    .wc-hero-zone::before {
         opacity: 0.35; /* Better mobile readability */
     }
 
@@ -645,7 +632,6 @@ body {
     grid-row: 1 / -1;
     width: 42px; /* Figma spec: 41-42px icons */
     height: 42px;
-    fill: var(--wc-cream);
 }
 
 .wc-podcast-service-label {
@@ -772,7 +758,7 @@ body {
     display: -webkit-box;
     margin-top: 10px;
     overflow-y: hidden;
-    font-family: var(--font-body);
+    font-family: var(--font-heading);
     font-size: 1.5rem; /* Figma: 15px */
     line-height: 1.5;
     color: var(--wc-cream);
@@ -1096,7 +1082,7 @@ body {
 .wc-audio-hero {
     position: relative;
     z-index: 1;
-    background: linear-gradient(135deg, #0d8a38 0%, #10A544 100%);
+    background: var(--wc-green);
     padding: 2rem 0;
     border-radius: 16px;
     overflow: hidden;
@@ -1152,7 +1138,7 @@ body {
 }
 
 .wc-audio-hero-subtitle {
-    font-family: var(--font-body);
+    font-family: var(--font-heading);
     font-size: 1.2rem;
     font-style: italic;
     color: rgba(255, 250, 235, 0.9);
@@ -1171,7 +1157,7 @@ body {
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: var(--wc-black, #000026);
+    background: var(--wc-black, #000000);
     border: none;
     cursor: pointer;
     display: flex;
@@ -1223,7 +1209,7 @@ body {
 
 .wc-service-icon:hover {
     background: var(--wc-cream);
-    color: var(--wc-black, #000026);
+    color: var(--wc-black, #000000);
     transform: scale(1.08);
 }
 
@@ -1239,7 +1225,7 @@ body {
 
 /* Waveform section */
 .wc-audio-waveform-section {
-    background: rgba(0, 0, 38, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 1rem 1.5rem;
 }
@@ -1344,7 +1330,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #31B15B; /* Figma spec: Episode Notes green */
+    color: var(--wc-green); /* Brand guide override — was Figma #31B15B */
     margin: 0 0 var(--wc-spacing-md);
 }
 
@@ -1387,7 +1373,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #34B15D; /* Figma spec: Links heading green */
+    color: var(--wc-green); /* Brand guide override — was Figma #34B15D */
     margin: 0 0 var(--wc-spacing-md);
 }
 
@@ -1396,7 +1382,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.4rem; /* Figma spec: 14px Bold */
     font-weight: 700;
-    color: #49B96C; /* Figma spec: Link item green */
+    color: var(--wc-green); /* Brand guide override — was Figma #49B96C */
     margin-bottom: var(--wc-spacing-xs);
     text-decoration: none;
 }
@@ -1607,7 +1593,7 @@ body {
 }
 
 .wc-pagination-count {
-    font-family: var(--font-body);
+    font-family: var(--font-heading);
     font-size: 1.6rem;
     color: var(--wc-cream);
     opacity: 0.8;
@@ -1701,6 +1687,19 @@ body {
 /* ============================================
    Cabinet Frame Dividers
    ============================================ */
+
+/* Green horizontal rules — clean CSS lines replacing PNG dividers */
+.wc-rule {
+    border: none;
+    height: 2px;
+    background-color: var(--wc-green);
+    max-width: 810px;
+    margin: var(--wc-spacing-sm) auto;
+}
+
+.wc-rule--thick {
+    height: 3px;
+}
 
 .wc-divider {
     padding: var(--wc-spacing-lg) 0;
@@ -1811,7 +1810,7 @@ body {
     text-align: center;
     padding: var(--wc-spacing-sm);
     color: rgba(255, 250, 235, 0.5);
-    font-family: var(--font-body);
+    font-family: var(--font-heading);
     min-height: 48px;
 }
 
