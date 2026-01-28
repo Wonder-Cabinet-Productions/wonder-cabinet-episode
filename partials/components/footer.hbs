@@ -1,24 +1,30 @@
 {{!--
     Wonder Cabinet Footer
-    Cabinet illustration with secondary nav and copyright between legs (per wireframe)
+    Cabinet illustration with nav + copyright overlaid (per wireframe)
 --}}
 
 <footer class="wc-footer gh-outer">
     <div class="wc-footer-inner gh-inner">
-        {{#if @site.secondary_navigation}}
-            <nav class="wc-footer-nav">
-                {{navigation type="secondary"}}
-            </nav>
-        {{/if}}
 
         <div class="wc-footer-illustration">
             <img src="{{asset "images/illustration-footer-cabinet-table.svg"}}"
                  alt="Wonder Cabinet"
                  class="wc-footer-cabinet">
-            <div class="wc-footer-copyright">
-                <span class="wc-footer-copyright-title">Wonder Cabinet Productions</span>
-                <span class="wc-footer-copyright-year">{{date format="YYYY"}} &copy;</span>
+
+            <div class="wc-footer-overlay">
+                {{#if @site.secondary_navigation}}
+                    <nav class="wc-footer-nav">
+                        {{navigation type="secondary"}}
+                    </nav>
+                {{/if}}
+
+                <div class="wc-footer-copyright">
+                    <span class="wc-footer-copyright-line">Wonder Cabinet</span>
+                    <span class="wc-footer-copyright-line">Productions</span>
+                    <span class="wc-footer-copyright-line">{{date format="YYYY"}} &copy;</span>
+                </div>
             </div>
         </div>
+
     </div>
 </footer>

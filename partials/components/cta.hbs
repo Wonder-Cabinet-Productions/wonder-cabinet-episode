@@ -1,23 +1,17 @@
 {{!--
     Wonder Cabinet Email CTA
-    Subscription call-to-action with decorative brackets
+    Simple subscribe call-to-action (no decorative brackets)
 --}}
 
 {{#if @site.members_enabled}}
     {{#unless @member}}
         <section class="wc-cta gh-outer">
             <div class="wc-cta-inner gh-inner">
-                <div class="wc-cta-content">
-                    <img src="{{asset "images/ui-email-bracket-left.svg"}}" alt="" class="wc-cta-bracket wc-cta-bracket--left">
-                    <div class="wc-cta-form">
-                        <p class="wc-cta-text">Subscribe to make sure you never miss an episode.</p>
-                        <button class="wc-cta-input" data-portal>
-                            <span class="wc-cta-placeholder">jamie@example.com</span>
-                            <span class="wc-cta-btn">Subscribe</span>
-                        </button>
-                    </div>
-                    <img src="{{asset "images/ui-email-bracket-right.svg"}}" alt="" class="wc-cta-bracket wc-cta-bracket--right">
-                </div>
+                <p class="wc-cta-text">Get the latest episodes directly in your inbox</p>
+                <button class="wc-cta-input" data-portal>
+                    <span class="wc-cta-placeholder">jamie@example.com</span>
+                    <span class="wc-cta-btn">Subscribe</span>
+                </button>
             </div>
         </section>
     {{/unless}}
