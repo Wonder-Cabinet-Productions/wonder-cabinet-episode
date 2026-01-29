@@ -6,7 +6,7 @@
 <header id="gh-head" class="gh-head gh-outer wc-head{{#if isTransparent}} is-head-transparent{{/if}}">
     <div class="gh-head-inner{{#unless fullWidth}} gh-inner{{/unless}} wc-head-row">
         {{!-- Left nav links (uses {{navigation}} helper which loads partials/navigation.hbs) --}}
-        <nav class="wc-head-nav wc-head-nav--left">
+        <nav class="wc-head-nav wc-head-nav--left" aria-label="Main navigation">
             {{navigation}}
         </nav>
 
@@ -18,7 +18,7 @@
         {{!-- Right actions --}}
         <div class="wc-head-nav wc-head-nav--right">
             <button class="gh-search wc-head-search" aria-label="Search this site" data-ghost-search>
-                <img src="{{asset "images/icon-search.svg"}}" alt="Search" width="20" height="20">
+                <img src="{{asset "images/icon-search.svg"}}" alt="" width="20" height="20">
             </button>
             {{#if @site.members_enabled}}
                 {{#unless @member}}
@@ -38,10 +38,10 @@
 
     {{!-- Mobile menu overlay (inside header so .is-head-open toggle works) --}}
     <div class="wc-mobile-menu" id="wc-mobile-menu">
-        <nav class="wc-mobile-nav wc-mobile-nav-links">
+        <nav class="wc-mobile-nav wc-mobile-nav-links" aria-label="Mobile navigation">
             {{navigation}}
         </nav>
-        <nav class="wc-mobile-nav">
+        <nav class="wc-mobile-nav" aria-label="Mobile actions">
             {{#if @site.members_enabled}}
                 <div class="wc-mobile-actions">
                     {{#unless @member}}

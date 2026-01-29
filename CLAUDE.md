@@ -152,7 +152,7 @@ Brand assets are in `assets/images/`:
 ### Container Width
 ```css
 .gh-inner {
-    --container-width: 960px;
+    --container-width: 810px; /* Figma spec */
 }
 ```
 

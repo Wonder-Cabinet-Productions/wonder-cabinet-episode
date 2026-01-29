@@ -549,6 +549,22 @@
                     announceToScreenReader('Jumped to start');
                     break;
 
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    // Number keys 1-9: Seek to 10%-90% of duration
+                    e.preventDefault();
+                    var percent = parseInt(e.key, 10) * 10;
+                    wavesurfer.seekTo(percent / 100);
+                    announceToScreenReader('Jumped to ' + percent + ' percent');
+                    break;
+
                 case 'End':
                     // End: Go to end (paused)
                     e.preventDefault();

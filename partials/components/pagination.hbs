@@ -1,0 +1,33 @@
+{{!--
+    Wonder Cabinet Pagination
+    Displays prev/next navigation for paginated lists
+
+    Usage: {{> "components/pagination"}}
+    Requires: pagination context (automatically available in index, tag, author templates)
+--}}
+
+{{#match pagination.pages ">" 1}}
+    <nav class="wc-pagination gh-outer" aria-label="Episode pagination">
+        <div class="wc-pagination-inner gh-inner">
+            {{#if pagination.prev}}
+                <a class="wc-pagination-link wc-pagination-prev" href="{{page_url pagination.prev}}">
+                    ← Newer Episodes
+                </a>
+            {{else}}
+                <span class="wc-pagination-link wc-pagination-prev is-disabled" aria-hidden="true"></span>
+            {{/if}}
+
+            <span class="wc-pagination-count">
+                Page {{pagination.page}} of {{pagination.pages}}
+            </span>
+
+            {{#if pagination.next}}
+                <a class="wc-pagination-link wc-pagination-next" href="{{page_url pagination.next}}">
+                    Older Episodes →
+                </a>
+            {{else}}
+                <span class="wc-pagination-link wc-pagination-next is-disabled" aria-hidden="true"></span>
+            {{/if}}
+        </div>
+    </nav>
+{{/match}}

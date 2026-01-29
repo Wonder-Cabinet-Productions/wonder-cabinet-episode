@@ -45,6 +45,9 @@
 <body class="{{body_class}}{{{block "body_class"}}}">
 <div class="gh-site">
 
+    {{!-- Skip to content link for keyboard accessibility (WCAG 2.4.1) --}}
+    <a href="#main-content" class="wc-skip-link">Skip to content</a>
+
     {{> "components/navbar"}}
 
     {{{body}}}

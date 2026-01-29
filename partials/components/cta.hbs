@@ -1,13 +1,16 @@
 {{!--
     Wonder Cabinet Email CTA
     Simple subscribe call-to-action (no decorative brackets)
+
+    Parameters:
+    - title: Optional custom title text (default: "Get the latest episodes directly in your inbox")
 --}}
 
 {{#if @site.members_enabled}}
     {{#unless @member}}
         <section class="wc-cta gh-outer">
             <div class="wc-cta-inner gh-inner">
-                <p class="wc-cta-text">Get the latest episodes directly in your inbox</p>
+                <p class="wc-cta-text">{{#if title}}{{title}}{{else}}Get the latest episodes directly in your inbox{{/if}}</p>
                 <button class="wc-cta-input" data-portal>
                     <span class="wc-cta-placeholder">jamie@example.com</span>
                     <span class="wc-cta-btn">Subscribe</span>

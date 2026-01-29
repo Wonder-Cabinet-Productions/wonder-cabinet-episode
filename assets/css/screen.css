@@ -858,7 +858,7 @@ body {
     flex: 1;
     padding: 0 var(--wc-spacing-md);
     background-color: var(--wc-cream);
-    font-family: var(--font-body);
+    font-family: var(--font-heading);
     font-size: 1.6rem;
     color: rgba(0, 0, 0, 0.5);
 }
@@ -1529,7 +1529,7 @@ body {
 }
 
 .kg-callout-card-white {
-    background-color: white;
+    background-color: var(--wc-cream);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
