@@ -1,6 +1,6 @@
 {{!< default}}
 
-<main class="gh-main wc-main">
+<main id="main-content" class="gh-main wc-main">
     {{!-- Hero zone: galaxy bg via CSS background-image, extends behind wave divider + hero --}}
     <div class="wc-hero-zone">
         {{!-- Wave divider between navbar and hero (homepage only) --}}
@@ -32,11 +32,13 @@
     <hr class="wc-rule">
 
     {{#match pagination.pages ">" 1}}
-        <div class="gh-more gh-outer">
-            <div class="gh-inner">
-                <a href="/page/2/">More episodes →</a>
+        <nav class="wc-pagination wc-pagination--home gh-outer" aria-label="More episodes">
+            <div class="wc-pagination-inner gh-inner">
+                <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.next}}">
+                    More Episodes →
+                </a>
             </div>
-        </div>
+        </nav>
     {{/match}}
     {{> "components/cta" title=@custom.email_signup_text}}
 </main>

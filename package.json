@@ -68,58 +68,50 @@
             "luminous_apple_podcasts_link": {
                 "type": "text",
                 "default": "",
-                "group": "luminous"
+                "group": "homepage"
             },
             "luminous_spotify_link": {
                 "type": "text",
                 "default": "",
-                "group": "luminous"
+                "group": "homepage"
             },
             "luminous_youtube_music_link": {
                 "type": "text",
                 "default": "",
-                "group": "luminous"
+                "group": "homepage"
             },
             "instagram_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "bluesky_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "facebook_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "linkedin_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "tiktok_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "threads_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "mastodon_link": {
                 "type": "text",
-                "default": "",
-                "group": "social"
+                "default": ""
             },
             "email_link": {
                 "type": "text",
                 "default": "",
-                "description": "Contact email address (just the email, no mailto:)",
-                "group": "social"
+                "description": "Contact email address (just the email, no mailto:)"
             }
         }
     },
