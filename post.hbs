@@ -16,6 +16,15 @@
         </div>
     </section>
 
+    {{!-- Comments Section --}}
+    {{#if comments}}
+    <section class="wc-comments gh-outer">
+        <div class="wc-comments-inner gh-inner">
+            {{comments}}
+        </div>
+    </section>
+    {{/if}}
+
     {{> "components/cta" title=@custom.email_signup_text}}
 </main>
 

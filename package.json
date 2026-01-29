@@ -64,6 +64,62 @@
                 "type": "text",
                 "default": "https://music.youtube.com/",
                 "group": "homepage"
+            },
+            "luminous_apple_podcasts_link": {
+                "type": "text",
+                "default": "",
+                "group": "luminous"
+            },
+            "luminous_spotify_link": {
+                "type": "text",
+                "default": "",
+                "group": "luminous"
+            },
+            "luminous_youtube_music_link": {
+                "type": "text",
+                "default": "",
+                "group": "luminous"
+            },
+            "instagram_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "bluesky_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "facebook_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "linkedin_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "tiktok_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "threads_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "mastodon_link": {
+                "type": "text",
+                "default": "",
+                "group": "social"
+            },
+            "email_link": {
+                "type": "text",
+                "default": "",
+                "description": "Contact email address (just the email, no mailto:)",
+                "group": "social"
             }
         }
     },

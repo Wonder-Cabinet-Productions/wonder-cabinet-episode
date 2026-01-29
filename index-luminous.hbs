@@ -1,15 +1,51 @@
 {{!< default}}
 
 <main class="gh-main wc-main">
-    {{!-- Simple header matching Episode theme style --}}
-    <header class="gh-header gh-outer">
-        <div class="gh-header-inner gh-inner">
-            <h1 class="gh-header-primary">Luminous</h1>
-            {{#if tag.description}}
-                <p class="gh-header-secondary">{{tag.description}}</p>
-            {{/if}}
+    {{#tag}}
+        {{> "components/tag-header"}}
+    {{/tag}}
+
+    {{!-- Green rule above description --}}
+    <hr class="wc-rule wc-rule--thick">
+
+    {{!-- Series Info Zone with description and podcast services --}}
+    <section class="wc-series-info gh-outer">
+        <div class="wc-series-info-inner gh-inner">
+            {{#tag}}
+                {{#if description}}
+                    <p class="wc-series-description">{{description}}</p>
+                {{/if}}
+            {{/tag}}
+
+            {{!-- Luminous Podcast Services --}}
+            <div class="wc-podcast-services-links">
+                {{#if @custom.luminous_apple_podcasts_link}}
+                    <a href="{{@custom.luminous_apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                        {{> "icons/apple"}}
+                        <span class="wc-podcast-service-label">Listen on</span>
+                        <span class="wc-podcast-service-name">Apple Podcasts</span>
+                    </a>
+                {{/if}}
+                {{#if @custom.luminous_spotify_link}}
+                    <a href="{{@custom.luminous_spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                        {{> "icons/spotify"}}
+                        <span class="wc-podcast-service-label">Listen on</span>
+                        <span class="wc-podcast-service-name">Spotify</span>
+                    </a>
+                {{/if}}
+                {{#if @custom.luminous_youtube_music_link}}
+                    <a href="{{@custom.luminous_youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                        {{> "icons/youtube-music"}}
+                        <span class="wc-podcast-service-label">Listen on</span>
+                        <span class="wc-podcast-service-name">YouTube Music</span>
+                    </a>
+                {{/if}}
+            </div>
         </div>
-    </header>
+    </section>
+
+    {{!-- Green rule below podcast services --}}
+    <hr class="wc-rule">
 
     {{!-- Episode list without Wonder Cabinet cabinet-frame styling --}}
     <section class="gh-archive gh-outer">
@@ -17,6 +53,33 @@
             {{> "components/list" layout="simple" count="all" showExcerpt=true showPublishedAt=true hasPagination=true}}
         </div>
     </section>
+
+    {{!-- Pagination --}}
+    {{#match pagination.pages ">" 1}}
+        <nav class="wc-pagination gh-outer" aria-label="Episode pagination">
+            <div class="wc-pagination-inner gh-inner">
+                {{#if pagination.prev}}
+                    <a class="wc-pagination-link wc-pagination-prev" href="{{page_url pagination.prev}}">
+                        ← Newer Episodes
+                    </a>
+                {{else}}
+                    <span class="wc-pagination-link wc-pagination-prev is-disabled" aria-hidden="true"></span>
+                {{/if}}
+
+                <span class="wc-pagination-count">
+                    Page {{pagination.page}} of {{pagination.pages}}
+                </span>
+
+                {{#if pagination.next}}
+                    <a class="wc-pagination-link wc-pagination-next" href="{{page_url pagination.next}}">
+                        Older Episodes →
+                    </a>
+                {{else}}
+                    <span class="wc-pagination-link wc-pagination-next is-disabled" aria-hidden="true"></span>
+                {{/if}}
+            </div>
+        </nav>
+    {{/match}}
 
     {{> "components/cta"}}
 </main>

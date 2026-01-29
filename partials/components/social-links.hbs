@@ -1,0 +1,66 @@
+{{!--
+    Social Media Links
+    Renders icons for configured social platforms
+    Place in footer (below copyright)
+
+    Supported: Instagram, Bluesky, Facebook, Twitter/X, LinkedIn, TikTok, Threads, Mastodon, Email
+    Each link only renders if the corresponding custom setting has a value.
+--}}
+
+<div class="wc-social-links">
+    {{!-- Facebook: custom setting first, fall back to Ghost built-in --}}
+    {{#if @custom.facebook_link}}
+        <a href="{{@custom.facebook_link}}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            {{> "icons/facebook"}}
+        </a>
+    {{else}}
+        {{#if @site.facebook}}
+            <a href="{{social_url type="facebook"}}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                {{> "icons/facebook"}}
+            </a>
+        {{/if}}
+    {{/if}}
+
+    {{#if @custom.instagram_link}}
+        <a href="{{@custom.instagram_link}}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            {{> "icons/instagram"}}
+        </a>
+    {{/if}}
+
+    {{#if @custom.bluesky_link}}
+        <a href="{{@custom.bluesky_link}}" target="_blank" rel="noopener noreferrer" aria-label="Bluesky">
+            {{> "icons/bluesky"}}
+        </a>
+    {{/if}}
+
+    {{#if @custom.linkedin_link}}
+        <a href="{{@custom.linkedin_link}}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            {{> "icons/linkedin"}}
+        </a>
+    {{/if}}
+
+    {{#if @custom.tiktok_link}}
+        <a href="{{@custom.tiktok_link}}" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            {{> "icons/tiktok"}}
+        </a>
+    {{/if}}
+
+    {{#if @custom.threads_link}}
+        <a href="{{@custom.threads_link}}" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+            {{> "icons/threads"}}
+        </a>
+    {{/if}}
+
+    {{#if @custom.mastodon_link}}
+        <a href="{{@custom.mastodon_link}}" target="_blank" rel="noopener noreferrer" aria-label="Mastodon">
+            {{> "icons/mastodon"}}
+        </a>
+    {{/if}}
+
+    {{!-- Email contact link --}}
+    {{#if @custom.email_link}}
+        <a href="mailto:{{@custom.email_link}}" aria-label="Email">
+            {{> "icons/email"}}
+        </a>
+    {{/if}}
+</div>
