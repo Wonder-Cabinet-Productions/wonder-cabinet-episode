@@ -1,0 +1,621 @@
+# Wonder Cabinet Theme - Design System Rules for Figma Integration
+
+**Purpose**: Guide AI agents (Claude, Cursor, etc.) in implementing Figma designs within the Wonder Cabinet Ghost theme while maintaining brand consistency and existing patterns.
+
+---
+
+## 1. Token Definitions
+
+### Location
+Design tokens are defined in **`assets/css/screen.css`** as CSS custom properties on `:root`.
+
+### Color Tokens
+```css
+:root {
+    /* Brand Colors - THESE ARE THE CANONICAL VALUES */
+    --wc-green: #10A544;         /* Primary brand green */
+    --wc-black: #000000;         /* Primary dark */
+    --wc-cream: #FFFAEB;         /* Primary light/background */
+    --wc-dark-green: #043013;    /* Hover/accent dark green */
+}
+```
+
+**Usage Guidelines**:
+- **Green (#10A544)**: Primary CTAs, borders, links, accents
+- **Black (#000000)**: Page backgrounds, text on light surfaces
+- **Cream (#FFFAEB)**: Text on dark backgrounds, light page sections, form inputs
+- **Dark Green (#043013)**: Hover states for green links
+
+### Typography Tokens
+```css
+:root {
+    --font-heading: 'Jost', sans-serif;    /* Headlines, UI text, buttons */
+    --font-body: 'EB Garamond', Georgia, serif;  /* Body copy, paragraphs */
+    --font-sans: 'Jost', sans-serif;       /* Alias for heading font */
+}
+```
+
+**Font Loading**: Fonts are loaded via Google Fonts in `default.hbs`:
+```html
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+```
+
+**Brand Guide Mapping**:
+| Brand Guide | Implementation | Weight |
+|-------------|----------------|--------|
+| Futura Bold | Jost | 700, 800 |
+| Adobe Garamond | EB Garamond | 400, 500, 600 |
+
+### Spacing Tokens
+```css
+:root {
+    --wc-spacing-xs: 8px;
+    --wc-spacing-sm: 16px;
+    --wc-spacing-md: 24px;
+    --wc-spacing-lg: 40px;
+    --wc-spacing-xl: 64px;
+}
+```
+
+### Other Tokens
+```css
+:root {
+    --wc-radius: 0;              /* Sharp corners by default */
+    --container-width: 810px;    /* Content area width (set on .gh-inner) */
+}
+```
+
+### Token Format
+- **Format**: Native CSS custom properties
+- **Transformation**: None - tokens are used directly
+- **No build step**: Tokens are consumed as-is by the CSS
+
+---
+
+## 2. Component Library
+
+### Location
+Components are Handlebars partials in **`partials/`** with corresponding CSS in **`assets/css/screen.css`**.
+
+### Architecture
+- **Template Engine**: Handlebars (.hbs files)
+- **No JavaScript framework**: Vanilla JS only
+- **CSS-first**: Styling via BEM-like CSS classes prefixed with `wc-`
+
+### Core Component Inventory
+
+| Component | Partial Path | CSS Class | Purpose |
+|-----------|-------------|-----------|---------|
+| Navbar | `partials/components/navbar.hbs` | `.wc-head`, `.wc-head-*` | Main navigation |
+| Footer | `partials/components/footer.hbs` | `.wc-footer`, `.wc-footer-*` | Site footer with cabinet illustration |
+| Home Hero | `partials/components/home-hero.hbs` | `.wc-hero`, `.wc-hero-*` | Homepage galaxy hero |
+| Episode Card | `partials/components/list-item.hbs` | `.wc-episode-card`, `.wc-episode-card-*` | Episode list item |
+| Bracket Button | `partials/components/bracket-button.hbs` | `.wc-bracket-btn`, `.wc-bracket-btn-*` | Decorative bracket button |
+| CTA | `partials/components/cta.hbs` | `.wc-cta`, `.wc-cta-*` | Email signup section |
+| Audio Player | `partials/audio-player-hero.hbs` | `.wc-audio-hero`, `.wc-audio-*` | WaveSurfer audio player |
+| Tag Header | `partials/components/tag-header.hbs` | `.wc-tag-hero`, `.wc-tag-hero-*` | Tag archive hero |
+| Social Links | `partials/components/social-links.hbs` | `.wc-social-links` | Social media icons |
+| Podcast Services | `partials/podcast-services.hbs` | `.wc-podcast-services`, `.wc-podcast-service` | Apple/Spotify/YouTube links |
+
+### Component Documentation
+- **No Storybook**: Components are documented inline via Handlebars comments
+- **Pattern**: Components include parameter documentation at top of file
+
+Example from `bracket-button.hbs`:
+```handlebars
+{{!--
+    Bracket Button Component
+    Parameters:
+    * href (required) - Link destination
+    * text (required) - Button text
+    * portal (optional) - Ghost Portal action
+    * icon (optional) - Include play icon
+    * class (optional) - Additional CSS classes
+--}}
+```
+
+---
+
+## 3. Frameworks & Libraries
+
+### UI Framework
+- **None**: Pure HTML/CSS/Vanilla JS
+- **Base Theme**: Extends `@tryghost/shared-theme-assets` v2
+
+### Styling
+- **CSS Methodology**: BEM-like with `wc-` prefix for Wonder Cabinet custom styles
+- **Shared Assets**: Imports `@tryghost/shared-theme-assets/assets/css/v2/screen.css`
+- **PostCSS Plugins**:
+  - `postcss-easy-import` (imports)
+  - `autoprefixer` (vendor prefixes)
+  - `cssnano` (minification)
+
+### Build System
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Gulp | 5.0.1 | Task runner |
+| PostCSS | 8.5.6 | CSS processing |
+| gulp-concat | 2.6.1 | JS concatenation |
+| gulp-uglify | 3.0.2 | JS minification |
+
+### Build Commands
+```bash
+npm run dev      # Watch mode with livereload
+npm run zip      # Build + create distribution archive
+npx gulp build   # One-time CSS + JS build
+```
+
+### Output Files
+- `assets/built/screen.css` - Compiled CSS
+- `assets/built/main.min.js` - Compiled JS (shared-theme-assets + main.js)
+
+---
+
+## 4. Asset Management
+
+### Asset Location
+All theme assets are in **`assets/`**:
+```
+assets/
+├── css/
+│   └── screen.css          # Source CSS
+├── js/
+│   ├── main.js             # Theme JS
+│   └── audio-player.js     # WaveSurfer audio player
+├── images/                 # All brand assets
+└── built/                  # Compiled output (committed)
+```
+
+### Image Naming Convention
+```
+logo-{variant}-{background}-{size}.{ext}
+  └─ primary, nav-icon
+              └─ dark-bg, light-bg
+                         └─ 400w, 800w, or none for SVG
+                                    └─ .png, .svg
+
+ui-{element}.svg
+  └─ wave-divider-light, bracket-corner-{position}, email-bracket-{side}
+
+bg-{description}.png
+  └─ galaxy-spiral-1200w@2x
+
+illustration-{description}.svg
+  └─ footer-cabinet-table
+
+icon-{name}.svg
+  └─ search, play-circle-dark, play-circle-light, explicit
+```
+
+### Key Brand Assets
+
+| Asset | File | Usage |
+|-------|------|-------|
+| Primary Logo (dark bg) | `logo-primary-dark-bg-800w.png`, `.svg` | Navbar |
+| Galaxy Background | `bg-galaxy-spiral-1200w@2x.png` | Hero sections |
+| Wave Divider | `ui-wave-divider-light.svg` | Below navbar on home |
+| Bracket Corners | `ui-bracket-corner-{position}.svg` | Bracket buttons |
+| Cabinet Illustration | `illustration-footer-cabinet-table.svg` | Footer |
+| Play Icon | `play-white.svg` | Episode cards, buttons |
+
+### Asset Referencing in Templates
+```handlebars
+{{asset "images/logo-primary-dark-bg-800w.png"}}
+{{asset "built/screen.css"}}
+```
+
+### Image Optimization
+- **Ghost Responsive Images**: Using `{{img_url}}` helper with `size` param
+- **Defined Sizes** (from `package.json`):
+  ```json
+  "image_sizes": {
+      "xs": { "width": 150 },
+      "s": { "width": 300 },
+      "m": { "width": 720 },
+      "l": { "width": 960 },
+      "xl": { "width": 1200 },
+      "xxl": { "width": 2000 }
+  }
+  ```
+
+### CDN
+- **WaveSurfer.js**: Loaded from unpkg CDN on post pages
+  ```html
+  <script src="https://unpkg.com/wavesurfer.js@7"></script>
+  ```
+- **Google Fonts**: External CDN
+- **No other external CDN** for theme assets
+
+---
+
+## 5. Icon System
+
+### Icon Location
+Icons are **inline SVG in Handlebars partials**: `partials/icons/`
+
+### Available Icons
+
+| Icon | Partial | Usage |
+|------|---------|-------|
+| Apple Podcasts | `icons/apple.hbs` | Podcast services |
+| Spotify | `icons/spotify.hbs` | Podcast services |
+| YouTube Music | `icons/youtube-music.hbs` | Podcast services |
+| Bluesky | `icons/bluesky.hbs` | Social links |
+| Facebook | `icons/facebook.hbs` | Social links |
+| Instagram | `icons/instagram.hbs` | Social links |
+| LinkedIn | `icons/linkedin.hbs` | Social links |
+| Mastodon | `icons/mastodon.hbs` | Social links |
+| Threads | `icons/threads.hbs` | Social links |
+| TikTok | `icons/tiktok.hbs` | Social links |
+| Twitter/X | `icons/twitter.hbs` | Social links |
+| YouTube | `icons/youtube.hbs` | Social links |
+| Email | `icons/email.hbs` | Social links |
+| Search | `icons/search.hbs` | Navbar |
+
+### Icon Implementation Pattern
+```handlebars
+{{!-- In partials/icons/spotify.hbs --}}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 168" fill="currentColor">
+  <path d="..."/>
+</svg>
+```
+
+### Usage in Templates
+```handlebars
+{{> "icons/spotify"}}
+```
+
+### Icon Styling
+- Icons use `fill="currentColor"` or `stroke="currentColor"`
+- Parent element controls color via CSS `color` property
+- Typical sizing: `width: 20px; height: 20px;` or via parent `.wc-*` class
+
+---
+
+## 6. Styling Approach
+
+### CSS Methodology
+- **Custom BEM-like**: `.wc-{component}`, `.wc-{component}-{element}`, `.wc-{component}--{modifier}`
+- **Ghost Classes**: Extends `gh-*` classes from shared-theme-assets
+- **No CSS Modules**: Single global stylesheet
+
+### Class Naming Examples
+```css
+/* Component */
+.wc-episode-card { }
+
+/* Element within component */
+.wc-episode-card-title { }
+.wc-episode-card-excerpt { }
+.wc-episode-card-btn { }
+
+/* Modifier */
+.wc-bracket-btn--sm { }
+.wc-audio-player--no-audio { }
+.wc-audio-player--ready { }
+```
+
+### CSS File Structure
+The main stylesheet (`assets/css/screen.css`) is organized into sections:
+```css
+@import "@tryghost/shared-theme-assets/assets/css/v2/screen.css";
+
+/* ============================================
+   Wonder Cabinet Brand System
+   ============================================ */
+
+/* ============================================
+   Bracket Button Component
+   ============================================ */
+
+/* ============================================
+   Wonder Cabinet Navbar
+   ============================================ */
+
+/* ... more sections ... */
+```
+
+### Global Styles
+- Base typography on `body` and `.gh-site`
+- Heading styles on `:is(h1, h2, h3, h4, h5, h6)`
+- Button base on `.gh-btn`
+
+### Responsive Design
+- **Primary Breakpoint**: `@media (max-width: 767px)`
+- **Approach**: Mobile-specific overrides after desktop styles
+- **Pattern**:
+  ```css
+  .wc-component {
+      /* Desktop styles */
+  }
+
+  @media (max-width: 767px) {
+      .wc-component {
+          /* Mobile overrides */
+      }
+  }
+  ```
+
+### Key Responsive Patterns
+- Navbar: Desktop shows nav links, mobile uses burger menu
+- Episode cards: Horizontal on desktop, stacked on mobile
+- Galaxy backgrounds: Reduced opacity on mobile for readability
+- Touch targets: Minimum 44px height on mobile
+
+---
+
+## 7. Project Structure
+
+```
+wonder-cabinet-episode/
+├── assets/
+│   ├── css/
+│   │   └── screen.css         # All custom CSS
+│   ├── js/
+│   │   ├── main.js            # Theme initialization
+│   │   └── audio-player.js    # WaveSurfer integration
+│   ├── images/                # Brand assets
+│   └── built/                 # Compiled output (committed!)
+├── partials/
+│   ├── components/            # Reusable UI components
+│   │   ├── navbar.hbs
+│   │   ├── footer.hbs
+│   │   ├── home-hero.hbs
+│   │   ├── list-item.hbs      # Episode card
+│   │   ├── bracket-button.hbs
+│   │   ├── cta.hbs
+│   │   ├── tag-header.hbs
+│   │   └── social-links.hbs
+│   ├── icons/                 # Inline SVG icons
+│   │   ├── spotify.hbs
+│   │   ├── apple.hbs
+│   │   └── ... (social icons)
+│   ├── audio-player-hero.hbs  # Audio player component
+│   ├── podcast-services.hbs   # Service links section
+│   └── pswp.hbs               # PhotoSwipe lightbox
+├── docs/                      # Documentation
+│   ├── wonder-cabinet/
+│   │   └── brand-guide.md     # Brand identity
+│   ├── GHOST_THEME_REFERENCE.md
+│   ├── HANDLEBARS_HELPERS.md
+│   └── AUDIO_PLAYER.md
+├── *.hbs                      # Page templates
+│   ├── default.hbs            # Base layout
+│   ├── home.hbs               # Homepage
+│   ├── index.hbs              # Episode archive
+│   ├── post.hbs               # Episode page
+│   ├── page.hbs               # Static pages
+│   ├── tag.hbs                # Tag archive
+│   └── author.hbs             # Author page
+├── package.json               # Theme config + Ghost settings
+├── gulpfile.js                # Build configuration
+└── CLAUDE.md                  # AI assistant instructions
+```
+
+### Feature Organization
+Components are organized by function:
+- **`partials/components/`**: Visual UI components
+- **`partials/icons/`**: Icon SVGs
+- **Root `partials/`**: Specialized sections (audio-player, podcast-services)
+
+---
+
+## 8. Figma-to-Code Workflow
+
+### Before Implementing a Figma Design
+
+1. **Check existing components** in `partials/components/` - extend rather than duplicate
+2. **Verify colors match** the token values in `:root`
+3. **Map Figma fonts** to theme fonts:
+   - Futura → Jost
+   - Garamond → EB Garamond
+4. **Use spacing tokens** rather than arbitrary pixel values
+
+### Creating New Components
+
+1. Create partial in `partials/components/{component-name}.hbs`
+2. Add CSS to `assets/css/screen.css` in a new section
+3. Use `wc-{component}` class naming
+4. Add responsive styles with `@media (max-width: 767px)`
+5. Run `npx gulp build` to compile
+
+### Common Figma-to-CSS Mappings
+
+| Figma Property | CSS Implementation |
+|----------------|-------------------|
+| Fill: #10A544 | `color: var(--wc-green)` or `background-color: var(--wc-green)` |
+| Jost Bold 24px | `font-family: var(--font-heading); font-size: 2.4rem; font-weight: 700;` |
+| Garamond Regular 18px | `font-family: var(--font-body); font-size: 1.8rem;` |
+| Spacing 24px | `padding: var(--wc-spacing-md)` or `gap: var(--wc-spacing-md)` |
+| Corner radius 0 | `border-radius: var(--wc-radius)` |
+
+### Typography Scale Reference
+| Figma Size | CSS rem | Usage |
+|------------|---------|-------|
+| 11px | 1.1rem | Dates, labels |
+| 14px | 1.4rem | Small text, links |
+| 16px | 1.6rem | Body text, nav links |
+| 18px | 1.8rem | Body paragraphs |
+| 23px | 2.3rem | Episode titles |
+| 24px | 2.4rem | Section headings |
+| 26px | 2.6rem | Archive titles |
+| 28px | 2.8rem | Welcome text |
+| 32px | 3.2rem | Audio hero title |
+
+---
+
+## 9. Ghost-Specific Patterns
+
+### Ghost Admin Custom Settings
+Defined in `package.json` under `config.custom`:
+```json
+{
+    "background_color": { "type": "color", "default": "#000000" },
+    "email_signup_text": { "type": "text" },
+    "apple_podcasts_link": { "type": "text", "group": "homepage" },
+    "spotify_link": { "type": "text", "group": "homepage" },
+    "youtube_music_link": { "type": "text", "group": "homepage" },
+    "instagram_link": { "type": "text", "group": "social" },
+    "bluesky_link": { "type": "text", "group": "social" }
+    // ... more social links
+}
+```
+
+**Access in templates**: `{{@custom.apple_podcasts_link}}`
+
+### Ghost Helpers Used
+```handlebars
+{{asset "path/to/file"}}           <!-- Theme assets -->
+{{@site.title}}                     <!-- Site title -->
+{{@custom.setting_name}}            <!-- Custom settings -->
+{{#is "home"}}...{{/is}}            <!-- Page type check -->
+{{#if @site.members_enabled}}       <!-- Membership check -->
+{{navigation}}                      <!-- Primary nav -->
+{{#foreach posts}}...{{/foreach}}   <!-- Post iteration -->
+{{img_url image size="m"}}          <!-- Responsive images -->
+{{> "partial-name"}}                <!-- Include partial -->
+{{date published_at format="DD MMM YYYY"}}  <!-- Date formatting -->
+```
+
+---
+
+## 10. Audio Player Integration
+
+### Architecture
+- **Library**: WaveSurfer.js v7 (CDN loaded on post pages)
+- **Script**: `assets/js/audio-player.js`
+- **CSS**: `.wc-audio-*` classes in screen.css
+
+### Audio Detection Order
+1. `data-audio-url` attribute on `.wc-audio-player`
+2. Ghost's `.kg-audio-card` audio element
+3. Standard HTML5 `<audio>` in content
+
+### Player Configuration (in audio-player.js)
+```javascript
+const CONFIG = {
+    skipBackSeconds: 15,
+    skipForwardSeconds: 30,
+    speedOptions: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
+    waveformHeight: 64,
+    waveformHeightMobile: 48,
+    // Brand colors
+    waveColor: 'rgba(255, 250, 235, 0.4)',     // Cream at 40%
+    progressColor: '#10A544',                   // Brand green
+    cursorColor: '#10A544'                      // Brand green
+};
+```
+
+---
+
+## 11. Development Workflow
+
+### After Making CSS/JS Changes
+```bash
+npx gulp build
+```
+Ghost hot-reloads `.hbs` templates automatically, but CSS/JS changes require rebuild.
+
+### The `assets/built/` Folder
+**MUST be committed** - Ghost serves compiled assets from this directory.
+
+### Testing
+```bash
+npm run test   # Run GScan theme validation
+```
+
+### Distribution
+```bash
+npm run zip    # Creates theme.zip in dist/
+```
+
+---
+
+## 12. Common Implementation Patterns
+
+### Green-Bordered Card (Episode Pattern)
+```css
+.wc-card {
+    padding: 30px;
+    border: 2px solid var(--wc-green);
+    background-color: var(--wc-black);
+}
+```
+
+### Solid Green Button
+```css
+.wc-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 45px;
+    padding: 0 20px;
+    background-color: var(--wc-green);
+    color: var(--wc-cream);
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+    border-radius: var(--wc-radius);
+}
+```
+
+### Galaxy Background Section
+```css
+.wc-section-galaxy {
+    position: relative;
+    background-color: var(--wc-black);
+}
+
+.wc-section-galaxy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url(../images/bg-galaxy-spiral-1200w@2x.png) no-repeat center center;
+    background-size: 687px 687px;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.wc-section-galaxy > * {
+    position: relative;
+    z-index: 1;
+}
+```
+
+### Cream Content Section
+```css
+.wc-content-section {
+    background-color: var(--wc-cream);
+    padding: var(--wc-spacing-xl) 0;
+}
+
+.wc-content-section .content {
+    font-family: var(--font-body);
+    font-size: 1.8rem;
+    line-height: 1.7;
+    color: var(--wc-black);
+}
+
+.wc-content-section a {
+    color: var(--wc-green);
+}
+
+.wc-content-section a:hover {
+    color: var(--wc-dark-green);
+}
+```
+
+---
+
+## Summary Checklist for Figma Implementation
+
+- [ ] Colors use CSS custom properties (`--wc-green`, etc.)
+- [ ] Typography maps to `--font-heading` (Jost) or `--font-body` (EB Garamond)
+- [ ] Spacing uses tokens (`--wc-spacing-md`, etc.)
+- [ ] Components follow `wc-{component}-{element}` naming
+- [ ] Responsive styles use `@media (max-width: 767px)`
+- [ ] New CSS added to `assets/css/screen.css` in a labeled section
+- [ ] Build run after changes: `npx gulp build`
+- [ ] `assets/built/` changes committed
