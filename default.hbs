@@ -21,7 +21,10 @@
 
     <style>
         :root {
-            --background-color: {{@custom.background_color}}
+            --background-color: {{@custom.background_color}};
+            {{#if @custom.galaxy_background_image}}
+            --wc-galaxy-bg: url({{@custom.galaxy_background_image}});
+            {{/if}}
         }
     </style>
 

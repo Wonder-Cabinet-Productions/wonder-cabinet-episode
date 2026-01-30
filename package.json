@@ -118,6 +118,14 @@
                 "type": "text",
                 "default": "",
                 "description": "Contact email address (just the email, no mailto:)"
+            },
+            "hero_title_image": {
+                "type": "image",
+                "description": "Wonder Cabinet title graphic for homepage hero"
+            },
+            "galaxy_background_image": {
+                "type": "image",
+                "description": "Galaxy spiral background image for hero sections"
             }
         }
     },
