@@ -83,7 +83,17 @@ function zipper(done) {
             '**',
             '!node_modules', '!node_modules/**',
             '!dist', '!dist/**',
-            '!yarn-error.log'
+            '!yarn-error.log',
+            // Exclude non-theme files from zip
+            '!docs', '!docs/**',
+            '!planning', '!planning/**',
+            '!AGENTS.md',
+            '!AGENT_ONBOARDING.md',
+            '!CLAUDE.md',
+            '!.github', '!.github/**',
+            '!.cursor', '!.cursor/**',
+            '!package-lock.json',
+            '!.DS_Store'
         ]),
         zip(filename),
         dest('dist/')

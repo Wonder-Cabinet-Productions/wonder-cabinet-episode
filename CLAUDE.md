@@ -129,14 +129,14 @@ Brand assets are in `assets/images/`:
 
 | Asset | File |
 |-------|------|
-| Logo (dark bg) | `logo-primary-dark-bg-800w.png`, `.svg` |
-| Logo wordmark | `logo-primary-wordmark-dark-bg-800w.png` |
+| Logo (dark bg) | `logo-primary-dark-bg-800w.png` |
 | Bracket corners | `ui-bracket-corner-{position}.svg` (4 files) |
 | Wave divider | `ui-wave-divider-light.svg` |
 | Galaxy background | `bg-galaxy-spiral-1200w@2x.png` |
 | Cabinet illustration | `illustration-footer-cabinet-table.svg` |
-| Email brackets | `ui-email-bracket-left.svg`, `ui-email-bracket-right.svg` |
 | Title graphic | `WonderCabinet-title.png` |
+| Show cover art | `Show_Cover-Wonder-Cabinet.png` |
+| Section divider | `ui-divider-thick.png` |
 
 ## Key CSS Patterns
 
