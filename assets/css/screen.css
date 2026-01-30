@@ -879,8 +879,13 @@ body {
 }
 
 @media (max-width: 767px) {
+    .wc-cta-inner {
+        padding: 0 var(--wc-spacing-md); /* 24px side padding — pull box off edges */
+    }
+
     .wc-cta-text {
         font-size: 2.0rem; /* Proportional mobile reduction */
+        max-width: 260px; /* Force even line breaks instead of orphan wrap */
     }
 
     .wc-cta-input {
@@ -981,6 +986,7 @@ body {
 
     .wc-footer-overlay {
         gap: 28px; /* Compact: nav + copyright fit inside scaled cabinet */
+        width: 100%; /* Override max-content so children can center properly */
     }
 
     .wc-footer-nav {
