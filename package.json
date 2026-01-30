@@ -65,6 +65,12 @@
                 "default": "https://music.youtube.com/",
                 "group": "homepage"
             },
+            "pod_link": {
+                "type": "text",
+                "default": "",
+                "description": "pod.link URL for additional podcast apps",
+                "group": "homepage"
+            },
             "luminous_apple_podcasts_link": {
                 "type": "text",
                 "default": "",
