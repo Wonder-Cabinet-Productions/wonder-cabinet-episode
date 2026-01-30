@@ -617,6 +617,10 @@ body {
         padding: var(--wc-spacing-sm) 0 var(--wc-spacing-md) 0;
     }
 
+    .wc-podcast-services-inner {
+        padding: 0 var(--wc-spacing-md); /* 24px side padding on mobile */
+    }
+
     .wc-podcast-services-desc {
         font-size: 1.6rem; /* Proportional mobile reduction */
     }
@@ -975,6 +979,17 @@ body {
         padding: var(--wc-spacing-md) 0;
     }
 
+    .wc-footer-overlay {
+        gap: 28px; /* Compact: nav + copyright fit inside scaled cabinet */
+    }
+
+    .wc-footer-nav {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--wc-spacing-xs); /* 8px — tight stack, still distinct lines */
+        padding-left: 0; /* Remove optical offset at small sizes */
+    }
+
     .wc-footer-nav a {
         font-size: 1.4rem;
     }
@@ -1027,7 +1042,8 @@ body {
 @media (max-width: 767px) {
     .wc-social-links {
         gap: var(--wc-spacing-sm);
-        margin-top: var(--wc-spacing-md);
+        margin-top: var(--wc-spacing-lg); /* 40px — clear separation from cabinet illustration */
+        padding-bottom: var(--wc-spacing-lg); /* 40px — breathing room at page bottom */
     }
 
     .wc-social-links svg {
@@ -1727,6 +1743,7 @@ body {
     max-width: 720px;
     margin: 0 auto;
     padding: 0 var(--wc-spacing-md);
+    color: #1a1a1a; /* Explicit dark text for Ghost comment widget light-mode detection */
 }
 
 /* Override Ghost's default comment margins */

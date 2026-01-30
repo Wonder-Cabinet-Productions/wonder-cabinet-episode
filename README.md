@@ -4,6 +4,18 @@
   <img src="assets/images/logo-primary-wordmark-dark-bg-800w.png" alt="Wonder Cabinet Logo" width="400">
 </p>
 
+```
+ __    __    ___    _  _   ____    ___   ____
+|  |/\|  |  / _ \  | \| | |  _ \  | __| |  _ \
+|   /\   | | |_| | |    | | |_| | | _|  | |_| |
+|__/  \__| |_____| |_|\_| |____/  |___| |_|\_\
+
+  ___    _     ___    ___   _  _   ___   _____
+ / __|  /_\   | _ )  |_ _| | \| | | __| |_   _|
+| (__  / _ \  | _ \   | |  |  ` | | _|    | |
+ \___||_| \_| |___/  |___| |_|\_| |___|   |_|
+```
+
 <p align="center">
   <em>A custom Ghost theme for the Wonder Cabinet podcast</em><br>
   <strong>From the creators of <em>To The Best Of Our Knowledge</em></strong>
