@@ -1,7 +1,7 @@
 # Wonder Cabinet
 
 <p align="center">
-  <img src="assets/images/logo-primary-wordmark-dark-bg-800w.png" alt="Wonder Cabinet Logo" width="400">
+  <img src="https://wondercabinetproductions.com/content/images/2026/01/logo-primary-dark-bg-800w-1.webp" alt="Wonder Cabinet Logo" width="400">
 </p>
 
 ```
