@@ -177,6 +177,13 @@
             return;
         }
 
+        // Safety net: ensure <main> reflects has-audio state
+        var main = document.getElementById('main-content');
+        if (main) {
+            main.classList.remove('wc-audio-unresolved');
+            main.classList.add('wc-has-audio');
+        }
+
         // Check for pre-generated peaks JSON (avoids CORS issues for waveform)
         var peaksDataEl = document.querySelector('.wc-audio-player[data-peaks-url]');
         var peaksUrl = peaksDataEl ? peaksDataEl.dataset.peaksUrl : null;
@@ -643,21 +650,21 @@
     // ========================================
 
     /**
-     * Show placeholder when no audio is available
+     * Show placeholder when no audio is available.
+     * Reinforces page-level wc-no-audio class so the fallback header shows.
      */
     function showPlayerPlaceholder(container) {
         // Hide the waveform section entirely via CSS
         var player = document.getElementById('wc-audio-player');
         if (player) player.classList.add('wc-audio-player--no-audio');
 
-        container.innerHTML =
-            '<div class="wc-player-placeholder">' +
-                '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-                    '<circle cx="12" cy="12" r="10"/>' +
-                    '<polygon points="10 8 16 12 10 16 10 8"/>' +
-                '</svg>' +
-                '<p>Audio player will appear here when audio is available</p>' +
-            '</div>';
+        // Safety net: ensure <main> reflects no-audio state
+        // (inline script should have already set this, but reinforce)
+        var main = document.getElementById('main-content');
+        if (main) {
+            main.classList.remove('wc-audio-unresolved');
+            main.classList.add('wc-no-audio');
+        }
     }
 
     /**

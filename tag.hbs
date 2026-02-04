@@ -6,52 +6,54 @@
 
         {{!-- Series Info Zone (shown when description exists) --}}
         {{#if description}}
-            <section class="wc-series-info gh-outer">
-                <div class="wc-series-info-inner gh-inner">
-                    <p class="wc-series-description">{{description}}</p>
+            {{#match slug "!=" "newsletter"}}
+                <section class="wc-series-info gh-outer">
+                    <div class="wc-series-info-inner gh-inner">
+                        {{!-- Podcast Services --}}
+                        <div class="wc-series-services">
+                            {{#if @custom.apple_podcasts_link}}
+                                <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                                    {{> "icons/apple"}}
+                                    <span class="wc-podcast-service-label">Listen on</span>
+                                    <span class="wc-podcast-service-name">Apple Podcasts</span>
+                                </a>
+                            {{/if}}
+                            {{#if @custom.spotify_link}}
+                                <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                                    {{> "icons/spotify"}}
+                                    <span class="wc-podcast-service-label">Listen on</span>
+                                    <span class="wc-podcast-service-name">Spotify</span>
+                                </a>
+                            {{/if}}
+                            {{#if @custom.youtube_music_link}}
+                                <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
+                                    {{> "icons/youtube-music"}}
+                                    <span class="wc-podcast-service-label">Listen on</span>
+                                    <span class="wc-podcast-service-name">YouTube Music</span>
+                                </a>
+                            {{/if}}
+                        </div>
+                    </div>
+                </section>
 
-                    {{!-- Podcast Services --}}
-                    <div class="wc-series-services">
-                        {{#if @custom.apple_podcasts_link}}
-                            <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
-                                {{> "icons/apple"}}
-                                <span class="wc-podcast-service-label">Listen on</span>
-                                <span class="wc-podcast-service-name">Apple Podcasts</span>
-                            </a>
-                        {{/if}}
-                        {{#if @custom.spotify_link}}
-                            <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
-                                {{> "icons/spotify"}}
-                                <span class="wc-podcast-service-label">Listen on</span>
-                                <span class="wc-podcast-service-name">Spotify</span>
-                            </a>
-                        {{/if}}
-                        {{#if @custom.youtube_music_link}}
-                            <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
-                                {{> "icons/youtube-music"}}
-                                <span class="wc-podcast-service-label">Listen on</span>
-                                <span class="wc-podcast-service-name">YouTube Music</span>
-                            </a>
-                        {{/if}}
+                {{!-- Visual Divider --}}
+                <div class="wc-series-divider gh-outer">
+                    <div class="gh-inner">
+                        <img src="{{asset "images/ui-divider-thick.png"}}" alt="" class="wc-divider-img">
                     </div>
                 </div>
-            </section>
-
-            {{!-- Visual Divider --}}
-            <div class="wc-series-divider gh-outer">
-                <div class="gh-inner">
-                    <img src="{{asset "images/ui-divider-thick.png"}}" alt="" class="wc-divider-img">
-                </div>
-            </div>
+            {{/match}}
         {{/if}}
     {{/tag}}
 
     {{!-- Episodes Section Header --}}
+    {{#tag}}
     <section class="wc-episodes-header gh-outer">
         <div class="gh-inner">
-            <h2 class="wc-section-heading">Episodes{{#if pagination.total}} <span class="wc-episode-count">({{pagination.total}} available)</span>{{/if}}</h2>
+            <h2 class="wc-section-heading">{{name}}{{#if ../pagination.total}} <span class="wc-episode-count">({{../pagination.total}} available)</span>{{/if}}</h2>
         </div>
     </section>
+    {{/tag}}
 
     {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
 

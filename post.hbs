@@ -2,9 +2,12 @@
 
 {{#post}}
 
-<main id="main-content" class="gh-main wc-episode-page">
-    {{!-- Audio Player Hero - Renders on ALL posts --}}
+<main id="main-content" class="gh-main wc-episode-page wc-audio-unresolved{{#has tag="#no-audio"}} wc-no-audio{{/has}}">
+    {{!-- Audio Player Hero - shown for posts WITH audio --}}
     {{> "audio-player-hero"}}
+
+    {{!-- Fallback Post Header - shown for posts WITHOUT audio --}}
+    {{> "components/post-header"}}
 
     {{!-- Episode Notes Section --}}
     <section class="wc-episode-notes gh-outer">
@@ -15,6 +18,20 @@
             </div>
         </div>
     </section>
+
+    {{!-- Inline audio detection — runs after {{content}} is in the DOM.
+         Resolves wc-audio-unresolved before first paint in most browsers. --}}
+    <script>
+    (function() {
+        var main = document.getElementById('main-content');
+        if (!main || main.classList.contains('wc-no-audio')) return;
+        var hasAudio = document.querySelector(
+            '.kg-audio-card, [data-audio-url], .wc-audio-player[data-audio-url]'
+        );
+        main.classList.remove('wc-audio-unresolved');
+        main.classList.add(hasAudio ? 'wc-has-audio' : 'wc-no-audio');
+    })();
+    </script>
 
     {{!-- Comments Section --}}
     {{#if comments}}

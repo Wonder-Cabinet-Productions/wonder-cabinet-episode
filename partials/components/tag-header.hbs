@@ -15,7 +15,8 @@
             </div>
         {{/if}}
         <h1 class="wc-tag-hero-title">{{name}}</h1>
-        {{!-- Short tagline only shown if NO extended description --}}
-        {{!-- When description exists, it moves to the series info section --}}
+        {{#if description}}
+            <p class="wc-tag-hero-description">{{description}}</p>
+        {{/if}}
     </div>
 </section>
