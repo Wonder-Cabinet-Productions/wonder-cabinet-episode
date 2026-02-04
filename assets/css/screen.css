@@ -1395,9 +1395,59 @@ body {
         font-size: 1.6rem;
     }
 
+    .wc-episode-notes-content .wc-episode-notes-links-heading {
+        font-size: 2rem;
+    }
+
+    .wc-episode-notes-content .wc-episode-notes-content-links::before {
+        font-size: 2rem;
+    }
+
     .wc-episode-links-heading {
         font-size: 2.4rem;
     }
+}
+
+/* Episode Notes Links Heading — h3 styled like the h2 "EPISODE NOTES" heading */
+/* Scoped to .wc-episode-notes-content to beat the h3 { color: black } rule */
+.wc-episode-notes-content .wc-episode-notes-links-heading {
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--wc-green-text);
+    margin: var(--wc-spacing-lg) 0 var(--wc-spacing-sm);
+}
+
+/* Episode Notes Content Links — tightened link list spacing, no bullets */
+.wc-episode-notes-content .wc-episode-notes-content-links {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    margin-top: var(--wc-spacing-xl);
+}
+
+/* Auto-generated "Links" heading via CSS */
+.wc-episode-notes-content .wc-episode-notes-content-links::before {
+    content: "Links";
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--wc-green-text);
+    margin-bottom: var(--wc-spacing-sm);
+}
+
+.wc-episode-notes-content .wc-episode-notes-content-links li {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.wc-episode-notes-content .wc-episode-notes-content-links li:last-child {
+    margin-bottom: 0;
 }
 
 /* Episode Links Section (Figma spec) */
@@ -2180,6 +2230,13 @@ body {
 
 .wc-page-content .gh-content a:hover {
     color: var(--wc-dark-green);
+}
+
+/* Page Content Mobile Responsive */
+@media (max-width: 767px) {
+    .wc-page-content .gh-content {
+        font-size: 1.6rem;
+    }
 }
 
 /* Main page background */
