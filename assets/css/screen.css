@@ -2155,7 +2155,12 @@ body {
     padding: var(--wc-spacing-xl) 0;
 }
 
+.wc-page-content .gh-inner {
+    max-width: 720px;
+}
+
 .wc-page-content .gh-content {
+    margin-top: 0;
     font-family: var(--font-body);
     font-size: 1.8rem;
     line-height: 1.7;
