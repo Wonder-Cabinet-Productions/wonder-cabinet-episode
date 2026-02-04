@@ -29,8 +29,12 @@
             {{/if}}
 
             <span class="wc-episode-card-btn">
-                <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-episode-card-btn-icon">
-                View Episode
+                {{#has tag="newsletter"}}
+                    Read
+                {{else}}
+                    <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-episode-card-btn-icon">
+                    View Episode
+                {{/has}}
             </span>
         </div>
     </a>
