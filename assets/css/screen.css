@@ -2217,6 +2217,13 @@ body {
     color: var(--wc-black);
 }
 
+/* Override shared theme's 80px first-child margin on page templates.
+   Shared theme rule: .page-template .gh-content:only-child > *:first-child:not(.kg-width-full)
+   has specificity 0,4,1 — we need to match or exceed it. */
+.page-template .wc-page-content .gh-content:only-child > *:first-child:not(.kg-width-full) {
+    margin-top: 0;
+}
+
 .wc-page-content .gh-content h2,
 .wc-page-content .gh-content h3 {
     font-family: var(--font-heading);
