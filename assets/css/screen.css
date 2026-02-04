@@ -2234,6 +2234,10 @@ body {
 
 /* Page Content Mobile Responsive */
 @media (max-width: 767px) {
+    .wc-page-content .gh-inner {
+        padding: 0 var(--wc-spacing-sm);
+    }
+
     .wc-page-content .gh-content {
         font-size: 1.6rem;
     }
