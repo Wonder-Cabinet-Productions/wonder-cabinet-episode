@@ -2202,7 +2202,7 @@ body {
 
 .wc-page-content {
     background-color: var(--wc-cream);
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-spacing-lg) 0; /* 40px — header above provides its own spacing */
 }
 
 .wc-page-content .gh-inner {
@@ -2247,6 +2247,145 @@ body {
 
     .wc-page-content .gh-content {
         font-size: 1.6rem;
+    }
+}
+
+/* ============================================
+   Post Audio Detection Toggle
+   Dual-layout: audio hero vs. page-like header.
+   State classes on <main>:
+     .wc-audio-unresolved — initial (script hasn't run yet)
+     .wc-has-audio        — audio found, show hero
+     .wc-no-audio         — no audio, show fallback header
+   ============================================ */
+
+/* --- FOUC prevention: hide audio hero until resolved --- */
+.wc-audio-unresolved .wc-audio-hero-wrapper {
+    visibility: hidden;
+    position: absolute;
+    overflow: hidden;
+    height: 0;
+}
+
+/* --- Resolved: audio present --- */
+.wc-has-audio .wc-audio-hero-wrapper {
+    visibility: visible;
+    position: relative;
+    height: auto;
+}
+
+/* --- No-audio state: hide hero + "Episode Notes" heading, show fallback --- */
+.wc-no-audio .wc-audio-hero-wrapper {
+    display: none;
+}
+
+.wc-no-audio .wc-post-header {
+    display: block;
+}
+
+.wc-no-audio .wc-episode-notes-heading {
+    display: none;
+}
+
+.wc-no-audio .wc-episode-notes {
+    padding-top: var(--wc-spacing-lg); /* 40px — tighter without the heading */
+}
+
+/* ============================================
+   Post Header (No-Audio Fallback)
+   Page-like header for posts without audio
+   ============================================ */
+
+.wc-post-header {
+    display: none; /* Hidden by default; shown via .wc-no-audio .wc-post-header */
+    background-color: var(--wc-black);
+    padding: var(--wc-spacing-xl) 0;
+    text-align: center;
+}
+
+.wc-post-header .gh-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wc-post-header-feature {
+    max-width: 300px;
+    margin: 0 auto var(--wc-spacing-lg);
+}
+
+.wc-post-header-feature img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 2px solid var(--wc-green);
+}
+
+.wc-post-header-date {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 500;
+    font-variant: small-caps;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 250, 235, 0.6);
+    margin-bottom: var(--wc-spacing-xs);
+}
+
+.wc-post-header-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.8rem, 5vw, 4.8rem);
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wc-cream);
+    margin: 0 0 var(--wc-spacing-sm);
+}
+
+.wc-post-header-byline {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: rgba(255, 250, 235, 0.6);
+    margin-bottom: var(--wc-spacing-sm);
+}
+
+.wc-post-header-byline a {
+    color: rgba(255, 250, 235, 0.8);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.wc-post-header-byline a:hover {
+    color: var(--wc-cream);
+    text-decoration: underline;
+}
+
+.wc-post-header-byline a:focus-visible {
+    outline: 2px solid var(--wc-focus-ring-light);
+    outline-offset: 2px;
+}
+
+.wc-post-header-subtitle {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: rgba(255, 250, 235, 0.85);
+    max-width: 600px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Post Header Mobile Responsive */
+@media (max-width: 767px) {
+    .wc-post-header {
+        padding: var(--wc-spacing-lg) var(--wc-spacing-sm);
+    }
+
+    .wc-post-header-feature {
+        max-width: 200px;
     }
 }
 

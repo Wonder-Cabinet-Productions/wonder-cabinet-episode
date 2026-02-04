@@ -1,0 +1,23 @@
+{{!--
+    Post Header (No-Audio Fallback)
+    Page-like header shown only when a post has no embedded audio.
+    Visibility controlled by wc-has-audio / wc-no-audio classes on <main>.
+--}}
+
+<header class="wc-post-header gh-outer">
+    <div class="gh-inner">
+        {{#if feature_image}}
+            <figure class="wc-post-header-feature">
+                <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+            </figure>
+        {{/if}}
+        <span class="wc-post-header-date">{{date published_at format="DD MMM YYYY"}}</span>
+        <h1 class="wc-post-header-title">{{title}}</h1>
+        {{#if primary_author.name}}
+            <span class="wc-post-header-byline">By {{authors separator=" & "}}</span>
+        {{/if}}
+        {{#if custom_excerpt}}
+            <p class="wc-post-header-subtitle">{{custom_excerpt}}</p>
+        {{/if}}
+    </div>
+</header>
