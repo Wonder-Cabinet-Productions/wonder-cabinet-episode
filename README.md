@@ -25,7 +25,7 @@
 
 ## About Wonder Cabinet
 
-Wonder Cabinet is a podcast that embodies the spirit of a "cabinet of curiosities"—an exploratory, otherworldly journey through ideas that spark wonder. The brand identity, designed by [Art & Sons](https://artandsons.com), features a distinctive cabinet icon with a cosmic spiral, representing the show's blend of intellectual curiosity and cosmic exploration.
+[Wonder Cabinet](https://wondercabinetproductions.com) is a podcast that embodies the spirit of a "cabinet of curiosities"—an exploratory, otherworldly journey through ideas that spark wonder. The brand identity, designed by [Art & Sons](https://artandsons.com), features a distinctive cabinet icon with a cosmic spiral, representing the show's blend of intellectual curiosity and cosmic exploration.
 
 This theme translates that vision into a fully functional Ghost CMS experience, purpose-built for podcast publishing with WaveSurfer.js audio playback, brand-compliant design, and seamless integration with major podcast platforms.
 
