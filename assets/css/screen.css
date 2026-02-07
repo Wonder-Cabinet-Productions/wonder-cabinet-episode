@@ -2525,8 +2525,7 @@ body {
 }
 
 .wc-transcript-content.is-open {
-    max-height: 10000px;
-    transition: max-height 0.5s ease-in;
+    max-height: none;
 }
 
 .wc-transcript-inner {
