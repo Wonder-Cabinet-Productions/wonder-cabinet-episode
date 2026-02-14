@@ -67,8 +67,9 @@
 
         {{!-- Waveform section --}}
         <div class="wc-audio-waveform-section gh-inner">
-            <div id="wc-waveform" class="wc-audio-waveform"></div>
-            <span class="wc-audio-time" id="wc-time-display">0:00 / 0:00</span>
+            <div id="wc-waveform" class="wc-audio-waveform" tabindex="0" role="slider"
+                 aria-label="Episode progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            <span class="wc-audio-time" id="wc-time-display" role="timer" aria-label="Playback time">0:00 / 0:00</span>
         </div>
     </section>
 </section>

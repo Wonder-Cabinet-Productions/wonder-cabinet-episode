@@ -42,6 +42,9 @@
     </section>
     {{/if}}
 
+    {{!-- Author Card Section --}}
+    {{> "components/author-card" multiple=(match authors.length ">" 1)}}
+
     {{> "components/cta" title=@custom.email_signup_text}}
 </main>
 

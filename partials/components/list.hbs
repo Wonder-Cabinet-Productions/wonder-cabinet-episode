@@ -4,6 +4,7 @@
     * count (number)
     * columns (number)
     * slug (tag)
+    * filter (Ghost NQL filter string, e.g. "tag:-newsletter")
     * showHeader (true, false)
     * showPrimaryTag (true, false)
     * showPrimaryAuthor (true, false)
@@ -58,7 +59,7 @@
                         {{/foreach}}
                     {{/get}}
                 {{else}}
-                    {{#get "posts" include="tags,authors" limit=count}}
+                    {{#get "posts" include="tags,authors" limit=count filter=filter}}
                         {{#foreach posts}}
                             {{> components/list-item
                                 showPrimaryTag=../../showPrimaryTag

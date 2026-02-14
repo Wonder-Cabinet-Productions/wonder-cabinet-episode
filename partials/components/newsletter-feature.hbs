@@ -1,0 +1,11 @@
+{{!--
+    Wonder Cabinet Featured Newsletter Card
+    Reuses list-item.hbs — rendered inline within a gh-list-feed container.
+    Only renders if a post with tag:newsletter + featured:true exists.
+--}}
+
+{{#get "posts" include="tags,authors" filter="tag:newsletter+featured:true" limit="1"}}
+    {{#foreach posts}}
+        {{> components/list-item showExcerpt=true showPublishedAt=true isNewsletterFeature=true}}
+    {{/foreach}}
+{{/get}}

@@ -1,0 +1,81 @@
+{{!--
+    Wonder Cabinet Author Card
+    Displays author bio and social links below episode content.
+    Supports multiple authors using Ghost's built-in {{authors}} helper.
+    Two authors display side-by-side on desktop, stacked on mobile.
+--}}
+
+<section class="wc-author-section gh-outer">
+    <div class="wc-author-section-inner gh-inner">
+        <div class="wc-author-grid{{#if multiple}} wc-author-grid--multi{{/if}}">
+            {{#foreach authors}}
+            <article class="wc-author-card">
+                {{#if profile_image}}
+                <figure class="wc-author-image">
+                    <a href="{{url}}">
+                        <img src="{{img_url profile_image size="m"}}" alt="{{name}}">
+                    </a>
+                </figure>
+                {{/if}}
+
+                <h3 class="wc-author-name">
+                    <a href="{{url}}">{{name}}</a>
+                </h3>
+
+                {{#if bio}}
+                <p class="wc-author-bio">{{bio}}</p>
+                {{/if}}
+
+                <div class="wc-author-meta">
+                    {{#if location}}
+                    <span class="wc-author-location">{{location}}</span>
+                    {{/if}}
+
+                    <div class="wc-author-social">
+                        {{#if website}}
+                        <a href="{{website}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="Website">
+                            {{> "icons/link"}}
+                        </a>
+                        {{/if}}
+                        {{#if twitter}}
+                        <a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="X (Twitter)">
+                            {{> "icons/twitter"}}
+                        </a>
+                        {{/if}}
+                        {{#if facebook}}
+                        <a href="{{social_url type="facebook"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="Facebook">
+                            {{> "icons/facebook"}}
+                        </a>
+                        {{/if}}
+                        {{#if linkedin}}
+                        <a href="{{social_url type="linkedin"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="LinkedIn">
+                            {{> "icons/linkedin"}}
+                        </a>
+                        {{/if}}
+                        {{#if bluesky}}
+                        <a href="{{social_url type="bluesky"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="Bluesky">
+                            {{> "icons/bluesky"}}
+                        </a>
+                        {{/if}}
+                        {{#if threads}}
+                        <a href="{{social_url type="threads"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="Threads">
+                            {{> "icons/threads"}}
+                        </a>
+                        {{/if}}
+                        {{#if mastodon}}
+                        <a href="{{social_url type="mastodon"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="Mastodon">
+                            {{> "icons/mastodon"}}
+                        </a>
+                        {{/if}}
+                        {{#if instagram}}
+                        <a href="{{social_url type="instagram"}}" target="_blank" rel="noopener" class="wc-author-link" aria-label="Instagram">
+                            {{> "icons/instagram"}}
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </article>
+            {{/foreach}}
+        </div>
+    </div>
+</section>

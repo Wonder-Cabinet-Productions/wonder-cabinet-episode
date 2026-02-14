@@ -821,15 +821,47 @@
     // INITIALIZATION
     // ========================================
 
+    /**
+     * Wait for WaveSurfer to be available with timeout
+     * Handles async CDN loading with fallback
+     */
+    function waitForWaveSurfer(callback, maxWait) {
+        maxWait = maxWait || 10000; // 10 second max wait
+        var startTime = Date.now();
+        var checkInterval = 100; // Check every 100ms
+
+        function check() {
+            if (typeof WaveSurfer !== 'undefined') {
+                callback(true);
+            } else if (Date.now() - startTime >= maxWait) {
+                console.warn('Wonder Cabinet: WaveSurfer.js not available after ' + (maxWait / 1000) + 's');
+                callback(false);
+            } else {
+                setTimeout(check, checkInterval);
+            }
+        }
+        check();
+    }
+
     function init() {
         // Track page view (Analytics)
         trackEpisodeView();
 
-        // Initialize player
-        initAudioPlayer();
-
-        // Initialize transcript toggle
+        // Initialize transcript toggle (doesn't need WaveSurfer)
         initTranscriptToggle();
+
+        // Wait for WaveSurfer then initialize player
+        waitForWaveSurfer(function(available) {
+            if (available) {
+                initAudioPlayer();
+            } else {
+                // Show graceful fallback - WaveSurfer not available
+                var waveformContainer = document.getElementById('wc-waveform');
+                if (waveformContainer) {
+                    showPlayerError(waveformContainer, 'Audio player temporarily unavailable. Please refresh the page.');
+                }
+            }
+        });
     }
 
     // Run on DOM ready

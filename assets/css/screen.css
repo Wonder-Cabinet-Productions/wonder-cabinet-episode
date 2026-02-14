@@ -331,6 +331,14 @@ body {
     bottom: 8px;
 }
 
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .wc-burger::before,
+    .wc-burger::after {
+        transition: none;
+    }
+}
+
 /* Mobile menu */
 .wc-mobile-menu {
     display: none;
@@ -657,6 +665,7 @@ body {
     gap: var(--wc-spacing-md); /* 24px — matches wireframe card spacing */
 }
 
+
 /* Override base 40px gap in list-inner (between header and feed) */
 .gh-list-inner {
     gap: var(--wc-spacing-sm); /* 16px */
@@ -664,6 +673,7 @@ body {
 
 .wc-episode-card {
     margin-bottom: 0; /* Gap property handles inter-card spacing */
+    position: relative;
 }
 
 .wc-episode-card-inner {
@@ -674,6 +684,49 @@ body {
     border: 2px solid var(--wc-green);
     background-color: var(--wc-black);
     text-decoration: none;
+}
+
+/* Featured post styling */
+.wc-episode-card.featured .wc-episode-card-inner {
+    border-width: 3px;
+    box-shadow: 0 0 20px rgba(16, 165, 68, 0.3);
+}
+
+.wc-featured-badge {
+    position: absolute;
+    top: -1px;
+    right: 20px;
+    background-color: var(--wc-green);
+    color: var(--wc-black);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    z-index: 10;
+}
+
+.wc-newsletter-badge {
+    position: absolute;
+    top: -1px;
+    left: 20px;
+    background-color: var(--wc-cream);
+    color: var(--wc-black);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    z-index: 10;
+}
+
+/* Newsletter card: flip image to right side, extra vertical breathing room for badge */
+.wc-episode-card--newsletter .wc-episode-card-inner {
+    flex-direction: row-reverse !important;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .wc-episode-card-inner:hover {
@@ -813,6 +866,24 @@ body {
         align-self: stretch; /* Full-width tap target on mobile */
         justify-content: center;
         min-height: 45px; /* Matches header button height; exceeds 44px iOS minimum */
+    }
+
+    /* Featured badge position adjustment for stacked mobile layout */
+    .wc-featured-badge {
+        right: 15px;
+        font-size: 1rem;
+        padding: 5px 10px;
+    }
+
+    .wc-newsletter-badge {
+        left: 15px;
+        font-size: 1rem;
+        padding: 5px 10px;
+    }
+
+    /* On mobile, cards stack vertically — revert to normal column order */
+    .wc-episode-card--newsletter .wc-episode-card-inner {
+        flex-direction: column !important;
     }
 }
 
@@ -1370,6 +1441,39 @@ body {
 
 .wc-episode-notes-content a:hover {
     color: var(--wc-dark-green);
+}
+
+/* Images in episode notes content — allow full width display */
+.wc-episode-notes-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.wc-episode-notes-content figure {
+    margin: var(--wc-spacing-md) 0;
+}
+
+.wc-episode-notes-content figcaption {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.6);
+    text-align: center;
+    margin-top: var(--wc-spacing-xs);
+}
+
+/* Ghost image cards — ensure they display at proper size */
+.wc-episode-notes-content .kg-image-card,
+.wc-episode-notes-content .kg-gallery-card {
+    margin: var(--wc-spacing-lg) 0;
+}
+
+.wc-episode-notes-content .kg-image-card.kg-width-wide,
+.wc-episode-notes-content .kg-image-card.kg-width-full {
+    margin-left: calc(-1 * var(--wc-spacing-md));
+    margin-right: calc(-1 * var(--wc-spacing-md));
+    max-width: calc(100% + 2 * var(--wc-spacing-md));
 }
 
 /* Hide Ghost's default audio card */
@@ -1941,11 +2045,14 @@ body {
 }
 
 .wc-series-description {
-    font-family: var(--font-heading);
-    font-size: 2.3rem;
+    font-family: var(--font-body);
+    font-size: 2rem;
+    font-style: italic;
+    line-height: 1.6;
     color: var(--wc-cream);
+    opacity: 0.9;
     max-width: 720px;
-    margin: 0;
+    margin: 0 auto var(--wc-spacing-md) auto;
 }
 
 .wc-series-services {
@@ -2098,6 +2205,8 @@ body {
 
 .gh-archive-header {
     margin-bottom: var(--wc-spacing-sm); /* 16px — tighter header-to-list gap */
+    align-items: center;  /* center flex children horizontally */
+    text-align: center;   /* center text within children */
 }
 
 /* ============================================
@@ -2293,13 +2402,16 @@ body {
 
 /* ============================================
    Post Header (No-Audio Fallback)
-   Page-like header for posts without audio
+   Wide breakout hero for posts without audio.
+   Feature image breaks out of gh-inner for a
+   cinematic presentation, then text metadata
+   stays within the 810px content column.
    ============================================ */
 
 .wc-post-header {
     display: none; /* Hidden by default; shown via .wc-no-audio .wc-post-header */
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-spacing-xl) 0 var(--wc-spacing-xl);
     text-align: center;
 }
 
@@ -2309,16 +2421,21 @@ body {
     align-items: center;
 }
 
+/* Wide breakout image — exceeds the 810px content column */
 .wc-post-header-feature {
-    max-width: 300px;
-    margin: 0 auto var(--wc-spacing-lg);
+    max-width: 1100px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    margin: 0 auto var(--wc-spacing-xl);
 }
 
 .wc-post-header-feature img {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
-    border: 2px solid var(--wc-green);
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
 }
 
 .wc-post-header-date {
@@ -2378,14 +2495,20 @@ body {
     line-height: 1.5;
 }
 
-/* Post Header Mobile Responsive */
+/* Post Header — Mobile Responsive */
 @media (max-width: 767px) {
     .wc-post-header {
-        padding: var(--wc-spacing-lg) var(--wc-spacing-sm);
+        padding: var(--wc-spacing-lg) 0;
     }
 
+    /* Full-width on mobile — aspect-ratio scales naturally */
     .wc-post-header-feature {
-        max-width: 200px;
+        max-width: 100%;
+        margin-bottom: var(--wc-spacing-lg);
+    }
+
+    .wc-post-header .gh-inner {
+        padding: 0 var(--wc-spacing-sm);
     }
 }
 /* Main page background */
@@ -2812,5 +2935,278 @@ body {
 /* Generic link focus for gh-content areas */
 .gh-content a:focus-visible {
     outline: 2px solid var(--wc-focus-ring-dark);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   Author Card Component
+   Editorial byline below episode content.
+   Center-aligned, open layout — no card chrome.
+   Supports 1 or 2 authors (side-by-side on desktop).
+   ============================================ */
+
+.wc-author-section {
+    background-color: var(--wc-black);
+    padding: var(--wc-spacing-xl) 0;
+}
+
+.wc-author-section-inner {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding-top: var(--wc-spacing-lg);
+    padding-bottom: var(--wc-spacing-lg);
+    border-top: 2px solid var(--wc-green);
+    border-bottom: 2px solid var(--wc-green);
+}
+
+/* Grid container — single column by default, two columns when multi */
+.wc-author-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wc-spacing-lg);
+}
+
+.wc-author-grid--multi {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto; /* image, name, bio, meta */
+    row-gap: 0;
+    column-gap: var(--wc-spacing-lg);
+}
+
+/* When only one author card exists, revert to single-column centered layout
+   (covers cases where --multi class is applied incorrectly) */
+.wc-author-grid--multi:has(.wc-author-card:only-child) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Individual author — centered, no background, no borders */
+.wc-author-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+}
+
+/* Subgrid: align image/name/bio/meta rows across columns */
+.wc-author-grid--multi > .wc-author-card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 4;
+    justify-items: center;
+}
+
+
+/* Profile image */
+.wc-author-image {
+    width: 88px;
+    height: 88px;
+    margin: 0 0 var(--wc-spacing-sm) 0;
+    flex-shrink: 0;
+}
+
+.wc-author-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--wc-green);
+    transition: border-color 0.2s ease;
+}
+
+.wc-author-image a:hover img {
+    border-color: var(--wc-cream);
+}
+
+/* Author name */
+.wc-author-name {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 var(--wc-spacing-xs) 0;
+}
+
+.wc-author-name a {
+    color: var(--wc-cream);
+    text-decoration: none;
+}
+
+.wc-author-name a:hover {
+    color: var(--wc-green);
+}
+
+/* Bio text */
+.wc-author-bio {
+    font-family: var(--font-body);
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: var(--wc-cream);
+    opacity: 0.85;
+    margin: 0 0 var(--wc-spacing-sm) 0;
+    max-width: 480px;
+}
+
+/* Meta row (location + social icons) */
+.wc-author-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--wc-spacing-sm);
+}
+
+.wc-author-location {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--wc-cream);
+    opacity: 0.6;
+}
+
+/* Social icons row */
+.wc-author-social {
+    display: flex;
+    gap: var(--wc-spacing-xs);
+}
+
+.wc-author-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--wc-cream);
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.wc-author-link:hover {
+    color: var(--wc-green);
+    opacity: 1;
+}
+
+.wc-author-link svg {
+    width: 18px;
+    height: 18px;
+}
+
+.wc-author-link:focus-visible {
+    outline: 2px solid var(--wc-focus-ring-light);
+    outline-offset: 2px;
+}
+
+/* Mobile: stack multi-author grid, tighten spacing */
+@media (max-width: 767px) {
+    .wc-author-section {
+        padding: var(--wc-spacing-lg) 0;
+    }
+
+    .wc-author-section-inner {
+        padding: var(--wc-spacing-md) var(--wc-spacing-sm);
+    }
+
+    .wc-author-grid--multi {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+    }
+
+    .wc-author-grid--multi > .wc-author-card {
+        display: flex;
+        grid-row: auto;
+    }
+
+    .wc-author-image {
+        width: 72px;
+        height: 72px;
+    }
+
+    .wc-author-bio {
+        font-size: 1.5rem;
+    }
+}
+
+/* ============================================
+   Author Archive Page Enhancements
+   Styled consistently with Wonder Cabinet brand
+   ============================================ */
+
+.gh-archive-image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--wc-spacing-md) auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--wc-green);
+}
+
+.gh-archive-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gh-archive-description {
+    font-family: var(--font-body);
+    font-size: 1.8rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--wc-cream);
+    opacity: 0.9;
+    text-align: center;
+    max-width: 600px;
+    margin: var(--wc-spacing-sm) auto;
+}
+
+.gh-archive-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wc-spacing-sm);
+    margin-top: var(--wc-spacing-md);
+}
+
+.gh-archive-location {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--wc-cream);
+    opacity: 0.7;
+}
+
+.gh-archive-social {
+    display: flex;
+    gap: var(--wc-spacing-sm);
+}
+
+.gh-archive-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--wc-cream);
+    opacity: 0.7;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.gh-archive-social a:hover {
+    color: var(--wc-green);
+    opacity: 1;
+}
+
+.gh-archive-social svg {
+    width: 20px;
+    height: 20px;
+}
+
+.gh-archive-social a:focus-visible {
+    outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }

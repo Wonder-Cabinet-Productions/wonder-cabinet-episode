@@ -65,8 +65,24 @@ The theme implements the Wonder Cabinet brand identity:
 | `partials/components/footer.hbs` | Footer with cabinet illustration |
 | `partials/components/tag-header.hbs` | Tag archive hero |
 | `partials/components/bracket-button.hbs` | Reusable bracket button component |
+| `partials/components/newsletter-feature.hbs` | Featured newsletter card (injected in homepage feed) |
 | `partials/audio-player-hero.hbs` | WaveSurfer.js audio player hero |
 | `partials/podcast-services.hbs` | Apple/Spotify/YouTube Music links |
+
+### Homepage Content Model
+
+The homepage (`home.hbs`) does **not** use Ghost's featured flag for the hero or episode list. The episode list shows the 4 most recent posts (excluding `tag:newsletter`) in chronological order.
+
+**Featured newsletter card**: A `newsletter-feature.hbs` partial is injected after the 2nd episode in the list. It queries for a single post matching `tag:newsletter+featured:true`. If no post matches that filter, nothing renders — the card silently disappears and the episode list closes up. To show a newsletter callout on the homepage:
+
+1. Tag the post with `newsletter`
+2. Mark it as **Featured** in Ghost Admin
+3. Only one should be featured at a time (the query uses `limit="1"`)
+
+The card renders using the same `list-item.hbs` partial with the `isNewsletterFeature=true` flag, which adds:
+- A `wc-episode-card--newsletter` CSS class
+- A "Latest Newsletter" badge instead of the generic "Featured" badge
+- A "Read" button instead of "View Episode"
 
 ### Audio Player
 
