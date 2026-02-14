@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -35,3 +37,219 @@ jobs:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
           api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}
           file: dist/wonder-cabinet-episode.zip
+
+      - name: Extract change context
+        id: context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_EVENT: ${{ github.event_name }}
+          INPUT_ACTOR: ${{ github.actor }}
+          INPUT_REPO: ${{ github.repository }}
+          INPUT_SHA: ${{ github.sha }}
+        run: |
+          # Determine how this deploy was triggered and gather context
+          if [ "$INPUT_EVENT" = "workflow_dispatch" ]; then
+            echo "source=manual" >> "$GITHUB_OUTPUT"
+            echo "title=Manual deployment" >> "$GITHUB_OUTPUT"
+            {
+              echo "body<<GHEOF"
+              echo "Manually triggered deployment by ${INPUT_ACTOR}."
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+            echo "files=" >> "$GITHUB_OUTPUT"
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Try to find the merged PR for this commit
+          PR_JSON=$(gh api "repos/${INPUT_REPO}/commits/${INPUT_SHA}/pulls" \
+            --jq '.[0] // empty' 2>/dev/null || true)
+
+          if [ -n "$PR_JSON" ]; then
+            echo "source=pr" >> "$GITHUB_OUTPUT"
+            PR_NUMBER=$(echo "$PR_JSON" | jq -r '.number')
+            PR_TITLE=$(echo "$PR_JSON" | jq -r '.title')
+            PR_BODY=$(echo "$PR_JSON" | jq -r '.body // ""' | head -c 2000)
+            echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "title=$PR_TITLE" >> "$GITHUB_OUTPUT"
+            {
+              echo "body<<GHEOF"
+              echo "$PR_BODY"
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+
+            # Get changed files from the PR
+            FILES=$(gh api "repos/${INPUT_REPO}/pulls/$PR_NUMBER/files" \
+              --jq '.[].filename' 2>/dev/null | head -30 || true)
+            {
+              echo "files<<GHEOF"
+              echo "$FILES"
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            # Direct push — use commit info
+            echo "source=push" >> "$GITHUB_OUTPUT"
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            echo "title=$COMMIT_MSG" >> "$GITHUB_OUTPUT"
+            {
+              echo "body<<GHEOF"
+              git diff --stat HEAD~1 2>/dev/null || echo "No diff available"
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "files<<GHEOF"
+              git diff --name-only HEAD~1 2>/dev/null | head -30 || true
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate AI summary
+        id: summary
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          INPUT_TITLE: ${{ steps.context.outputs.title }}
+          INPUT_BODY: ${{ steps.context.outputs.body }}
+          INPUT_FILES: ${{ steps.context.outputs.files }}
+        run: |
+          TITLE="$INPUT_TITLE"
+          BODY="$INPUT_BODY"
+          FILES="$INPUT_FILES"
+
+          SYSTEM_PROMPT="You write short website update summaries for the Wonder Cabinet team. Wonder Cabinet is a podcast from the creators of To The Best Of Our Knowledge. Your audience is public media producers and editors — smart, not technical. Write in a warm, clear, public-media voice. Think colleague sending a Slack message, not a software changelog.
+
+          2-4 bullet points. Be specific about which parts of the website changed and what visitors or the team might see differently. Describe changes in terms of the website experience, not code.
+
+          The website has these sections:
+          - Homepage: the main landing page with a list of recent episodes and a newsletter signup
+          - Episode pages: individual episode pages with an audio player, show notes, full transcript, and author bios at the bottom
+          - Tag pages: browsable collections of episodes grouped by topic (e.g. Science, Philosophy)
+          - Author pages: pages for each host or contributor showing their bio and episodes
+          - Newsletter posts: text-only articles without an audio player
+          - Navigation bar and footer: appear on every page
+
+          Use the file paths in the change list to figure out which sections are affected. Here is the mapping (do NOT include these filenames in your summary):
+          - home.hbs = homepage
+          - post.hbs / audio-player-hero.hbs = episode pages
+          - tag.hbs / tag-header.hbs = tag pages
+          - author.hbs / author-card.hbs = author pages and bios
+          - list-item.hbs = episode cards (the preview tiles that appear in lists)
+          - navbar.hbs = navigation bar
+          - footer.hbs = footer
+          - cta.hbs = email/newsletter signup area
+          - screen.css = visual design and layout (try to say which pages based on context)
+          - audio-player.js = the audio player on episode pages
+
+          Never reference filenames, code, GitHub, pull requests, commits, or branches. If something is technical (like layout or spacing), explain what it means visually — e.g. 'author bios are better aligned on mobile' rather than 'fixed CSS subgrid'. No emoji."
+
+          USER_PROMPT="PR Title: ${TITLE}
+
+          Description:
+          ${BODY}
+
+          Files changed:
+          ${FILES}"
+
+          SYSTEM_JSON=$(echo "$SYSTEM_PROMPT" | jq -Rs .)
+          USER_JSON=$(echo "$USER_PROMPT" | jq -Rs .)
+
+          PAYLOAD=$(jq -n \
+            --argjson system "$SYSTEM_JSON" \
+            --argjson user "$USER_JSON" \
+            '{
+              model: "anthropic/claude-3.5-haiku",
+              max_tokens: 300,
+              messages: [
+                { role: "system", content: $system },
+                { role: "user", content: $user }
+              ]
+            }')
+
+          RESPONSE=$(curl -s --max-time 30 \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "https://openrouter.ai/api/v1/chat/completions")
+
+          AI_TEXT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
+
+          if [ -n "$AI_TEXT" ]; then
+            {
+              echo "text<<GHEOF"
+              echo "$AI_TEXT"
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::AI summary failed, using fallback"
+            {
+              echo "text<<GHEOF"
+              echo "$TITLE"
+              echo "GHEOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Notify Slack
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          INPUT_SUMMARY: ${{ steps.summary.outputs.text }}
+          INPUT_TITLE: ${{ steps.context.outputs.title }}
+          INPUT_PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          INPUT_SHA: ${{ github.sha }}
+          INPUT_REPO: ${{ github.repository }}
+          INPUT_ACTOR: ${{ github.actor }}
+        run: |
+          SUMMARY_TEXT="$INPUT_SUMMARY"
+          if [ -z "$SUMMARY_TEXT" ]; then
+            SUMMARY_TEXT="$INPUT_TITLE"
+          fi
+
+          # Build context elements
+          CONTEXT_ELEMENTS='[]'
+          PR_NUMBER="$INPUT_PR_NUMBER"
+          if [ -n "$PR_NUMBER" ]; then
+            CONTEXT_ELEMENTS=$(echo "$CONTEXT_ELEMENTS" | jq \
+              --arg label "View details" \
+              --arg url "https://github.com/${INPUT_REPO}/pull/${PR_NUMBER}" \
+              '. + [{ "type": "mrkdwn", "text": ("<" + $url + "|" + $label + ">") }]')
+          fi
+          CONTEXT_ELEMENTS=$(echo "$CONTEXT_ELEMENTS" | jq \
+            --arg actor "Published by ${INPUT_ACTOR}" \
+            '. + [{ "type": "mrkdwn", "text": $actor }]')
+
+          SUMMARY_JSON=$(echo "$SUMMARY_TEXT" | jq -Rs .)
+
+          PAYLOAD=$(jq -n \
+            --argjson summary "$SUMMARY_JSON" \
+            --argjson context "$CONTEXT_ELEMENTS" \
+            '{
+              blocks: [
+                {
+                  type: "header",
+                  text: { type: "plain_text", text: ":rocket: Wonder Cabinet theme deployed", emoji: true }
+                },
+                {
+                  type: "section",
+                  text: { type: "mrkdwn", text: $summary }
+                },
+                { type: "divider" },
+                {
+                  type: "context",
+                  elements: $context
+                }
+              ]
+            }')
+
+          HTTP_STATUS=$(curl -s -o /tmp/slack_response -w "%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$SLACK_WEBHOOK_URL")
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "Slack notification sent successfully (HTTP $HTTP_STATUS)"
+          else
+            echo "::warning::Slack notification failed (HTTP $HTTP_STATUS)"
+            cat /tmp/slack_response 2>/dev/null || true
+          fi
