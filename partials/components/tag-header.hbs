@@ -6,7 +6,7 @@
 
 <section class="wc-tag-hero{{#if feature_image}} has-feature-image{{/if}}">
     <div class="wc-tag-hero-bg">
-        <img src="{{@custom.galaxy_background_image}}" alt="" class="wc-tag-hero-galaxy">
+        <img src="{{@custom.galaxy_background_image}}" alt="" class="wc-tag-hero-galaxy" aria-hidden="true">
     </div>
     <div class="wc-tag-hero-content gh-inner">
         {{#if feature_image}}
@@ -15,8 +15,5 @@
             </div>
         {{/if}}
         <h1 class="wc-tag-hero-title">{{name}}</h1>
-        {{#if description}}
-            <p class="wc-tag-hero-description">{{description}}</p>
-        {{/if}}
     </div>
 </section>

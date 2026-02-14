@@ -5,7 +5,7 @@
     <div class="wc-hero-zone">
         {{!-- Wave divider between navbar and hero (homepage only) --}}
         <div class="wc-wave-divider">
-            <img src="{{asset "images/ui-wave-divider-light.svg"}}" alt="">
+            <img src="{{asset "images/ui-wave-divider-light.svg"}}" alt="" aria-hidden="true">
         </div>
 
         {{> "components/home-hero"}}
@@ -26,7 +26,23 @@
             </header>
         </div>
     </section>
-    {{> "components/list" layout="simple" count="5" showExcerpt=true showPublishedAt=true}}
+
+    {{!-- Episodes with newsletter card injected after the 2nd item --}}
+    <div class="gh-list simple gh-outer">
+        <div class="gh-list-inner gh-inner">
+            <div class="gh-list-feed">
+                {{#get "posts" include="tags,authors" filter="tag:-newsletter" limit="4"}}
+                    {{#foreach posts}}
+                        {{> components/list-item showExcerpt=true showPublishedAt=true}}
+                        {{#match @index "==" 1}}
+                            {{!-- Newsletter card after 2nd episode --}}
+                            {{> "components/newsletter-feature"}}
+                        {{/match}}
+                    {{/foreach}}
+                {{/get}}
+            </div>
+        </div>
+    </div>
 
     {{!-- Green rule after episodes --}}
     <hr class="wc-rule">
@@ -35,7 +51,7 @@
         <nav class="wc-pagination wc-pagination--home gh-outer" aria-label="More episodes">
             <div class="wc-pagination-inner gh-inner">
                 <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.next}}">
-                    More Episodes →
+                    More Episodes &rarr;
                 </a>
             </div>
         </nav>

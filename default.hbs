@@ -65,9 +65,59 @@
 
 <script src="{{asset "built/main.min.js"}}"></script>
 
-{{!-- WaveSurfer.js for audio player --}}
+{{!-- WaveSurfer.js for audio player with CDN fallback --}}
 {{#is "post"}}
-    <script src="https://unpkg.com/wavesurfer.js@7"></script>
+    <script>
+    // Load WaveSurfer with timeout and fallback CDNs
+    (function() {
+        var cdns = [
+            'https://unpkg.com/wavesurfer.js@7',
+            'https://cdn.jsdelivr.net/npm/wavesurfer.js@7'
+        ];
+        var timeout = 5000; // 5 second timeout per CDN
+        var loaded = false;
+        var currentIndex = 0;
+
+        function loadScript(url, callback, onError) {
+            var script = document.createElement('script');
+            var timer = setTimeout(function() {
+                script.onload = script.onerror = null;
+                onError(new Error('Timeout loading ' + url));
+            }, timeout);
+
+            script.onload = function() {
+                clearTimeout(timer);
+                callback();
+            };
+            script.onerror = function() {
+                clearTimeout(timer);
+                onError(new Error('Failed to load ' + url));
+            };
+            script.src = url;
+            document.head.appendChild(script);
+        }
+
+        function tryNextCdn() {
+            if (loaded || currentIndex >= cdns.length) {
+                if (!loaded) {
+                    console.warn('Wonder Cabinet: WaveSurfer.js could not be loaded from any CDN');
+                    // Audio player will show graceful error state
+                }
+                return;
+            }
+            loadScript(cdns[currentIndex], function() {
+                loaded = true;
+                console.log('Wonder Cabinet: WaveSurfer.js loaded from', cdns[currentIndex]);
+            }, function(err) {
+                console.warn(err.message);
+                currentIndex++;
+                tryNextCdn();
+            });
+        }
+
+        tryNextCdn();
+    })();
+    </script>
     <script src="{{asset "js/audio-player.js"}}"></script>
 {{/is}}
 

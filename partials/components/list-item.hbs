@@ -1,10 +1,16 @@
 {{!--
     Wonder Cabinet Episode Card
     Displays episode with green border, artwork, and solid green button
+    Featured posts get a visual indicator badge
 --}}
 
-<article class="gh-list-item wc-episode-card {{post_class}}">
+<article class="gh-list-item wc-episode-card{{#if isNewsletterFeature}} wc-episode-card--newsletter{{/if}} {{post_class}}">
     <a class="gh-list-item-inner wc-episode-card-inner" href="{{url}}">
+        {{#if isNewsletterFeature}}
+            <span class="wc-newsletter-badge"><span class="sr-only">Featured newsletter: </span>Latest Newsletter</span>
+        {{else if featured}}
+            <span class="wc-featured-badge"><span class="sr-only">Featured episode: </span>Featured</span>
+        {{/if}}
         {{#if feature_image}}
             <figure class="gh-list-item-image wc-episode-card-image">
                 <img

@@ -8,15 +8,9 @@
     {{!-- Green rule above description --}}
     <hr class="wc-rule wc-rule--thick">
 
-    {{!-- Series Info Zone with description and podcast services --}}
+    {{!-- Series Info Zone with podcast services --}}
     <section class="wc-series-info gh-outer">
         <div class="wc-series-info-inner gh-inner">
-            {{#tag}}
-                {{#if description}}
-                    <p class="wc-series-description">{{description}}</p>
-                {{/if}}
-            {{/tag}}
-
             {{!-- Luminous Podcast Services --}}
             <div class="wc-podcast-services-links">
                 {{#if @custom.luminous_apple_podcasts_link}}

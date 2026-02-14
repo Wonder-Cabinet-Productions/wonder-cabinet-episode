@@ -4,5 +4,20 @@
     {{#author}}
         {{> "components/author-header"}}
     {{/author}}
+
+    {{!-- Episodes Section Header --}}
+    {{#author}}
+    <section class="wc-episodes-header gh-outer">
+        <div class="gh-inner">
+            <h2 class="wc-section-heading">Episodes by {{name}}{{#if ../pagination.total}} <span class="wc-episode-count">({{../pagination.total}} available)</span>{{/if}}</h2>
+        </div>
+    </section>
+    {{/author}}
+
     {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
+
+    {{!-- Pagination --}}
+    {{> "components/pagination"}}
+
+    {{> "components/cta" title=@custom.email_signup_text}}
 </main>
