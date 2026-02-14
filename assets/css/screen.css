@@ -2205,6 +2205,8 @@ body {
 
 .gh-archive-header {
     margin-bottom: var(--wc-spacing-sm); /* 16px — tighter header-to-list gap */
+    align-items: center;  /* center flex children horizontally */
+    text-align: center;   /* center text within children */
 }
 
 /* ============================================
