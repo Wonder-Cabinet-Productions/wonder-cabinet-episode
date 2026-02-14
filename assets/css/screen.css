@@ -2951,7 +2951,9 @@ body {
 }
 
 .wc-author-section-inner {
+    width: 100%;
     max-width: var(--container-width);
+    margin: 0 auto;
     padding-top: var(--wc-spacing-lg);
     padding-bottom: var(--wc-spacing-lg);
     border-top: 2px solid var(--wc-green);
@@ -2969,6 +2971,17 @@ body {
 .wc-author-grid--multi {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto; /* image, name, bio, meta */
+    row-gap: 0;
+    column-gap: var(--wc-spacing-lg);
+}
+
+/* When only one author card exists, revert to single-column centered layout
+   (covers cases where --multi class is applied incorrectly) */
+.wc-author-grid--multi:has(.wc-author-card:only-child) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Individual author — centered, no background, no borders */
@@ -2978,6 +2991,14 @@ body {
     align-items: center;
     text-align: center;
     padding: 0;
+}
+
+/* Subgrid: align image/name/bio/meta rows across columns */
+.wc-author-grid--multi > .wc-author-card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 4;
+    justify-items: center;
 }
 
 
@@ -3088,12 +3109,17 @@ body {
     }
 
     .wc-author-section-inner {
-        padding-top: var(--wc-spacing-md);
-        padding-bottom: var(--wc-spacing-md);
+        padding: var(--wc-spacing-md) var(--wc-spacing-sm);
     }
 
     .wc-author-grid--multi {
         grid-template-columns: 1fr;
+        grid-template-rows: none;
+    }
+
+    .wc-author-grid--multi > .wc-author-card {
+        display: flex;
+        grid-row: auto;
     }
 
     .wc-author-image {
