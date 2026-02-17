@@ -57,8 +57,12 @@
         </a>
     {{/if}}
 
-    {{!-- Email contact link --}}
-    {{#if @custom.email_link}}
+    {{!-- Email contact: opens Jotform popup if configured, otherwise mailto fallback --}}
+    {{#if @custom.jotform_form_id}}
+        <a href="#contact-form" aria-label="Contact">
+            {{> "icons/email"}}
+        </a>
+    {{else if @custom.email_link}}
         <a href="mailto:{{@custom.email_link}}" aria-label="Email">
             {{> "icons/email"}}
         </a>

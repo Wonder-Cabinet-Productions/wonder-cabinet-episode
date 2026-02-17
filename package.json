@@ -119,6 +119,11 @@
                 "default": "",
                 "description": "Contact email address (just the email, no mailto:)"
             },
+            "jotform_form_id": {
+                "type": "text",
+                "default": "",
+                "description": "Jotform form ID for the contact popup (number from end of form URL)"
+            },
             "hero_title_image": {
                 "type": "image",
                 "description": "Wonder Cabinet title graphic for homepage hero"

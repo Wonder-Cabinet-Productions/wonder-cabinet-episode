@@ -42,6 +42,10 @@
         document.documentElement.className = `has-${textColor}-text`;
     </script>
 
+    {{#if @custom.jotform_form_id}}
+    <script src="https://cdn.jotfor.ms/s/static/latest/static/feedback2.js"></script>
+    {{/if}}
+
     {{ghost_head}}
 </head>
 
@@ -120,6 +124,50 @@
     </script>
     <script src="{{asset "js/audio-player.js"}}"></script>
 {{/is}}
+
+{{#if @custom.jotform_form_id}}
+{{!-- Jotform contact form lightbox popup --}}
+<script>
+(function() {
+    var formId = '{{@custom.jotform_form_id}}';
+
+    // Initialize Jotform lightbox (hidden — no floating button)
+    var jfLightbox = new JotformFeedback({
+        formId: formId,
+        base: 'https://form.jotform.com/',
+        windowTitle: 'Contact Form',
+        backgroundColor: '#000000',
+        fontColor: '#FFFFFF',
+        type: false,
+        height: 500,
+        width: 700,
+        openOnLoad: false
+    });
+
+    // Open lightbox when any #contact-form link is clicked
+    document.addEventListener('click', function(e) {
+        var link = e.target.closest('a[href*="#contact-form"]');
+        if (!link) return;
+
+        e.preventDefault();
+
+        // Close mobile menu if open
+        var mobileMenu = document.querySelector('.wc-mobile-menu');
+        if (mobileMenu && mobileMenu.classList.contains('is-active')) {
+            mobileMenu.classList.remove('is-active');
+            document.body.classList.remove('no-scroll');
+        }
+
+        // Trigger the Jotform lightbox
+        var trigger = document.querySelector('.lightbox-' + formId);
+        if (trigger) {
+            trigger.click();
+        }
+    });
+})();
+</script>
+<script src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
+{{/if}}
 
 {{ghost_foot}}
 
