@@ -1,0 +1,116 @@
+{{!< default}}
+
+{{#post}}
+<main id="main-content" class="gh-main wc-main">
+    {{!-- Page header --}}
+    <header class="wc-page-header gh-outer">
+        <div class="gh-inner">
+            <h1 class="wc-page-title">{{title}}</h1>
+        </div>
+    </header>
+
+    {{!-- Page content (editorial intro from Ghost editor) + contact form --}}
+    <section class="wc-page-content wc-contact-form-page gh-outer">
+        <div class="gh-inner">
+            {{!-- Any content from the Ghost editor renders above the form --}}
+            {{#if html}}
+            <article class="gh-article">
+                <div class="gh-content">
+                    {{content}}
+                </div>
+            </article>
+            {{/if}}
+
+            {{!-- Native contact form submitting to JotForm --}}
+            <form id="wc-contact-form"
+                  class="wc-contact-form"
+                  action="https://submit.jotform.com/submit/260475329818163/"
+                  method="POST"
+                  target="wc-jotform-frame"
+                  accept-charset="utf-8">
+
+                <input type="hidden" name="formID" value="260475329818163" />
+
+                <div class="wc-form-row wc-form-row--split">
+                    <div class="wc-form-field">
+                        <label for="wc-first-name" class="wc-form-label">First Name</label>
+                        <input type="text" id="wc-first-name" name="q3_name[first]" required
+                               autocomplete="given-name" class="wc-form-input" />
+                    </div>
+                    <div class="wc-form-field">
+                        <label for="wc-last-name" class="wc-form-label">Last Name</label>
+                        <input type="text" id="wc-last-name" name="q3_name[last]" required
+                               autocomplete="family-name" class="wc-form-input" />
+                    </div>
+                </div>
+
+                <div class="wc-form-field">
+                    <label for="wc-email" class="wc-form-label">Email</label>
+                    <input type="email" id="wc-email" name="q4_email" required
+                           autocomplete="email" class="wc-form-input" />
+                </div>
+
+                <div class="wc-form-field">
+                    <label for="wc-reason" class="wc-form-label">Why are you reaching out?</label>
+                    <select id="wc-reason" name="q9_whyAre" class="wc-form-select">
+                        <option value="">Please select</option>
+                        <option value="Question about an episode">Question about an episode</option>
+                        <option value="Pitching a guest">Pitching a guest</option>
+                        <option value="Sponsorship/business inquiry">Sponsorship/business inquiry</option>
+                        <option value="Something is broken on the website">Something is broken on the website</option>
+                        <option value="Just saying hello">Just saying hello</option>
+                    </select>
+                </div>
+
+                <div class="wc-form-field">
+                    <label for="wc-message" class="wc-form-label">Message</label>
+                    <textarea id="wc-message" name="q7_message7" rows="6" required
+                              class="wc-form-textarea"></textarea>
+                </div>
+
+                <div class="wc-form-actions">
+                    <button type="submit" class="wc-form-submit">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+
+            {{!-- Success state (hidden by default, shown after submission) --}}
+            <div id="wc-contact-success" class="wc-contact-success" hidden>
+                <h2 class="wc-contact-success-heading">Message Sent</h2>
+                <p class="wc-contact-success-text">Thanks for reaching out — we'll get back to you soon.</p>
+            </div>
+
+            {{!-- Hidden iframe target for form submission --}}
+            <iframe name="wc-jotform-frame" id="wc-jotform-frame" style="display:none;" aria-hidden="true" tabindex="-1"></iframe>
+        </div>
+    </section>
+
+    {{> "components/cta"}}
+</main>
+{{/post}}
+
+<script>
+(function() {
+    'use strict';
+
+    var form = document.getElementById('wc-contact-form');
+    var success = document.getElementById('wc-contact-success');
+    var iframe = document.getElementById('wc-jotform-frame');
+    var intro = document.querySelector('.wc-contact-form-page .gh-article');
+
+    if (!form || !iframe) return;
+
+    var submitted = false;
+
+    form.addEventListener('submit', function() {
+        submitted = true;
+        // Immediately hide form and intro, show success
+        form.hidden = true;
+        if (intro) intro.hidden = true;
+        success.hidden = false;
+        success.focus();
+        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+})();
+</script>
