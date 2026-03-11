@@ -3282,18 +3282,18 @@ body {
 
 .wc-form-actions {
     margin-top: var(--wc-spacing-lg);
+    text-align: center;
 }
 
 .wc-form-submit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-width: 125px;
     padding: 14px 40px;
     font-family: var(--font-heading);
     font-size: 1.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-weight: 500;
     color: var(--wc-cream);
     background-color: var(--wc-green);
     border: 2px solid var(--wc-green);
