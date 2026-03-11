@@ -3210,3 +3210,137 @@ body {
     outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }
+
+/* ============================================
+   Contact Form
+   Native form styled to match Wonder Cabinet brand.
+   Submits to JotForm via hidden iframe POST.
+   ============================================ */
+
+.wc-contact-form {
+    margin-top: var(--wc-spacing-lg);
+}
+
+.wc-form-field {
+    margin-bottom: var(--wc-spacing-md);
+}
+
+.wc-form-row--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--wc-spacing-md);
+}
+
+.wc-form-label {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wc-black);
+    margin-bottom: var(--wc-spacing-xs);
+}
+
+.wc-form-input,
+.wc-form-select,
+.wc-form-textarea {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 1.8rem;
+    line-height: 1.5;
+    color: var(--wc-black);
+    background-color: #fff;
+    border: 2px solid var(--wc-black);
+    border-radius: 0;
+    transition: border-color 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.wc-form-input:focus,
+.wc-form-select:focus,
+.wc-form-textarea:focus {
+    outline: none;
+    border-color: var(--wc-green);
+}
+
+.wc-form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23000' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.wc-form-textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.wc-form-actions {
+    margin-top: var(--wc-spacing-lg);
+}
+
+.wc-form-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 40px;
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--wc-cream);
+    background-color: var(--wc-green);
+    border: 2px solid var(--wc-green);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.wc-form-submit:hover {
+    background-color: var(--wc-dark-green);
+    border-color: var(--wc-dark-green);
+}
+
+.wc-form-submit:focus-visible {
+    outline: 2px solid var(--wc-green);
+    outline-offset: 4px;
+}
+
+/* Success state */
+.wc-contact-success {
+    text-align: center;
+    padding: var(--wc-spacing-xl) 0;
+}
+
+.wc-contact-success-heading {
+    font-family: var(--font-heading);
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--wc-dark-green);
+    margin-bottom: var(--wc-spacing-sm);
+}
+
+.wc-contact-success-text {
+    font-family: var(--font-body);
+    font-size: 2rem;
+    color: var(--wc-black);
+    opacity: 0.8;
+}
+
+/* Contact form mobile */
+@media (max-width: 767px) {
+    .wc-form-row--split {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .wc-form-submit {
+        width: 100%;
+        justify-content: center;
+    }
+}

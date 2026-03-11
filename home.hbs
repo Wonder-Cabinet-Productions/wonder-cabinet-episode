@@ -31,7 +31,7 @@
     <div class="gh-list simple gh-outer">
         <div class="gh-list-inner gh-inner">
             <div class="gh-list-feed">
-                {{#get "posts" include="tags,authors" filter="tag:-newsletter" limit="4"}}
+                {{#get "posts" include="tags,authors" filter="tag:-newsletter" limit="5"}}
                     {{#foreach posts}}
                         {{> components/list-item showExcerpt=true showPublishedAt=true}}
                         {{#match @index "==" 1}}
