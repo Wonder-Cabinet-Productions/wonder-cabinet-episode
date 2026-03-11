@@ -3282,6 +3282,7 @@ body {
 
 .wc-form-actions {
     margin-top: var(--wc-spacing-lg);
+    text-align: center;
 }
 
 .wc-form-submit {
