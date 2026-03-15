@@ -2153,6 +2153,30 @@ body {
     text-align: center;
 }
 
+/* Load More button — inherits .wc-pagination-link styles */
+.wc-load-more-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+}
+
+.wc-load-more-btn:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+/* Fade-in for dynamically loaded episode cards */
+.wc-episode-card--new {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.wc-episode-card--loaded {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 @media (max-width: 767px) {
     .wc-series-info-inner {
         padding: 0 var(--wc-spacing-sm); /* Ensure text doesn't touch edges */

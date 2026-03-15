@@ -48,13 +48,17 @@
     <hr class="wc-rule">
 
     {{#match pagination.pages ">" 1}}
-        <nav class="wc-pagination wc-pagination--home gh-outer" aria-label="More episodes">
+        <nav class="wc-pagination wc-pagination--home gh-outer" id="wc-load-more-nav" aria-label="More episodes">
             <div class="wc-pagination-inner gh-inner">
-                <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.next}}">
+                <button class="wc-pagination-link wc-pagination-link--centered wc-load-more-btn"
+                        id="wc-load-more-btn"
+                        data-page="2"
+                        data-filter="tag:-newsletter">
                     More Episodes &rarr;
-                </a>
+                </button>
             </div>
         </nav>
+        <script src="{{asset "js/load-more.js"}}"></script>
     {{/match}}
     {{> "components/cta" title=@custom.email_signup_text}}
 </main>
