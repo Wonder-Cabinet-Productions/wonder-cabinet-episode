@@ -3332,6 +3332,28 @@ body {
     opacity: 0.8;
 }
 
+/* Error state */
+.wc-contact-error {
+    text-align: center;
+    padding: var(--wc-spacing-md) 0;
+}
+
+.wc-contact-error-text {
+    font-family: var(--font-body);
+    font-size: 1.8rem;
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 12px 20px;
+}
+
+/* Sending state */
+.wc-form-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Contact form mobile */
 @media (max-width: 767px) {
     .wc-form-row--split {
