@@ -21,38 +21,37 @@
             </article>
             {{/if}}
 
-            {{!-- Native contact form submitting to JotForm --}}
-            <form id="wc-contact-form"
-                  class="wc-contact-form"
-                  action="https://submit.jotform.com/submit/260475329818163/"
-                  method="POST"
-                  target="wc-jotform-frame"
-                  accept-charset="utf-8">
+            {{!-- Native contact form → Cloudflare Worker --}}
+            <form id="wc-contact-form" class="wc-contact-form" novalidate>
 
-                <input type="hidden" name="formID" value="260475329818163" />
+                {{!-- Honeypot: invisible to humans, bots auto-fill it --}}
+                <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                    <label for="wc-website">Website</label>
+                    <input type="text" id="wc-website" name="website" tabindex="-1" autocomplete="off" />
+                </div>
 
                 <div class="wc-form-row wc-form-row--split">
                     <div class="wc-form-field">
                         <label for="wc-first-name" class="wc-form-label">First Name</label>
-                        <input type="text" id="wc-first-name" name="q3_name[first]" required
+                        <input type="text" id="wc-first-name" name="firstName" required
                                autocomplete="given-name" class="wc-form-input" />
                     </div>
                     <div class="wc-form-field">
                         <label for="wc-last-name" class="wc-form-label">Last Name</label>
-                        <input type="text" id="wc-last-name" name="q3_name[last]" required
+                        <input type="text" id="wc-last-name" name="lastName" required
                                autocomplete="family-name" class="wc-form-input" />
                     </div>
                 </div>
 
                 <div class="wc-form-field">
                     <label for="wc-email" class="wc-form-label">Email</label>
-                    <input type="email" id="wc-email" name="q4_email" required
+                    <input type="email" id="wc-email" name="email" required
                            autocomplete="email" class="wc-form-input" />
                 </div>
 
                 <div class="wc-form-field">
                     <label for="wc-reason" class="wc-form-label">Why are you reaching out?</label>
-                    <select id="wc-reason" name="q9_whyAre" class="wc-form-select">
+                    <select id="wc-reason" name="reason" class="wc-form-select">
                         <option value="">Please select</option>
                         <option value="Question about an episode">Question about an episode</option>
                         <option value="Pitching a guest">Pitching a guest</option>
@@ -64,25 +63,30 @@
 
                 <div class="wc-form-field">
                     <label for="wc-message" class="wc-form-label">Message</label>
-                    <textarea id="wc-message" name="q7_message7" rows="6" required
+                    <textarea id="wc-message" name="message" rows="6" required
                               class="wc-form-textarea"></textarea>
                 </div>
 
+                {{!-- Cloudflare Turnstile widget (renders invisible challenge) --}}
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAADBR7lvTSBm11dlz" data-theme="light"></div>
+
                 <div class="wc-form-actions">
-                    <button type="submit" class="wc-form-submit">
+                    <button type="submit" class="wc-form-submit" id="wc-form-submit-btn">
                         Send Message
                     </button>
                 </div>
             </form>
 
-            {{!-- Success state (hidden by default, shown after submission) --}}
-            <div id="wc-contact-success" class="wc-contact-success" hidden>
+            {{!-- Error state --}}
+            <div id="wc-contact-error" class="wc-contact-error" hidden>
+                <p class="wc-contact-error-text"></p>
+            </div>
+
+            {{!-- Success state --}}
+            <div id="wc-contact-success" class="wc-contact-success" hidden tabindex="-1">
                 <h2 class="wc-contact-success-heading">Message Sent</h2>
                 <p class="wc-contact-success-text">Thanks for reaching out — we'll get back to you soon.</p>
             </div>
-
-            {{!-- Hidden iframe target for form submission --}}
-            <iframe name="wc-jotform-frame" id="wc-jotform-frame" style="display:none;" aria-hidden="true" tabindex="-1"></iframe>
         </div>
     </section>
 
@@ -90,27 +94,89 @@
 </main>
 {{/post}}
 
+{{!-- Cloudflare Turnstile script --}}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <script>
 (function() {
     'use strict';
 
+    // CONFIGURE: Replace with your deployed Worker URL
+    var WORKER_URL = 'https://wc-contact-form.markriechers.workers.dev';
+
     var form = document.getElementById('wc-contact-form');
     var success = document.getElementById('wc-contact-success');
-    var iframe = document.getElementById('wc-jotform-frame');
+    var errorBox = document.getElementById('wc-contact-error');
+    var errorText = errorBox ? errorBox.querySelector('.wc-contact-error-text') : null;
+    var submitBtn = document.getElementById('wc-form-submit-btn');
     var intro = document.querySelector('.wc-contact-form-page .gh-article');
 
-    if (!form || !iframe) return;
+    if (!form) return;
 
-    var submitted = false;
+    // Record when the page loaded (timing-based spam check)
+    var loadedAt = Date.now();
 
-    form.addEventListener('submit', function() {
-        submitted = true;
-        // Immediately hide form and intro, show success
-        form.hidden = true;
-        if (intro) intro.hidden = true;
-        success.hidden = false;
-        success.focus();
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Disable button to prevent double-submit
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+        if (errorBox) errorBox.hidden = true;
+
+        // Gather form data
+        var data = {
+            firstName: form.firstName.value,
+            lastName: form.lastName.value,
+            email: form.email.value,
+            reason: form.reason.value,
+            message: form.message.value,
+            website: form.website.value,  // honeypot
+            _loadedAt: loadedAt,
+        };
+
+        // Include Turnstile token if present
+        var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (turnstileInput) {
+            data['cf-turnstile-response'] = turnstileInput.value;
+        }
+
+        fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+        .then(function(res) {
+            return res.json().then(function(body) {
+                return { status: res.status, body: body };
+            });
+        })
+        .then(function(result) {
+            if (result.body.ok) {
+                form.hidden = true;
+                if (intro) intro.hidden = true;
+                success.hidden = false;
+                success.focus();
+                success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                showError(result.body.error || 'Something went wrong. Please try again.');
+            }
+        })
+        .catch(function() {
+            showError('Network error. Please check your connection and try again.');
+        });
     });
+
+    function showError(msg) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+        if (errorText) errorText.textContent = msg;
+        if (errorBox) {
+            errorBox.hidden = false;
+            errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        // Reset Turnstile so user can retry
+        if (window.turnstile) window.turnstile.reset();
+    }
 })();
 </script>
