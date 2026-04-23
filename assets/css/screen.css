@@ -2311,6 +2311,15 @@ body {
     height: auto;
 }
 
+.wc-page-feature figcaption {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: rgba(255, 250, 235, 0.6);
+    text-align: center;
+    margin-top: var(--wc-spacing-xs);
+}
+
 .wc-page-content {
     background-color: var(--wc-cream);
     padding: var(--wc-spacing-lg) 0; /* 40px — header above provides its own spacing */
@@ -2427,17 +2436,24 @@ body {
 .wc-post-header-feature {
     max-width: 1100px;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
     margin: 0 auto var(--wc-spacing-xl);
 }
 
 .wc-post-header-feature img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     object-position: center;
     display: block;
+}
+
+.wc-post-header-feature figcaption {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: rgba(255, 250, 235, 0.6);
+    text-align: center;
+    margin-top: var(--wc-spacing-xs);
 }
 
 .wc-post-header-date {
