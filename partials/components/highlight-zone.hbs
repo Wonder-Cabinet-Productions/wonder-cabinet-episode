@@ -1,0 +1,47 @@
+{{!--
+    Wonder Cabinet Highlight Zone
+    A configurable feed interruption that pulls the latest post from a specific series.
+
+    Parameters:
+    - tagFilter:  Ghost filter string (e.g., "tag:newsletter+featured:true", "tag:luminous", "tag:hash-island-of-knowledge")
+    - badgeLabel: Text for the badge (e.g., "Latest Newsletter", "From Luminous", "Island of Knowledge")
+    - ctaLabel:   Button text (e.g., "Read", "Listen", "Explore")
+    - accentClass: CSS modifier class for accent color (e.g., "wc-highlight--newsletter", "wc-highlight--luminous", "wc-highlight--series")
+
+    Usage in home.hbs:
+    {{> "components/highlight-zone" tagFilter="tag:luminous" badgeLabel="From Luminous" ctaLabel="Listen" accentClass="wc-highlight--luminous"}}
+--}}
+
+{{#get "posts" include="tags,authors" filter=tagFilter limit="1"}}
+    {{#foreach posts}}
+        <article class="gh-list-item wc-episode-card wc-highlight-zone {{../accentClass}} {{post_class}}">
+            <a class="gh-list-item-inner wc-episode-card-inner wc-highlight-zone-inner" href="{{url}}">
+                <span class="wc-highlight-badge">{{../badgeLabel}}</span>
+                {{#if feature_image}}
+                    <figure class="gh-list-item-image wc-episode-card-image">
+                        <img
+                            srcset="{{img_url feature_image size="s"}} 300w,
+                                    {{img_url feature_image size="m"}} 720w,
+                                    {{img_url feature_image size="l"}} 960w"
+                            sizes="(max-width: 767px) 100vw, 229px"
+                            src="{{img_url feature_image size="m"}}"
+                            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                        >
+                    </figure>
+                {{/if}}
+                <div class="gh-list-item-content wc-episode-card-content">
+                    <span class="gh-list-item-published-at wc-episode-card-date">{{date published_at format="DD MMM YYYY"}}</span>
+                    <h3 class="gh-list-item-title wc-episode-card-title">{{title}}</h3>
+                    <p class="gh-list-item-excerpt wc-episode-card-excerpt">{{excerpt}}</p>
+                    <span class="wc-episode-card-btn wc-highlight-zone-btn">
+                        {{#if ../ctaLabel}}
+                            {{../ctaLabel}}
+                        {{else}}
+                            View
+                        {{/if}}
+                    </span>
+                </div>
+            </a>
+        </article>
+    {{/foreach}}
+{{/get}}
