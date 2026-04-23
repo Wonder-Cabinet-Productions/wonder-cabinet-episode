@@ -31,14 +31,17 @@ npx gulp build   # One-time build (CSS + JS)
 
 The theme implements the Wonder Cabinet brand identity:
 
+Official brand colors per the style guide (`docs/WonderCabinet-BrandGuide-010726.pdf`):
+
 | Element | Value | CSS Variable |
 |---------|-------|--------------|
 | **Green** | `#10A544` | `--wc-green` |
 | **Black** | `#000000` | `--wc-black` |
 | **Cream** | `#FFFAEB` | `--wc-cream` |
-| **Dark Green** | `#043013` | `--wc-dark-green` |
-| **Headline Font** | Jost | `--font-heading` |
-| **Body Font** | EB Garamond | `--font-body` |
+| **Headline Font** | Jost (Futura alternative) | `--font-heading` |
+| **Body Font** | EB Garamond (Garamond alternative) | `--font-body` |
+
+Note: `--wc-dark-green` (`#043013`) and `--wc-green-text` (`#087834`) are theme-derived values not in the official brand guide. They were created for accessibility (text contrast on cream) and dark UI elements. Use sparingly.
 
 ## Architecture
 
