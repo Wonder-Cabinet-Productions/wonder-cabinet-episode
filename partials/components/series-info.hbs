@@ -1,0 +1,46 @@
+{{!--
+    Wonder Cabinet Series Info Zone
+    Shows podcast service links and divider for tag/series pages.
+    Used on both index.hbs and tag.hbs.
+
+    Must be called within a {{#tag}} block context.
+    Skips rendering on the "newsletter" tag page.
+--}}
+
+{{#if description}}
+    {{#match slug "!=" "newsletter"}}
+        <section class="wc-series-info gh-outer">
+            <div class="wc-series-info-inner gh-inner">
+                <div class="wc-series-services">
+                    {{#if @custom.apple_podcasts_link}}
+                        <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" aria-label="Listen on Apple Podcasts">
+                            {{> "icons/apple"}}
+                            <span class="wc-podcast-service-label">Listen on</span>
+                            <span class="wc-podcast-service-name">Apple Podcasts</span>
+                        </a>
+                    {{/if}}
+                    {{#if @custom.spotify_link}}
+                        <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" aria-label="Listen on Spotify">
+                            {{> "icons/spotify"}}
+                            <span class="wc-podcast-service-label">Listen on</span>
+                            <span class="wc-podcast-service-name">Spotify</span>
+                        </a>
+                    {{/if}}
+                    {{#if @custom.youtube_music_link}}
+                        <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" aria-label="Listen on YouTube Music">
+                            {{> "icons/youtube-music"}}
+                            <span class="wc-podcast-service-label">Listen on</span>
+                            <span class="wc-podcast-service-name">YouTube Music</span>
+                        </a>
+                    {{/if}}
+                </div>
+            </div>
+        </section>
+
+        <div class="wc-series-divider gh-outer">
+            <div class="gh-inner">
+                <img src="{{asset "images/ui-divider-thick.png"}}" alt="" class="wc-divider-img">
+            </div>
+        </div>
+    {{/match}}
+{{/if}}
