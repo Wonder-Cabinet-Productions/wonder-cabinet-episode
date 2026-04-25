@@ -3,14 +3,16 @@
     A configurable feed interruption that pulls the latest post from a specific series.
 
     Parameters:
-    - tagFilter:  Ghost filter string (e.g., "tag:newsletter+featured:true", "tag:luminous", "tag:hash-island-of-knowledge")
-    - badgeLabel: Text for the badge (e.g., "Latest Newsletter", "From Luminous", "Island of Knowledge")
-    - badgeUrl:   URL for the badge link (e.g., "/tag/newsletter/", "/tag/luminous/")
-    - ctaLabel:   Button text (e.g., "Read", "Listen", "Explore")
+    - tagFilter:   Ghost filter string (e.g., "tag:newsletter+featured:true", "tag:island-of-knowledge+featured:true")
+    - badgeLabel:  Text for the badge (e.g., "Latest Newsletter", "From Luminous", "Island of Knowledge")
+    - badgeUrl:    URL for the badge link (e.g., "/tag/newsletter/", "/tag/luminous/")
+                   NOTE: These URLs are coupled to Ghost tag slugs — if a slug changes, update here too.
     - accentClass: CSS modifier class for accent color (e.g., "wc-highlight--newsletter", "wc-highlight--luminous", "wc-highlight--series")
 
+    CTA button text is data-driven: posts tagged "newsletter" get "Read", all others get "View Episode".
+
     Usage in home.hbs:
-    {{> "components/highlight-zone" tagFilter="tag:luminous" badgeLabel="From Luminous" badgeUrl="/tag/luminous/" ctaLabel="Listen" accentClass="wc-highlight--luminous"}}
+    {{> "components/highlight-zone" tagFilter="tag:luminous+featured:true" badgeLabel="From Luminous" badgeUrl="/tag/luminous/" accentClass="wc-highlight--luminous"}}
 --}}
 
 {{#get "posts" include="tags,authors" filter=tagFilter limit="1"}}

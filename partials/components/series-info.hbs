@@ -4,11 +4,11 @@
     Used on both index.hbs and tag.hbs.
 
     Must be called within a {{#tag}} block context.
-    Skips rendering on the "newsletter" tag page.
+    Only renders on tags that represent separate podcast feeds (currently just Luminous).
 --}}
 
 {{#if description}}
-    {{#match slug "!=" "newsletter"}}
+    {{#match slug "=" "luminous"}}
         <section class="wc-series-info gh-outer">
             <div class="wc-series-info-inner gh-inner">
                 <div class="wc-series-services">

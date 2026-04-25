@@ -991,7 +991,7 @@ body {
     color: var(--iok-accent-text);
 }
 
-/* Luminous highlight — uses show token system for future flexibility */
+/* Luminous highlight — colors defined by --luminous-accent / --luminous-accent-text tokens */
 .wc-highlight--luminous .wc-episode-card-inner {
     border-color: var(--luminous-accent);
 }
@@ -2100,7 +2100,6 @@ body {
     width: 100%;
     height: auto;
     border-radius: 8px;
-    border: 2px solid var(--wc-green);
 }
 
 .wc-tag-hero-bg {

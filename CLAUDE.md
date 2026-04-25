@@ -68,24 +68,29 @@ Note: `--wc-dark-green` (`#043013`) and `--wc-green-text` (`#087834`) are theme-
 | `partials/components/footer.hbs` | Footer with cabinet illustration |
 | `partials/components/tag-header.hbs` | Tag archive hero |
 | `partials/components/bracket-button.hbs` | Reusable bracket button component |
-| `partials/components/newsletter-feature.hbs` | Featured newsletter card (injected in homepage feed) |
+| `partials/components/highlight-zone.hbs` | Configurable highlight card for series (newsletter, IoK, Luminous) |
+| `partials/components/post-header.hbs` | Non-audio post header with feature image and share button |
 | `partials/audio-player-hero.hbs` | WaveSurfer.js audio player hero |
 | `partials/podcast-services.hbs` | Apple/Spotify/YouTube Music links |
 
 ### Homepage Content Model
 
-The homepage (`home.hbs`) does **not** use Ghost's featured flag for the hero or episode list. The episode list shows the 4 most recent posts (excluding `tag:newsletter`) in chronological order.
+The homepage (`home.hbs`) shows the 5 most recent posts (excluding `tag:newsletter` and `tag:luminous`) in chronological order.
 
-**Featured newsletter card**: A `newsletter-feature.hbs` partial is injected after the 2nd episode in the list. It queries for a single post matching `tag:newsletter+featured:true`. If no post matches that filter, nothing renders — the card silently disappears and the episode list closes up. To show a newsletter callout on the homepage:
+**Highlight zones**: Three `highlight-zone.hbs` partials are injected between episode cards:
+- After 2nd episode: **Latest Newsletter** (`tag:newsletter+featured:true`)
+- After 3rd episode: **Island of Knowledge** (`tag:island-of-knowledge+featured:true`)
+- After 4th episode: **From Luminous** (`tag:luminous+featured:true`)
 
-1. Tag the post with `newsletter`
+Each zone queries for one featured post matching its filter. If no post matches, the zone silently disappears. To show a highlight zone:
+
+1. Tag the post with the appropriate tag (e.g., `newsletter`, `island-of-knowledge`, `luminous`)
 2. Mark it as **Featured** in Ghost Admin
-3. Only one should be featured at a time (the query uses `limit="1"`)
+3. Only one per tag should be featured at a time (each query uses `limit="1"`)
 
-The card renders using the same `list-item.hbs` partial with the `isNewsletterFeature=true` flag, which adds:
-- A `wc-episode-card--newsletter` CSS class
-- A "Latest Newsletter" badge instead of the generic "Featured" badge
-- A "Read" button instead of "View Episode"
+CTA text is data-driven: posts tagged `newsletter` show "Read", all others show "View Episode" with a play icon. Badge labels link to the corresponding tag page.
+
+**Important**: The `badgeUrl` values in `home.hbs` are hardcoded to tag slugs (`/tag/newsletter/`, `/tag/island-of-knowledge/`, `/tag/luminous/`). If tag slugs change in Ghost Admin, these must be updated.
 
 ### Audio Player
 
