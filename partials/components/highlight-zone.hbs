@@ -5,18 +5,19 @@
     Parameters:
     - tagFilter:  Ghost filter string (e.g., "tag:newsletter+featured:true", "tag:luminous", "tag:hash-island-of-knowledge")
     - badgeLabel: Text for the badge (e.g., "Latest Newsletter", "From Luminous", "Island of Knowledge")
+    - badgeUrl:   URL for the badge link (e.g., "/tag/newsletter/", "/tag/luminous/")
     - ctaLabel:   Button text (e.g., "Read", "Listen", "Explore")
     - accentClass: CSS modifier class for accent color (e.g., "wc-highlight--newsletter", "wc-highlight--luminous", "wc-highlight--series")
 
     Usage in home.hbs:
-    {{> "components/highlight-zone" tagFilter="tag:luminous" badgeLabel="From Luminous" ctaLabel="Listen" accentClass="wc-highlight--luminous"}}
+    {{> "components/highlight-zone" tagFilter="tag:luminous" badgeLabel="From Luminous" badgeUrl="/tag/luminous/" ctaLabel="Listen" accentClass="wc-highlight--luminous"}}
 --}}
 
 {{#get "posts" include="tags,authors" filter=tagFilter limit="1"}}
     {{#foreach posts}}
-        <article class="gh-list-item wc-episode-card wc-highlight-zone {{../accentClass}} {{post_class}}">
+        <article class="gh-list-item wc-episode-card wc-highlight-zone {{../../accentClass}} {{post_class}}">
+            <a class="wc-highlight-badge" href="{{../../badgeUrl}}">{{../../badgeLabel}}</a>
             <a class="gh-list-item-inner wc-episode-card-inner wc-highlight-zone-inner" href="{{url}}">
-                <span class="wc-highlight-badge">{{../badgeLabel}}</span>
                 {{#if feature_image}}
                     <figure class="gh-list-item-image wc-episode-card-image">
                         <img
@@ -34,11 +35,12 @@
                     <h3 class="gh-list-item-title wc-episode-card-title">{{title}}</h3>
                     <p class="gh-list-item-excerpt wc-episode-card-excerpt">{{excerpt}}</p>
                     <span class="wc-episode-card-btn wc-highlight-zone-btn">
-                        {{#if ../ctaLabel}}
-                            {{../ctaLabel}}
+                        {{#has tag="newsletter"}}
+                            Read
                         {{else}}
-                            View
-                        {{/if}}
+                            <img src="{{asset "images/play-white.svg"}}" alt="" class="wc-episode-card-btn-icon">
+                            View Episode
+                        {{/has}}
                     </span>
                 </div>
             </a>

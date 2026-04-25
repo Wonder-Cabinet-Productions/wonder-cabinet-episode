@@ -12,9 +12,13 @@
     --wc-cream: #FFFAEB;
     --wc-dark-green: #043013;
 
+    /* Brand Colors — Island of Knowledge (derived from theislandofknowledge.com) */
+    --iok-accent: #b6d0d8;
+    --iok-accent-text: #1a3a44;
+
     /* Brand Colors — Luminous (placeholder until brand is finalized) */
     --luminous-accent: #D4A843;
-    --luminous-accent-text: #8B6914;
+    --luminous-accent-text: var(--wc-black);
 
     /* Show-Agnostic Tokens
        Components use these instead of --wc-* directly.
@@ -948,6 +952,12 @@ body {
     letter-spacing: 0.08em;
     padding: 6px 12px;
     z-index: 10;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.wc-highlight-badge:hover {
+    opacity: 0.85;
 }
 
 /* Newsletter highlight — cream accent */
@@ -965,15 +975,20 @@ body {
     color: var(--wc-black);
 }
 
-/* Special series highlight — green with tinted background */
+/* Island of Knowledge highlight — steel blue from IoK brand */
 .wc-highlight--series .wc-episode-card-inner {
-    border-color: var(--wc-green);
-    background-color: rgba(16, 165, 68, 0.08);
+    border-color: var(--iok-accent);
+    background-color: rgba(182, 208, 216, 0.08);
 }
 
 .wc-highlight--series .wc-highlight-badge {
-    background-color: var(--wc-green);
-    color: var(--wc-cream);
+    background-color: var(--iok-accent);
+    color: var(--iok-accent-text);
+}
+
+.wc-highlight--series .wc-highlight-zone-btn {
+    background-color: var(--iok-accent);
+    color: var(--iok-accent-text);
 }
 
 /* Luminous highlight — uses show token system for future flexibility */
@@ -2633,6 +2648,27 @@ body {
     max-width: 600px;
     margin: 0;
     line-height: 1.5;
+}
+
+.wc-post-header-share {
+    display: inline-block;
+    margin-top: var(--wc-spacing-md);
+    padding: 8px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--wc-cream);
+    text-decoration: none;
+    border: 1px solid rgba(255, 250, 235, 0.4);
+    border-radius: 2px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.wc-post-header-share:hover {
+    border-color: var(--wc-cream);
+    background-color: rgba(255, 250, 235, 0.08);
 }
 
 /* Post Header — Mobile Responsive */

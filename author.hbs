@@ -1,18 +1,18 @@
 {{!< default}}
 
 <main id="main-content" class="gh-main wc-main">
-    {{#author}}
+    {{#primary_author}}
         {{> "components/author-header"}}
-    {{/author}}
+    {{/primary_author}}
 
     {{!-- Episodes Section Header --}}
-    {{#author}}
+    {{#primary_author}}
     <section class="wc-episodes-header gh-outer">
         <div class="gh-inner">
             <h2 class="wc-section-heading">Episodes by {{name}}{{#if ../pagination.total}} <span class="wc-episode-count">({{../pagination.total}} available)</span>{{/if}}</h2>
         </div>
     </section>
-    {{/author}}
+    {{/primary_author}}
 
     {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
 

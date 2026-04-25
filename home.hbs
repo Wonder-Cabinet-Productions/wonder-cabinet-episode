@@ -40,7 +40,7 @@
                             {{> "components/highlight-zone"
                                 tagFilter="tag:newsletter+featured:true"
                                 badgeLabel="Latest Newsletter"
-                                ctaLabel="Read"
+                                badgeUrl="/tag/newsletter/"
                                 accentClass="wc-highlight--newsletter"
                             }}
                         {{/match}}
@@ -48,9 +48,9 @@
                         {{!-- Highlight Zone 2: Special Series (after 3rd episode) --}}
                         {{#match @index "==" 2}}
                             {{> "components/highlight-zone"
-                                tagFilter="tag:island-of-knowledge"
+                                tagFilter="tag:island-of-knowledge+featured:true"
                                 badgeLabel="Island of Knowledge"
-                                ctaLabel="Explore"
+                                badgeUrl="/tag/island-of-knowledge/"
                                 accentClass="wc-highlight--series"
                             }}
                         {{/match}}
@@ -58,9 +58,9 @@
                         {{!-- Highlight Zone 3: Latest Luminous (after 4th episode) --}}
                         {{#match @index "==" 3}}
                             {{> "components/highlight-zone"
-                                tagFilter="tag:luminous"
+                                tagFilter="tag:luminous+featured:true"
                                 badgeLabel="From Luminous"
-                                ctaLabel="Listen"
+                                badgeUrl="/tag/luminous/"
                                 accentClass="wc-highlight--luminous"
                             }}
                         {{/match}}
