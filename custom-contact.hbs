@@ -22,7 +22,7 @@
             {{/if}}
 
             {{!-- Native contact form → Cloudflare Worker --}}
-            <form id="wc-contact-form" class="wc-contact-form" novalidate>
+            <form id="wc-contact-form" class="wc-contact-form">
 
                 {{!-- Honeypot: invisible to humans, bots auto-fill it --}}
                 <div style="position:absolute;left:-9999px;" aria-hidden="true">
@@ -147,6 +147,9 @@
             body: JSON.stringify(data),
         })
         .then(function(res) {
+            if (!res.ok) {
+                throw new Error('Server responded with ' + res.status);
+            }
             return res.json().then(function(body) {
                 return { status: res.status, body: body };
             });
@@ -162,8 +165,9 @@
                 showError(result.body.error || 'Something went wrong. Please try again.');
             }
         })
-        .catch(function() {
-            showError('Network error. Please check your connection and try again.');
+        .catch(function(err) {
+            console.error('Wonder Cabinet contact form error:', err);
+            showError('Something went wrong submitting the form. Please try again, or email us directly.');
         });
     });
 

@@ -5,24 +5,44 @@
    ============================================ */
 
 :root {
-    /* Brand Colors */
+    /* Brand Colors — Wonder Cabinet */
     --wc-green: #10A544;
     --wc-green-text: #087834; /* WCAG AA compliant green for text on cream (4.5:1+) */
     --wc-black: #000000;
     --wc-cream: #FFFAEB;
     --wc-dark-green: #043013;
 
+    /* Brand Colors — Island of Knowledge (derived from theislandofknowledge.com) */
+    --iok-accent: #b6d0d8;
+    --iok-accent-text: #1a3a44;
+
+    /* Brand Colors — Luminous (placeholder until brand is finalized) */
+    --luminous-accent: #D4A843;
+    --luminous-accent-text: var(--wc-black);
+
+    /* Show-Agnostic Tokens
+       Components use these instead of --wc-* directly.
+       Default to Wonder Cabinet values; override per-show via
+       body class, data attribute, or tag-specific context. */
+    --show-accent: var(--wc-green);
+    --show-accent-text: var(--wc-green-text);
+    --show-accent-dark: var(--wc-dark-green);
+
     /* Typography */
     --font-heading: 'Jost', sans-serif;
     --font-body: 'EB Garamond', Georgia, serif;
     --font-sans: 'Jost', sans-serif;
 
-    /* Spacing */
+    /* Spacing — component level */
     --wc-spacing-xs: 8px;
     --wc-spacing-sm: 16px;
     --wc-spacing-md: 24px;
     --wc-spacing-lg: 40px;
     --wc-spacing-xl: 64px;
+
+    /* Spacing — section level (vertical rhythm between page zones) */
+    --wc-section-gap: 64px;       /* Between major page sections */
+    --wc-subsection-gap: 40px;    /* Between sub-sections (e.g., header → content) */
 
     /* Border radius */
     --wc-radius: 0;
@@ -337,11 +357,14 @@ body {
     .wc-burger::after {
         transition: none;
     }
+
+    .wc-mobile-menu {
+        transition: none;
+    }
 }
 
 /* Mobile menu */
 .wc-mobile-menu {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -350,6 +373,9 @@ body {
     background-color: var(--wc-black);
     z-index: 999;
     padding: 80px var(--wc-spacing-md) var(--wc-spacing-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
 .wc-mobile-nav {
@@ -394,7 +420,8 @@ body {
 
 /* Mobile menu open state */
 .is-head-open .wc-mobile-menu {
-    display: block;
+    opacity: 1;
+    visibility: visible;
 }
 
 .is-head-open .wc-burger::before {
@@ -466,7 +493,7 @@ body {
     right: 0;
     bottom: 0;
     background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
-    background-size: 687px 687px; /* Figma spec: 687x687px */
+    background-size: clamp(400px, 55vw, 687px) clamp(400px, 55vw, 687px);
     opacity: 0.45; /* Figma spec */
     pointer-events: none;
 }
@@ -510,8 +537,9 @@ body {
 }
 
 .wc-hero-tagline {
-    font-family: var(--font-heading);
+    font-family: var(--font-body);
     font-size: 2.3rem; /* Figma: 23px */
+    font-style: italic;
     color: var(--wc-cream);
     margin: 0;
 }
@@ -652,7 +680,16 @@ body {
 
     .wc-podcast-service-label,
     .wc-podcast-service-name {
-        display: none;
+        /* Visually hidden but accessible to screen readers */
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 }
 
@@ -686,10 +723,9 @@ body {
     text-decoration: none;
 }
 
-/* Featured post styling */
+/* Featured post styling — thicker border, no glow (flat aesthetic) */
 .wc-episode-card.featured .wc-episode-card-inner {
     border-width: 3px;
-    box-shadow: 0 0 20px rgba(16, 165, 68, 0.3);
 }
 
 .wc-featured-badge {
@@ -788,9 +824,9 @@ body {
     margin-top: 10px;
     margin-bottom: var(--wc-spacing-md); /* 24px gap before button */
     overflow-y: hidden;
-    font-family: var(--font-heading);
-    font-size: 1.5rem; /* Figma: 15px */
-    line-height: 1.5;
+    font-family: var(--font-body);
+    font-size: 1.6rem; /* Slightly larger for serif readability */
+    line-height: 1.55;
     color: var(--wc-cream);
     -webkit-line-clamp: 3; /* Figma shows ~3 lines */
     -webkit-box-orient: vertical;
@@ -800,7 +836,7 @@ body {
 .wc-episode-card-btn {
     display: inline-flex;
     align-items: center;
-    gap: 25px; /* Per wireframe icon-to-text spacing */
+    gap: 12px; /* Tighter icon-label pairing */
     align-self: flex-start;
     margin-top: auto;
     min-height: 45px;
@@ -859,7 +895,7 @@ body {
     }
 
     .wc-episode-card-excerpt {
-        font-size: 1.4rem; /* Proportional mobile reduction */
+        font-size: 1.5rem; /* Proportional mobile reduction for serif */
     }
 
     .wc-episode-card-btn {
@@ -888,12 +924,108 @@ body {
 }
 
 /* ============================================
+   Highlight Zones
+   Configurable feed interruptions for cross-promoting
+   newsletters, special series, and sibling podcasts.
+   Each zone reuses the episode card structure with
+   accent-specific visual differentiation.
+   ============================================ */
+
+.wc-highlight-zone {
+    position: relative;
+}
+
+.wc-highlight-zone-inner {
+    flex-direction: row-reverse !important; /* Image on right to differentiate from episode cards */
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.wc-highlight-badge {
+    position: absolute;
+    top: -1px;
+    left: 20px;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    z-index: 10;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.wc-highlight-badge:hover {
+    opacity: 0.85;
+}
+
+/* Newsletter highlight — cream accent */
+.wc-highlight--newsletter .wc-episode-card-inner {
+    border-color: var(--wc-cream);
+}
+
+.wc-highlight--newsletter .wc-highlight-badge {
+    background-color: var(--wc-cream);
+    color: var(--wc-black);
+}
+
+.wc-highlight--newsletter .wc-highlight-zone-btn {
+    background-color: var(--wc-cream);
+    color: var(--wc-black);
+}
+
+/* Island of Knowledge highlight — steel blue from IoK brand */
+.wc-highlight--series .wc-episode-card-inner {
+    border-color: var(--iok-accent);
+    background-color: rgba(182, 208, 216, 0.08);
+}
+
+.wc-highlight--series .wc-highlight-badge {
+    background-color: var(--iok-accent);
+    color: var(--iok-accent-text);
+}
+
+.wc-highlight--series .wc-highlight-zone-btn {
+    background-color: var(--iok-accent);
+    color: var(--iok-accent-text);
+}
+
+/* Luminous highlight — colors defined by --luminous-accent / --luminous-accent-text tokens */
+.wc-highlight--luminous .wc-episode-card-inner {
+    border-color: var(--luminous-accent);
+}
+
+.wc-highlight--luminous .wc-highlight-badge {
+    background-color: var(--luminous-accent);
+    color: var(--luminous-accent-text);
+}
+
+.wc-highlight--luminous .wc-highlight-zone-btn {
+    background-color: var(--luminous-accent);
+    color: var(--luminous-accent-text);
+}
+
+/* Mobile: highlight zones stack like regular cards */
+@media (max-width: 767px) {
+    .wc-highlight-zone-inner {
+        flex-direction: column !important;
+    }
+
+    .wc-highlight-badge {
+        left: 15px;
+        font-size: 1rem;
+        padding: 5px 10px;
+    }
+}
+
+/* ============================================
    Email CTA Section
    ============================================ */
 
 .wc-cta {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) 0 var(--wc-spacing-md); /* Reduced bottom: flows into footer */
+    padding: var(--wc-section-gap) 0 var(--wc-spacing-md); /* Reduced bottom: flows into footer */
 }
 
 .wc-cta-inner {
@@ -977,7 +1109,7 @@ body {
 
 .wc-footer {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-lg) 0;
+    padding: var(--wc-subsection-gap) 0;
 }
 
 .wc-footer-inner {
@@ -1165,11 +1297,15 @@ body {
     pointer-events: none;
 }
 
-/* Green player card — elevated above galaxy */
+/* Green player card — elevated above galaxy.
+   INTENTIONAL EXCEPTION: border-radius: 16px departs from --wc-radius: 0
+   used elsewhere. The rounded card creates a "physical device" feel —
+   like a record player or radio sitting on the page. All internal
+   radii within the player use 12px for consistency. */
 .wc-audio-hero {
     position: relative;
     z-index: 1;
-    background: var(--wc-green);
+    background: var(--show-accent);
     padding: 2rem 15px;
     border-radius: 16px;
     overflow: hidden;
@@ -1205,11 +1341,12 @@ body {
 
 .wc-audio-hero-date {
     font-family: var(--font-heading);
-    font-size: 1.1rem; /* Matches episode card date */
+    font-size: 1.4rem; /* Bumped from 1.1rem — WCAG AA-large (3:1) at this size */
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 250, 235, 0.7);
+    color: var(--wc-cream);
+    opacity: 0.9;
     margin-bottom: 0.5rem;
 }
 
@@ -1287,7 +1424,7 @@ body {
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 8px;
+    border-radius: 12px;
     background: rgba(255, 250, 235, 0.25);
     color: var(--wc-cream);
     transition: all 0.2s ease;
@@ -1312,7 +1449,7 @@ body {
 /* Waveform section */
 .wc-audio-waveform-section {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 1rem 1.5rem;
 }
 
@@ -1350,7 +1487,7 @@ body {
 
     .wc-audio-hero {
         padding: 1.5rem 15px;
-        border-radius: 12px;
+        border-radius: 14px; /* Slightly reduced from desktop 16px, still rounded */
     }
 
     .wc-audio-hero-inner {
@@ -1359,8 +1496,10 @@ body {
     }
 
     .wc-audio-hero-artwork img {
-        width: 150px;
-        height: 150px;
+        width: 100%;
+        height: auto;
+        aspect-ratio: auto;
+        border-radius: 8px;
     }
 
     .wc-audio-hero-title {
@@ -1403,7 +1542,7 @@ body {
 
 .wc-episode-notes {
     background-color: var(--wc-cream);
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-section-gap) 0;
 }
 
 .wc-episode-notes-inner {
@@ -1895,7 +2034,7 @@ body {
    ============================================ */
 
 .wc-comments {
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-section-gap) 0;
     background-color: var(--wc-cream);
 }
 
@@ -1961,7 +2100,6 @@ body {
     width: 100%;
     height: auto;
     border-radius: 8px;
-    border: 2px solid var(--wc-green);
 }
 
 .wc-tag-hero-bg {
@@ -2215,7 +2353,7 @@ body {
 
 .gh-header {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-section-gap) 0;
     text-align: center;
     border: none !important;
     margin-bottom: 0 !important;
@@ -2285,7 +2423,7 @@ body {
 
 .wc-page-header {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-section-gap) 0;
     text-align: center;
 }
 
@@ -2307,6 +2445,15 @@ body {
 .wc-page-feature img {
     width: 100%;
     height: auto;
+}
+
+.wc-page-feature figcaption {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: rgba(255, 250, 235, 0.6);
+    text-align: center;
+    margin-top: var(--wc-spacing-xs);
 }
 
 .wc-page-content {
@@ -2425,17 +2572,24 @@ body {
 .wc-post-header-feature {
     max-width: 1100px;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
     margin: 0 auto var(--wc-spacing-xl);
 }
 
 .wc-post-header-feature img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     object-position: center;
     display: block;
+}
+
+.wc-post-header-feature figcaption {
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: rgba(255, 250, 235, 0.6);
+    text-align: center;
+    margin-top: var(--wc-spacing-xs);
 }
 
 .wc-post-header-date {
@@ -2493,6 +2647,27 @@ body {
     max-width: 600px;
     margin: 0;
     line-height: 1.5;
+}
+
+.wc-post-header-share {
+    display: inline-block;
+    margin-top: var(--wc-spacing-md);
+    padding: 8px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--wc-cream);
+    text-decoration: none;
+    border: 1px solid rgba(255, 250, 235, 0.4);
+    border-radius: 2px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.wc-post-header-share:hover {
+    border-color: var(--wc-cream);
+    background-color: rgba(255, 250, 235, 0.08);
 }
 
 /* Post Header — Mobile Responsive */
@@ -2653,6 +2828,17 @@ body {
 
 .wc-transcript-inner {
     padding: var(--wc-spacing-md) 0;
+}
+
+/* Transcript Toggle — reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .wc-transcript-content {
+        transition: none;
+    }
+
+    .wc-transcript-toggle-icon {
+        transition: none;
+    }
 }
 
 /* Transcript Toggle Mobile Responsive */
@@ -2947,7 +3133,7 @@ body {
 
 .wc-author-section {
     background-color: var(--wc-black);
-    padding: var(--wc-spacing-xl) 0;
+    padding: var(--wc-section-gap) 0;
 }
 
 .wc-author-section-inner {
@@ -3115,6 +3301,7 @@ body {
     .wc-author-grid--multi {
         grid-template-columns: 1fr;
         grid-template-rows: none;
+        row-gap: var(--wc-spacing-xl);
     }
 
     .wc-author-grid--multi > .wc-author-card {

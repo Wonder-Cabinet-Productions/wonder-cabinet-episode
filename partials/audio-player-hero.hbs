@@ -13,7 +13,7 @@
             {{!-- Episode artwork --}}
             <div class="wc-audio-hero-artwork">
                 {{#if feature_image}}
-                    <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                    <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
                 {{else}}
                     <img src="{{asset "images/Show_Cover-Wonder-Cabinet.png"}}" alt="Wonder Cabinet">
                 {{/if}}
@@ -60,6 +60,9 @@
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>
                         </a>
                         {{/if}}
+                        <a href="#/share" class="wc-service-icon" aria-label="Share this episode" title="Share">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11a2 2 0 01-2 2H6a2 2 0 01-2-2V10a2 2 0 012-2h3v2H6v11h12V10h-3V8h3a2 2 0 012 2z"/></svg>
+                        </a>
                     </div>
                 </div>
             </div>

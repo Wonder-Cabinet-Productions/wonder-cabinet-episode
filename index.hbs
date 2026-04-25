@@ -5,41 +5,7 @@
         {{> "components/tag-header"}}
 
         {{!-- Series Info Zone (podcast services + divider) --}}
-        {{#if description}}
-            <section class="wc-series-info gh-outer">
-                <div class="wc-series-info-inner gh-inner">
-                    <div class="wc-series-services">
-                        {{#if @custom.apple_podcasts_link}}
-                            <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
-                                {{> "icons/apple"}}
-                                <span class="wc-podcast-service-label">Listen on</span>
-                                <span class="wc-podcast-service-name">Apple Podcasts</span>
-                            </a>
-                        {{/if}}
-                        {{#if @custom.spotify_link}}
-                            <a href="{{@custom.spotify_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
-                                {{> "icons/spotify"}}
-                                <span class="wc-podcast-service-label">Listen on</span>
-                                <span class="wc-podcast-service-name">Spotify</span>
-                            </a>
-                        {{/if}}
-                        {{#if @custom.youtube_music_link}}
-                            <a href="{{@custom.youtube_music_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service">
-                                {{> "icons/youtube-music"}}
-                                <span class="wc-podcast-service-label">Listen on</span>
-                                <span class="wc-podcast-service-name">YouTube Music</span>
-                            </a>
-                        {{/if}}
-                    </div>
-                </div>
-            </section>
-
-            <div class="wc-series-divider gh-outer">
-                <div class="gh-inner">
-                    <img src="{{asset "images/ui-divider-thick.png"}}" alt="" class="wc-divider-img">
-                </div>
-            </div>
-        {{/if}}
+        {{> "components/series-info"}}
     {{/tag}}
 
     {{!-- Section Header --}}

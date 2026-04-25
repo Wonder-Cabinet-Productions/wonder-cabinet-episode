@@ -27,16 +27,42 @@
         </div>
     </section>
 
-    {{!-- Episodes with newsletter card injected after the 2nd item --}}
+    {{!-- Episodes with highlight zones injected between items --}}
     <div class="gh-list simple gh-outer">
         <div class="gh-list-inner gh-inner">
             <div class="gh-list-feed">
-                {{#get "posts" include="tags,authors" filter="tag:-newsletter" limit="5"}}
+                {{#get "posts" include="tags,authors" filter="tag:-newsletter+tag:-luminous" limit="5"}}
                     {{#foreach posts}}
                         {{> components/list-item showExcerpt=true showPublishedAt=true}}
+
+                        {{!-- Highlight Zone 1: Latest Newsletter (after 2nd episode) --}}
                         {{#match @index "==" 1}}
-                            {{!-- Newsletter card after 2nd episode --}}
-                            {{> "components/newsletter-feature"}}
+                            {{> "components/highlight-zone"
+                                tagFilter="tag:newsletter+featured:true"
+                                badgeLabel="Latest Newsletter"
+                                badgeUrl="/tag/newsletter/"
+                                accentClass="wc-highlight--newsletter"
+                            }}
+                        {{/match}}
+
+                        {{!-- Highlight Zone 2: Special Series (after 3rd episode) --}}
+                        {{#match @index "==" 2}}
+                            {{> "components/highlight-zone"
+                                tagFilter="tag:island-of-knowledge+featured:true"
+                                badgeLabel="Island of Knowledge"
+                                badgeUrl="/tag/island-of-knowledge/"
+                                accentClass="wc-highlight--series"
+                            }}
+                        {{/match}}
+
+                        {{!-- Highlight Zone 3: Latest Luminous (after 4th episode) --}}
+                        {{#match @index "==" 3}}
+                            {{> "components/highlight-zone"
+                                tagFilter="tag:luminous+featured:true"
+                                badgeLabel="From Luminous"
+                                badgeUrl="/tag/luminous/"
+                                accentClass="wc-highlight--luminous"
+                            }}
                         {{/match}}
                     {{/foreach}}
                 {{/get}}

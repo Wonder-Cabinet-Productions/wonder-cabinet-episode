@@ -129,6 +129,41 @@
     }
 
     /**
+     * Downsample raw peaks to a target number of bars using RMS averaging.
+     * Raw peaks from audiowaveform are often 10,000-100,000+ integer values;
+     * WaveSurfer renders ~200 bars, so max-based downsampling makes every bar
+     * clip to full height. RMS preserves the perceived loudness dynamics.
+     * Also normalizes integer values to the -1.0..1.0 range WaveSurfer expects.
+     */
+    function downsamplePeaks(rawPeaks, targetBars) {
+        // Find max absolute value for normalization (handles integer peaks)
+        var maxVal = 0;
+        for (var i = 0; i < rawPeaks.length; i++) {
+            var abs = Math.abs(rawPeaks[i]);
+            if (abs > maxVal) maxVal = abs;
+        }
+        if (maxVal === 0) maxVal = 1;
+
+        var binSize = Math.floor(rawPeaks.length / targetBars);
+        if (binSize < 1) binSize = 1;
+
+        var result = [];
+        for (var b = 0; b < targetBars; b++) {
+            var start = b * binSize;
+            var end = Math.min(start + binSize, rawPeaks.length);
+            var sumSquares = 0;
+            var count = 0;
+            for (var j = start; j < end; j++) {
+                var normalized = rawPeaks[j] / maxVal;
+                sumSquares += normalized * normalized;
+                count++;
+            }
+            result.push(count > 0 ? Math.sqrt(sumSquares / count) : 0);
+        }
+        return result;
+    }
+
+    /**
      * Generate an array of placeholder waveform peaks.
      * Uses a sine-based pattern with variation for a natural look
      * while WaveSurfer waits for real peaks data to load.
@@ -226,7 +261,9 @@
             fetch(peaksUrl)
                 .then(function(r) { return r.json(); })
                 .then(function(peaks) {
-                    wavesurfer.load(audioUrl, peaks.data ? [peaks.data] : [peaks]);
+                    var rawPeaks = peaks.data || peaks;
+                    var processed = downsamplePeaks(rawPeaks, 200);
+                    wavesurfer.load(audioUrl, [processed]);
                 })
                 .catch(function(err) {
                     console.log('Wonder Cabinet: Using placeholder waveform (peaks not available)');
