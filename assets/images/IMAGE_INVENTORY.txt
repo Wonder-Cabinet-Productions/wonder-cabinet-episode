@@ -1,0 +1,373 @@
+================================================================================
+WONDER CABINET — IMAGE ASSET BRIEF FOR DESIGNER
+================================================================================
+Live reference site : https://wondercabinetproductions.com
+Generated           : 2026-05-05
+
+
+READ THIS FIRST
+---------------
+We're cloning and modifying the website homepage, AND we want a complete
+brand kit that covers podcast directories (Apple, Spotify, etc.) and
+general-purpose logo use (press, social, merch, partner decks).
+
+The list is sorted so the images that matter most are at the top:
+
+  Tier 0 — Brand kit deliverables (logos in standard variants)
+  Tier 0.5 — Podcast directory assets (Apple / Spotify / RSS feed specs)
+  Tier 1 — Homepage essentials (the live site we're redesigning)
+  Tier 2 — Bracket button corners (planned site-wide rollout)
+  Tier 3 — Other functional assets
+  Tier 4 — Skip these (auto-generated / vendor / orphaned)
+
+For each asset you'll see what it is, where it's used, and the exact size
+and format we need back. You do NOT need to know anything about Ghost
+(the CMS) to design these. If you're curious about why some files live in
+this folder vs. get uploaded elsewhere, see the "Behind the scenes"
+appendix at the bottom — optional reading.
+
+
+================================================================================
+TIER 0 — BRAND KIT DELIVERABLES  (general-purpose logo system)
+================================================================================
+These don't yet exist as separate files in the directory — only the
+"primary mark on dark background" version does (item [5] in Tier 1).
+We need the full brand kit so the logo works across press, social, merch,
+partner decks, slide templates, email signatures, etc.
+
+For every variant below, deliver BOTH:
+  • Vector master  : SVG (preferred) or layered AI/Figma source
+  • Raster export  : PNG at 2048 px on the longest edge, transparent bg
+                     (we'll downscale as needed)
+
+
+[A] PRIMARY MARK — full lockup (icon + wordmark together)
+    Variants needed:
+      • On dark background  (the version we have today, item [5])
+      • On light background  (dark or full-color version of the mark)
+      • Monochrome black     (single-color black, for B&W contexts)
+      • Monochrome white     (single-color white, for printing on photos)
+    Aspect : Square or near-square is fine — match the existing 1:1 ratio
+             of the current mark unless redesigning.
+
+[B] WORDMARK ONLY  (typography lockup, no icon)
+    Variants needed:
+      • Dark background
+      • Light background
+      • Monochrome black
+      • Monochrome white
+    Aspect : Wide horizontal — the existing wordmark is ~3.17 : 1 (item [1]).
+             Use that ratio or refine.
+
+[C] ICON / SUBMARK  (the spiral / cabinet symbol on its own)
+    Variants needed:
+      • Dark bg, light bg, mono black, mono white
+    Aspect : Square (1:1). Designed to read at small sizes — favicon,
+             social avatars, app icons.
+    Why this matters: This is the version that becomes the favicon, the
+    Twitter / Bluesky avatar, the YouTube channel icon, etc.
+
+[D] HORIZONTAL LOCKUP  (icon left, wordmark right, on one line)
+    Variants needed:
+      • Dark bg, light bg, mono black, mono white
+    Aspect : Wide — used in headers, email signatures, partner sponsor
+             rows where vertical space is tight.
+
+[E] STACKED LOCKUP  (icon on top, wordmark below)
+    Variants needed:
+      • Dark bg, light bg, mono black, mono white
+    Aspect : Squarish — used for posters, merch, large hero placements.
+
+CLEAR SPACE & MIN SIZE
+    Document the minimum allowable size for each variant (typically the
+    icon should never appear smaller than 24 px tall on screen, and the
+    full wordmark not smaller than 120 px wide). Document the minimum
+    clear space around each lockup (typically equal to the height of the
+    icon's bounding box or the cap-height of the wordmark).
+
+DELIVERABLE FORMAT
+    A single Brand Kit folder (Figma file or zip) organized as:
+      /01-primary-mark/      [A] in 4 variants × 2 formats
+      /02-wordmark/          [B] in 4 variants × 2 formats
+      /03-icon/              [C] in 4 variants × 2 formats
+      /04-horizontal/        [D] in 4 variants × 2 formats
+      /05-stacked/           [E] in 4 variants × 2 formats
+      /usage-guide.pdf       clear space, min size, color palette,
+                             do's and don'ts
+
+
+================================================================================
+TIER 0.5 — PODCAST DIRECTORY ASSETS  (Apple, Spotify, RSS feed)
+================================================================================
+Wonder Cabinet is distributed as a podcast on Apple Podcasts, Spotify,
+YouTube Music, and via RSS to any other podcast app. Each platform has
+specific image requirements. The current Show_Cover-Wonder-Cabinet.png
+(item [13] in Tier 3) covers the basic submission spec, but we'd like
+the full kit refreshed.
+
+
+[F] SHOW COVER ART — the primary podcast artwork
+    Format   : PNG or JPG, RGB, no alpha
+    Size     : 3000 x 3000 px (square, 1:1)
+    Min spec : 1400 x 1400 (Apple); 3000 x 3000 strongly preferred
+    Notes    : This is the single most important podcast asset — it's
+               what listeners see in their podcast app's library, search
+               results, and now-playing screen. Must be legible at
+               55 x 55 px (the smallest size Apple displays it). Avoid
+               small text. No "explicit" / "new episode" badges (Apple
+               rejects these).
+               Replaces the current Show_Cover-Wonder-Cabinet.png.
+
+[G] EPISODE-LEVEL ARTWORK TEMPLATE
+    Format   : PSD / Figma component + sample PNG export
+    Size     : 3000 x 3000 px (same as show cover)
+    Notes    : A template that producers can drop episode-specific
+               imagery / titles into for each new episode's artwork.
+               Should leave a clear "title zone" and use consistent
+               brand framing (border, color block, etc.) so episodes
+               feel like a series.
+
+
+FUTURE
+
+[H] SOCIAL AUDIOGRAM / PROMO VIDEO TEMPLATE
+    Format   : Figma / After Effects / PSD source
+    Size     : Square 1080 x 1080 (Instagram, Bluesky)
+               Vertical 1080 x 1920 (Instagram Reels, TikTok, Stories)
+               Horizontal 1920 x 1080 (Twitter video, embeds)
+    Notes    : Branded background + waveform area + title/quote zone.
+               Used to share episode clips on social.
+
+[I] YOUTUBE EPISODE THUMBNAIL TEMPLATE
+    Format   : Figma / PSD source + sample PNG export
+    Size     : 1280 x 720 px (16:9), JPG or PNG
+    Notes    : We publish full episodes to a shared YouTube channel
+               (co-owned with the parent Wonder Cabinet brand), so the
+               channel icon and channel banner are NOT this project's
+               deliverable. We DO need a Wonder-Cabinet-branded episode
+               thumbnail template that producers can drop episode title /
+               guest name / image into for each new upload. Should feel
+               consistent with the podcast cover artwork [F] and the
+               social audiogram template [H] so the show reads as a unit
+               across YouTube, podcast apps, and social.
+
+
+================================================================================
+TIER 1 — HOMEPAGE ESSENTIALS  (the things we're actively redesigning)
+================================================================================
+Every asset in this tier is visible at https://wondercabinetproductions.com/.
+These are the ones to focus on first.
+
+
+[1] WonderCabinet-title.png       — THE WORDMARK
+    Where    : Big "Wonder Cabinet" hand-lettered title in the hero,
+               directly below "Welcome to" on the homepage.
+    Size     : 2400 x 758 px  (transparent PNG)
+    Notes    : Hand-lettered/illustrated wordmark — the brand's signature.
+               Preserve the ~3.17 : 1 aspect ratio. Transparent background.
+    See also : This is the "dark background" variant of [B] (wordmark)
+               in Tier 0. The Tier 0 brand kit will produce this asset
+               along with the light-bg, mono-black, and mono-white
+               siblings of the same wordmark.
+
+
+[2] bg-galaxy-spiral-1200w@2x.png — GALAXY BACKGROUND
+    Where    : Faint galaxy spiral behind the hero on the homepage
+               (also appears behind the audio player on episode pages and
+               on tag pages, but homepage is where we'll see it most).
+               Rendered at 0.45 opacity over a black background.
+    Size     : 2400 x 2400 px  (transparent PNG)
+    Notes    : Designed to render at roughly 400–700 px wide on screen,
+               hence the 2x retina master. Transparent background — the
+               page bg shows through. Keep it square.
+
+
+[3] ui-wave-divider-light.svg     — TRIPLE-WAVE DIVIDER
+    Where    : The triple wavy green line directly under the navbar at
+               the top of the homepage. Only on the homepage.
+    Size     : SVG, viewBox 1200 x 152
+    Notes    : Three stroked lines, brand green (#10a544), each with a
+               drop-shadow filter offset 11.29 px. Stroke width 3.35 px.
+               Edit in Illustrator to keep the drop shadows intact (other
+               SVG editors sometimes rasterize them).
+
+
+[4] illustration-footer-cabinet-table.svg — FOOTER CABINET ILLUSTRATION
+    Where    : Bottom of every page — line-art curio cabinet with the
+               nav links and "Wonder Cabinet Productions / 2026 ©"
+               overlaid on top of it.
+    Size     : SVG, viewBox 1200 x 353
+    Notes    : Single green stroke (#00b86c, slightly different from the
+               brand green — see palette note at bottom). Has a Gaussian
+               drop-shadow filter. Stroke width 3.64 px. Same Illustrator-
+               filter caveat as the wave divider.
+
+
+[5] logo-primary-dark-bg-800w.png — CIRCULAR BRAND LOGO
+    Where    : Centered in the top nav bar on every page. Also currently
+               used as the browser-tab favicon.
+    Size     : 800 x 800 px  (transparent PNG, square)
+    Notes    : Primary brand mark on dark backgrounds. Transparent
+               background. Designed to be readable when scaled down to
+               ~40 px (navbar) and 16–32 px (favicon).
+    See also : This is the "dark background" variant of [A] in Tier 0.
+               Deliver the full Tier 0 brand kit and this slot gets
+               filled by the dark-bg primary mark from that kit.
+
+
+[6] icon-search.svg               — SEARCH ICON
+    Where    : Magnifying-glass at the right edge of the top nav, every
+               page.
+    Size     : SVG, viewBox 64 x 64. Renders at 20 x 20 in the browser.
+    Notes    : Currently filled #4ba250 (a green that doesn't match the
+               brand #10a544 — flagged for review).
+
+
+[7] play-white.svg                — PLAY GLYPH
+    Where    : Small play icon on each "View Episode" button on the
+               homepage episode list (and on the highlight cards between
+               episodes — Newsletter, Island of Knowledge).
+    Size     : SVG, viewBox 64 x 64
+    Notes    : Circle is filled #fffaeb (warm cream, NOT pure white,
+               despite the filename) — this is intentional, pairs with
+               the warm dark palette. Inner triangle has no explicit
+               fill so it renders black.
+
+
+================================================================================
+TIER 2 — BRACKET BUTTON CORNERS  (planned site-wide rollout)
+================================================================================
+These four SVGs are for a "bracket button" component that's coded but not
+yet live. Once it's wired up, it will REPLACE the standard buttons across
+the site — "More Episodes →" on the homepage, the email subscribe CTA, the
+"View Episode" buttons on episode cards, etc. So they're effectively a Tier
+1 asset just for a future moment.
+
+[8]  ui-bracket-corner-top-left.svg
+[9]  ui-bracket-corner-top-right.svg
+[10] ui-bracket-corner-bottom-left.svg
+[11] ui-bracket-corner-bottom-right.svg
+
+    Where    : Will frame every CTA button on the site once rolled out.
+               (Not currently visible on production.)
+    Size     : SVG, viewBox 76.11 x 25.95 (each)
+    Notes    : Each corner is hand-authored, not a flipped duplicate —
+               re-export all four together. Filled brand green #10a544.
+
+
+================================================================================
+TIER 3 — OTHER FUNCTIONAL ASSETS  (less visible, still need them)
+================================================================================
+
+
+[12] opengraph-default-1200x630.png — SOCIAL SHARE PREVIEW
+     Where    : The preview card image when wondercabinetproductions.com
+                is shared on Facebook, LinkedIn, iMessage, Slack, Bluesky,
+                etc. Not visible on the site itself.
+     Size     : 1200 x 630 px  (RGB PNG, NO alpha)
+     Notes    : NO transparency — Open Graph parsers can mishandle alpha.
+                Solid background. Keep focal content centered (~60 px safe
+                zone on each edge — Twitter / iMessage crop differently).
+
+
+[13] Show_Cover-Wonder-Cabinet.png — PODCAST COVER (FALLBACK)
+     Where    : The default episode artwork shown on the audio-player
+                hero IF an episode hasn't had its own cover assigned.
+                Most published episodes have their own artwork, so this
+                is rarely visible on the website — but it's also the
+                file submitted to Apple Podcasts / Spotify.
+     Size     : 3000 x 3000 px  (transparent PNG, square)
+     See also : This is the same asset as [F] in Tier 0.5. Deliver one
+                refreshed master at 3000 x 3000 and it covers both uses.
+
+
+[14] ui-divider-thick.png — TEXTURED HORIZONTAL RULE
+     Where    : Will appear on the "Luminous" series tag page, directly
+                under the podcast-service buttons. (That page isn't live
+                yet.) Lowest-priority asset in this tier.
+     Size     : 813 x 9 px  (transparent PNG)
+     Notes    : Textured / hand-drawn — that's why it's a PNG and not an
+                SVG. Tile-able horizontally if needed.
+
+
+================================================================================
+TIER 4 — SKIP THESE  (auto-generated, vendor-supplied, or orphaned)
+================================================================================
+Don't recreate any of these. Listed for completeness so you know what each
+file in the directory is.
+
+  WebP versions of the masters above
+    bg-galaxy-spiral-1200w-2x.webp     ← auto-generated from [2]
+    logo-primary-dark-bg-800w.webp     ← auto-generated from [5]
+    WonderCabinet-title.webp           ← auto-generated from [1]
+    Build tooling regenerates these from the PNG masters.
+
+  Favicon / app-icon set (orphaned — not used by the live site)
+    WC-favicon.ico                     16/32/48 px multi-resolution .ico
+    WC-favicon-16x16.png               16 x 16
+    WC-favicon-32x32.png               32 x 32
+    WC-apple-touch-icon.png            180 x 180  (iOS home screen)
+    WC-android-chrome-192x192.png      192 x 192  (Android PWA)
+    WC-android-chrome-512x512.png      512 x 512  (Android PWA)
+    These were authored but the live site uses the brand logo as its
+    favicon instead. Once we have a final icon-only mark from the Tier 0
+    brand kit, we'll auto-regenerate this entire set from it.
+
+  Raster fallback of an SVG (orphaned)
+    illustration-footer-cabinet-table.png   5000 x 1471
+    Generated from the SVG ([4]) — not referenced by the site.
+
+  PhotoSwipe lightbox — DO NOT TOUCH
+    default-skin.png    264 x 88   sprite sheet of close/prev/next/zoom icons
+    default-skin.svg    264 x 88   same sprite, vector form
+    preloader.gif        20 x 20   loading spinner
+    These ship with a third-party lightbox library (PhotoSwipe). The
+    library's CSS expects the icons at exact pixel offsets — redrawing
+    them in isolation will break alignment. If the lightbox UI needs a
+    refresh, it's a code change, not a design change.
+
+
+================================================================================
+COLOR PALETTE  (greens used across the assets)
+================================================================================
+There are three slightly different greens in active use. Worth confirming
+with us whether to unify them or keep the variation:
+
+  #10a544   Brand green — bracket-corner SVGs, wave divider, primary CTA color
+  #00b86c   Footer cabinet illustration green (warmer, slightly desaturated)
+  #4ba250   Search icon green (different again — possibly drift, possibly
+            intentional)
+
+  #fffaeb   Cream — the "off-white" play-button circle
+
+
+================================================================================
+APPENDIX — BEHIND THE SCENES  (optional reading)
+================================================================================
+Skip this unless you're curious about why the directory has so many files.
+
+The site runs on Ghost (a CMS). Some of the images in this folder are
+served directly to browsers — those are the SVGs and PNGs in Tier 1 and
+Tier 4 that say "auto-generated" or "PhotoSwipe."
+
+Other images in this folder (the wordmark, logo, galaxy bg, social-share
+PNG) live here as DESIGN MASTERS but the live site actually loads its
+copy from Ghost's CDN, because we uploaded them through the Ghost admin
+panel. So when you deliver a new master:
+
+  • For the SVGs in Tier 1, items [3], [4], [6], [7], plus all of Tier 2:
+    we drop the new file into this folder and redeploy the theme.
+  • For the wordmark [1], galaxy bg [2], logo [5], OG image [12]:
+    we replace the file here AND re-upload the new version through Ghost
+    admin so production picks it up.
+  • For the show cover [13] and the divider [14]: same as the SVGs —
+    drop in folder, redeploy.
+  • The favicon set is currently orphaned, so we don't have to do anything
+    with it unless we decide to revive it.
+
+Either way, the designer's deliverable is the same: the master files at
+the sizes specified above. We handle the upload paths.
+
+================================================================================
+END
+================================================================================
