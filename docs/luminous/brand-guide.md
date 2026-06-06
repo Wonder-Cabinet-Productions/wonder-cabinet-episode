@@ -4,7 +4,7 @@
 **Master file**: `Luminous_BrandGuide.ai`
 **Designer**: Art & Sons (artandsons.com)
 **Date**: May 17, 2026
-**Asset drop**: `ghost-dev/design/Luminous-Brand-Web-Podcast/`
+**Asset drop**: `design-assets/site-design/Luminous-Brand-Web-Podcast/` *(at the wonder-cabinet metarepo root — all `design-assets/…` paths in these docs resolve from there, not from this theme repo)*
 **Project**: Luminous — second podcast sharing the Wonder Cabinet Ghost theme
 
 > See also: [`multi-brand-design-system.md`](../multi-brand-design-system.md) for how Luminous coexists with Wonder Cabinet inside the same theme, and which tokens / assets swap per brand.
@@ -29,7 +29,7 @@ The primary logo consists of:
 
 ### Logo Variants
 
-All files live in `design/Luminous-Brand-Web-Podcast/LogoAssets/`.
+All files live in `design-assets/site-design/Luminous-Brand-Web-Podcast/LogoAssets/`.
 
 | Variant | File | Dimensions | Context |
 |---|---|---|---|
@@ -98,7 +98,7 @@ This means **typography is fully shared across both brands** — no per-brand fo
 
 ## Secondary Graphics
 
-All files live in `design/Luminous-Brand-Web-Podcast/WebsiteGraphics/`.
+All files live in `design-assets/site-design/Luminous-Brand-Web-Podcast/WebsiteGraphics/`.
 
 ### Website Background
 **`LuminousWeb_WebsiteBackground.svg`** — Wavy organic background pattern in cream and violet at low opacity. 2400×2400 viewBox, fully scalable. Functional analog to Wonder Cabinet's raster `bg-galaxy-spiral-1200w@2x.png`, but more abstract and lighter in tone.
@@ -119,7 +119,7 @@ The brand guide page 6 shows a grid pattern of nine violet eye icons on a wavy s
 
 ## Podcast Cover Art
 
-All files live in `design/Luminous-Brand-Web-Podcast/PodcastGraphics/`.
+All files live in `design-assets/site-design/Luminous-Brand-Web-Podcast/PodcastGraphics/`.
 
 | File | Dimensions | Purpose |
 |---|---|---|
@@ -166,6 +166,6 @@ Luminous lacks the following decorative elements that WC has. These are **delibe
 
 - **Original PDF**: `Luminous_BrandGuide.pdf` (786 KB)
 - **Master AI file**: `Luminous_BrandGuide.ai` (7.4 MB)
-- **Asset drop root**: `/Volumes/Mark's SSD/SSD-Dev/wonder-cabinet/ghost-dev/design/Luminous-Brand-Web-Podcast/`
+- **Asset drop root**: `~/Developer/wonder-cabinet/design-assets/site-design/Luminous-Brand-Web-Podcast/`
 - **Format**: Landscape brand guide presentation
 - **Page count**: ~7 (matching WC brand-guide convention)
