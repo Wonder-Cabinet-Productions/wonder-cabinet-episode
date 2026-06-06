@@ -89,17 +89,17 @@ Everything in this table swaps per brand. The "WC" column is the default; the "L
 
 | Slot | WC asset | Luminous asset |
 |---|---|---|
-| Show cover (RSS / podcast directories) | `assets/images/Show_Cover-Wonder-Cabinet.png` | `design/Luminous-Brand-Web-Podcast/PodcastGraphics/LuminousLogo_ShowCoverArt-3000x3000.png` |
-| Default episode artwork | (uses show cover) | `design/Luminous-Brand-Web-Podcast/PodcastGraphics/LuminousLogo_EpisodeDefault-3000x3000.png` |
-| Hero background | `assets/images/bg-galaxy-spiral-1200w@2x.png` (raster) | `design/Luminous-Brand-Web-Podcast/WebsiteGraphics/LuminousWeb_WebsiteBackground.svg` (vector) |
-| Wordmark / title graphic | `assets/images/WonderCabinet-title.png` | `design/Luminous-Brand-Web-Podcast/WebsiteGraphics/LuminousWeb_Website-Wordmark.svg` |
-| Logo on dark bg | `assets/images/logo-primary-dark-bg-800w.png` | `design/Luminous-Brand-Web-Podcast/LogoAssets/Luminous-_PrimaryMarkOnDark-1920wide.png` |
-| Favicon / mark | (WC cabinet icon) | `design/Luminous-Brand-Web-Podcast/LogoAssets/Luminous-_EyeIconBlack-800x800.png` |
-| Section divider | `assets/images/ui-wave-divider-light.svg` | `design/Luminous-Brand-Web-Podcast/WebsiteGraphics/LuminousWeb_LineSeparator.svg` |
+| Show cover (RSS / podcast directories) | `assets/images/Show_Cover-Wonder-Cabinet.png` | `design-assets/site-design/Luminous-Brand-Web-Podcast/PodcastGraphics/LuminousLogo_ShowCoverArt-3000x3000.png` |
+| Default episode artwork | (uses show cover) | `design-assets/site-design/Luminous-Brand-Web-Podcast/PodcastGraphics/LuminousLogo_EpisodeDefault-3000x3000.png` |
+| Hero background | `assets/images/bg-galaxy-spiral-1200w@2x.png` (raster) | `design-assets/site-design/Luminous-Brand-Web-Podcast/WebsiteGraphics/LuminousWeb_WebsiteBackground.svg` (vector) |
+| Wordmark / title graphic | `assets/images/WonderCabinet-title.png` | `design-assets/site-design/Luminous-Brand-Web-Podcast/WebsiteGraphics/LuminousWeb_Website-Wordmark.svg` |
+| Logo on dark bg | `assets/images/logo-primary-dark-bg-800w.png` | `design-assets/site-design/Luminous-Brand-Web-Podcast/LogoAssets/Luminous-_PrimaryMarkOnDark-1920wide.png` |
+| Favicon / mark | (WC cabinet icon) | `design-assets/site-design/Luminous-Brand-Web-Podcast/LogoAssets/Luminous-_EyeIconBlack-800x800.png` |
+| Section divider | `assets/images/ui-wave-divider-light.svg` | `design-assets/site-design/Luminous-Brand-Web-Podcast/WebsiteGraphics/LuminousWeb_LineSeparator.svg` |
 | Footer illustration | `assets/images/illustration-footer-cabinet-table.svg` | *(none — see §6 "asymmetric elements")* |
 | Bracket corner ornaments | `assets/images/ui-bracket-corner-{top-left,top-right,bottom-left,bottom-right}.svg` | *(none — see §6 "asymmetric elements")* |
 
-**Important:** Luminous asset paths above point to `design/Luminous-Brand-Web-Podcast/`. They have **not yet been copied** into `assets/images/`. That work is [Backlog #7](#9-backlog-refactor-work-this-doc-surfaces).
+**Important:** Luminous asset paths above point to `design-assets/site-design/Luminous-Brand-Web-Podcast/`. They have **not yet been copied** into `assets/images/`. That work is [Backlog #7](#9-backlog-refactor-work-this-doc-surfaces).
 
 ---
 
@@ -231,7 +231,7 @@ assets/images/
   (legacy files)   # Existing flat files until migrated
 ```
 
-Until that migration: **do not copy Luminous assets into `assets/images/` yet.** Reference them from `design/Luminous-Brand-Web-Podcast/` in this doc and in any drafts. The copy-and-rename pass is a coordinated sprint that touches every template at once. ([Backlog #7](#9-backlog-refactor-work-this-doc-surfaces).)
+Until that migration: **do not copy Luminous assets into `assets/images/` yet.** Reference them from `design-assets/site-design/Luminous-Brand-Web-Podcast/` in this doc and in any drafts. The copy-and-rename pass is a coordinated sprint that touches every template at once. ([Backlog #7](#9-backlog-refactor-work-this-doc-surfaces).)
 
 ---
 
@@ -273,6 +273,6 @@ The number of show-specific templates needed scales with how much the new show d
 - `.impeccable.md` (theme root) — design principles, brand strictness, multi-show intent
 - `CLAUDE.md` (theme root) — agent quickref, build commands, custom Ghost settings
 - Source PDFs:
-  - `/Volumes/Mark's SSD/SSD-Dev/wonder-cabinet/ghost-dev/design/mockups/WonderCabinet_BrandGuide-pages/` (extracted WC pages)
-  - `/Volumes/Mark's SSD/SSD-Dev/wonder-cabinet/ghost-dev/design/Luminous-Brand-Web-Podcast/Luminous_BrandGuide.pdf`
+  - `~/Developer/wonder-cabinet/design-assets/site-design/mockups/WonderCabinet_BrandGuide-pages/` (extracted WC pages)
+  - `~/Developer/wonder-cabinet/design-assets/site-design/Luminous-Brand-Web-Podcast/Luminous_BrandGuide.pdf`
 - CSS source: `assets/css/screen.css` (token definitions lines 9–34, Luminous highlight-zone rules lines 994–1006)
