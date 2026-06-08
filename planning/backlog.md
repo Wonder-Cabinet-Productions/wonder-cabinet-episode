@@ -81,8 +81,18 @@ Technical debt and hygiene — no user-facing impact.
 
 ---
 
+## Multi-brand (Luminous) work — tracked as sprints
+
+The Luminous brand integration runs as a 3-sprint arc, not maintenance backlog items. See the umbrella spec [`docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md`](../docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md) and per-sprint artifacts under [`planning/sprints/`](sprints/). The live backlog of refactor items lives in [`docs/multi-brand-design-system.md`](../docs/multi-brand-design-system.md) §9.
+
+- [x] **Sprint 1 — Foundation & Correctness** (2026-06-08) — token correctness, `--show-accent` leak routing, audio-player tokenization, N-brand doc. See [`planning/sprints/1-foundation/`](sprints/1-foundation/).
+- [ ] **Sprint 2 — Brand Switch** — show-scoping mechanism, `/luminous/` collection, asset migration, asymmetric elements, template variants.
+- [ ] **Sprint 3 — Impeccable audit + dual UX testing** (collaborative).
+
+---
+
 ## Completed
 
 Items moved here after completion (retained for 30 days per hygiene cadence).
 
-*(none yet)*
+*(Sprint work tracked above and under `planning/sprints/`.)*
