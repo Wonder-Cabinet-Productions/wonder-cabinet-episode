@@ -31,9 +31,12 @@
         waveformHeight: 64,
         waveformHeightMobile: 48,
         // Brand colors from CLAUDE.md
+        // waveColor is shared across all brands — keep hardcoded.
+        // progressColor / cursorColor derive from --show-accent at runtime (see initAudioPlayer);
+        // these values are retained here only as documentation of the fallback default.
         waveColor: 'rgba(255, 250, 235, 0.4)',
-        progressColor: '#10A544',
-        cursorColor: '#10A544'
+        progressColor: '#10A544', // fallback; overridden by --show-accent at init
+        cursorColor: '#10A544'    // fallback; overridden by --show-accent at init
     };
 
     // Store wavesurfer instance globally within IIFE for keyboard access
@@ -233,12 +236,18 @@
         audio.preload = 'metadata';
         audio.src = audioUrl;
 
+        // Resolve active brand accent from CSS custom property.
+        // --show-accent is set on :root by the brand context (Sprint 2+).
+        // Falls back to WC green so this is a no-op today.
+        var showAccent = getComputedStyle(document.documentElement)
+            .getPropertyValue('--show-accent').trim() || '#10A544';
+
         // Create WaveSurfer instance with brand styling, using <audio> backend
         var wavesurfer = WaveSurfer.create({
             container: waveformContainer,
             waveColor: CONFIG.waveColor,
-            progressColor: CONFIG.progressColor,
-            cursorColor: CONFIG.cursorColor,
+            progressColor: showAccent,
+            cursorColor: showAccent,
             cursorWidth: 2,
             barWidth: 3,
             barGap: 2,
