@@ -1,0 +1,78 @@
+{
+  "sprint": 1,
+  "name": "Luminous Foundation & Correctness",
+  "umbrellaSpec": "docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md",
+  "roles": {
+    "brand-translator": "adhd-friendly-ui-designer (design lens)",
+    "ghost-specialist": "the-fixer",
+    "a11y-specialist": "adhd-friendly-ui-designer (a11y lens)",
+    "implementer": "the-drone",
+    "cross-brand-qa": "code-reviewer"
+  },
+  "features": [
+    {
+      "id": "S1-00",
+      "title": "Eval triage + recover/re-derive planning docs",
+      "phase": "1.0",
+      "lead": "brand-translator",
+      "backlogRef": "umbrella spec §1",
+      "acceptance": "brand-guide.md recovered as foundation; multi-brand-design-system.md re-derived as N-brand; user-gated",
+      "status": "completed",
+      "blockedBy": []
+    },
+    {
+      "id": "S1-01",
+      "title": "Fix --luminous-accent #D4A843 -> #9A59FF",
+      "phase": "1.1",
+      "lead": "a11y-specialist",
+      "backlogRef": "multi-brand #1",
+      "acceptance": "screen.css --luminous-accent is #9A59FF; highlight-zone card renders violet; gscan green",
+      "status": "completed",
+      "blockedBy": ["S1-00"]
+    },
+    {
+      "id": "S1-06",
+      "title": "Derive Luminous WCAG-AA contrast tokens",
+      "phase": "1.1",
+      "lead": "a11y-specialist",
+      "backlogRef": "multi-brand #6",
+      "acceptance": "--luminous-accent-text-on-cream #8B4DEB (4.62:1) + --luminous-accent-dark #1F0F33 defined; math documented",
+      "status": "completed",
+      "blockedBy": ["S1-00"]
+    },
+    {
+      "id": "S1-02",
+      "title": "Route shared-component --wc-green leaks to --show-accent",
+      "phase": "1.2",
+      "lead": "implementer",
+      "backlogRef": "multi-brand #2",
+      "acceptance": "38 shared refs routed; WC pixel-stable; only intentional raw tokens remain",
+      "status": "completed",
+      "blockedBy": ["S1-00"]
+    },
+    {
+      "id": "S1-03",
+      "title": "Tokenize audio-player waveform/cursor colors",
+      "phase": "1.2",
+      "lead": "implementer",
+      "backlogRef": "multi-brand #3",
+      "acceptance": "progressColor/cursorColor read --show-accent at init with #10A544 fallback; waveColor unchanged",
+      "status": "completed",
+      "blockedBy": ["S1-00"]
+    },
+    {
+      "id": "S1-10",
+      "title": "Author cross-brand QA checklist + prove-both-brands",
+      "phase": "1.3",
+      "lead": "cross-brand-qa",
+      "backlogRef": "multi-brand #10",
+      "acceptance": "checklist authored; gscan green; live verification: WC no-op + Luminous card violet + IoK unchanged",
+      "status": "completed",
+      "blockedBy": ["S1-01", "S1-02", "S1-03"]
+    }
+  ],
+  "deferred": [
+    {"ref": "multi-brand #4", "title": "Tokenize SVG fills", "to": "Sprint 2.2", "reason": "colored SVGs are WC-only vocabulary hidden under Luminous"},
+    {"title": ".wc-head-subscribe navbar accent decision", "to": "Sprint 2/3", "reason": "design question: per-page brand accent vs site-wide WC green on the persistent navbar"}
+  ]
+}

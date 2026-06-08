@@ -4,6 +4,27 @@ Session handoff notes for continuity between work sessions.
 
 ---
 
+## 2026-06-08 - Sprint 1: Luminous Foundation & Correctness
+
+**Agent**: Multi-role team (Brand Translator, Ghost-Platform Specialist, a11y Specialist, Implementer, Cross-Brand QA)
+**Summary**: First sprint of the Luminous multi-brand arc. Made every brand-aware token + consumer correct and routed through `--show-accent*`, with the live WC site provably unchanged. Only intended visual change: the "From Luminous" highlight card is now violet.
+
+### What was done
+- **Eval triage** (3 specialist agents) of the two PR #44 docs vs. the primary brand source → recovered `docs/luminous/brand-guide.md` as foundation; **re-derived `docs/multi-brand-design-system.md` as N-brand** (WC + Luminous + IoK).
+- **Tokens**: `--luminous-accent` `#D4A843`→`#9A59FF`; added `--luminous-accent-text-on-cream` `#8B4DEB` (AA 4.62:1) and `--luminous-accent-dark` `#1F0F33`.
+- **CSS**: routed 38 shared-component `--wc-green*` leaks → `--show-accent*` (no-op for WC).
+- **JS**: audio player progress/cursor colors now read `--show-accent` at init (fallback `#10A544`).
+- **QA**: authored `docs/luminous/cross-brand-qa-checklist.md`; gscan green; live-verified on wondercabinet.riechers.co (WC green unchanged, Luminous card violet, IoK steel-blue unchanged).
+- Sprint artifacts under `planning/sprints/1-foundation/`.
+
+### Context for next session
+- **Discovery**: IoK is a third brand already in the theme (accent-only). The architecture is now documented as N-brand.
+- **Deferred**: SVG fill tokenization → Sprint 2.2; `.wc-head-subscribe` navbar-accent decision → Sprint 2/3 (open design question).
+- **Sprint 2 (Brand Switch)** is next: the page-level show-scoping mechanism is the keystone — nothing else in Sprint 2 starts until it lands. Then the `/luminous/` `routes.yaml` collection (note: routes.yaml lives on the LXC, not the theme repo — mirror at `docs/routes-luminous.reference.yaml`).
+- `assets/built/screen.css` was rebuilt by the CT and synced back — committed alongside source.
+
+---
+
 ## 2026-01-30 - Sprint Prioritization + Feedback Triage
 
 **Agent**: Planning session
