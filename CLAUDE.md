@@ -2,6 +2,21 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ Dev loop — read before running ANY command (rev 2026-06-05)
+
+This directory exists on **two machines**, kept identical by a mutagen sync (`wc-theme` session, ~2 s latency):
+
+| Machine | Role | What you may do here |
+|---|---|---|
+| **Mark's Mac** (`~/Developer/wonder-cabinet/ghost-dev/content/themes/wonder-cabinet-episode`) | Source of truth. **Git lives ONLY here.** | Edit files, commit, push. Do NOT run gulp/Ghost — there is no local runtime. |
+| **LXC `ghost01`** (`/home/mark/ghost-dev/content/themes/wonder-cabinet-episode`, ssh alias `wc-ghostdev`) | Runtime mirror. **No `.git` here — deliberate.** | Read files, run gulp/gscan, inspect logs. Do NOT edit source here (Mac wins sync conflicts) and do NOT `git init`. |
+
+**The loop:** edit on the Mac → mutagen syncs → `ghost-theme-watch.service` (gulp) rebuilds `assets/built/` on the CT → verify at **https://wondercabinet.riechers.co**. `.hbs` changes need only a refresh; `routes.yaml`/config changes need `ssh wc-ghostdev 'sudo systemctl restart ghost-dev'`.
+
+**To tell which machine you're on:** `hostname` → `ghost01` = the CT (runtime mirror); anything else = treat as the Mac. The `npm run dev` command below is ALREADY RUNNING on the CT as a systemd unit — don't start a second watcher.
+
+`node_modules/` is NOT synced (platform-specific) — `npm install` separately per machine if needed. `assets/built/` is generated on the CT and syncs back; never hand-edit it.
+
 ## Project Overview
 
 **Wonder Cabinet** is a custom Ghost theme for a podcast from the creators of *To The Best Of Our Knowledge*. Built on Ghost's **Episode** theme (official podcast theme) using `@tryghost/shared-theme-assets` v2 for Ghost CMS 5.0+.
