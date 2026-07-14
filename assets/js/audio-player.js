@@ -237,9 +237,11 @@
         audio.src = audioUrl;
 
         // Resolve active brand accent from CSS custom property.
-        // --show-accent is set on :root by the brand context (Sprint 2+).
-        // Falls back to WC green so this is a no-op today.
-        var showAccent = getComputedStyle(document.documentElement)
+        // The brand context sets --show-accent on <body> (body.brand-{show},
+        // see default.hbs), so read from document.body — NOT documentElement:
+        // a custom property set on <body> does not cascade up to <html>.
+        // Falls back to WC green so this is a no-op under the default brand.
+        var showAccent = getComputedStyle(document.body)
             .getPropertyValue('--show-accent').trim() || '#10A544';
 
         // Create WaveSurfer instance with brand styling, using <audio> backend

@@ -50,6 +50,19 @@
     --wc-radius: 0;
 }
 
+/* ============================================
+   Brand context activation (multi-brand scoping)
+   A page-level body class (set in default.hbs) overrides the
+   --show-accent* indirection tokens to the active show's palette.
+   Wonder Cabinet is the default (no class). Add a body.brand-{show}
+   block per full-brand-context show. See docs/multi-brand-design-system.md §7.
+   ============================================ */
+body.brand-luminous {
+    --show-accent: var(--luminous-accent);
+    --show-accent-text: var(--luminous-accent-text-on-cream);
+    --show-accent-dark: var(--luminous-accent-dark);
+}
+
 body {
     font-family: var(--font-body);
     background-color: var(--background-color);

@@ -45,7 +45,7 @@
     {{ghost_head}}
 </head>
 
-<body class="{{body_class}}{{{block "body_class"}}}">
+<body class="{{body_class}}{{{block "body_class"}}}{{#has tag="luminous"}} brand-luminous{{/has}}{{#if tag}} brand-{{tag.slug}}{{/if}}">
 <div class="gh-site">
 
     {{!-- Skip to content link for keyboard accessibility (WCAG 2.4.1) --}}
