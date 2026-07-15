@@ -28,6 +28,7 @@
        body class, data attribute, or tag-specific context. */
     --show-accent: var(--wc-green);
     --show-accent-text: var(--wc-green-text);
+    --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
 
     /* Typography */
@@ -60,6 +61,7 @@
 body.brand-luminous {
     --show-accent: var(--luminous-accent);
     --show-accent-text: var(--luminous-accent-text-on-cream);
+    --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
     --show-accent-dark: var(--luminous-accent-dark);
 }
 
@@ -2797,8 +2799,8 @@ body {
     gap: var(--wc-spacing-sm);
     width: 100%;
     padding: var(--wc-spacing-sm) var(--wc-spacing-md);
-    background: rgba(8, 120, 52, 0.08); /* Match --wc-green-text */
-    border: 1px solid rgba(8, 120, 52, 0.2);
+    background: rgba(var(--show-accent-text-rgb), 0.08); /* accent-text @ 8% — follows active brand */
+    border: 1px solid rgba(var(--show-accent-text-rgb), 0.2);
     border-radius: 4px;
     color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     font-family: var(--font-heading);
@@ -2811,7 +2813,7 @@ body {
 }
 
 .wc-transcript-toggle:hover {
-    background: rgba(8, 120, 52, 0.12); /* Match --wc-green-text */
+    background: rgba(var(--show-accent-text-rgb), 0.12); /* accent-text @ 12% — follows active brand */
 }
 
 .wc-transcript-toggle:focus-visible {
@@ -3027,7 +3029,7 @@ body {
 /* Focus ring color variables by context */
 :root {
     --wc-focus-ring-light: var(--wc-cream);    /* For dark backgrounds */
-    --wc-focus-ring-dark: var(--wc-green);     /* For light backgrounds */
+    --wc-focus-ring-dark: var(--show-accent);  /* For light backgrounds; follows active brand (defaults to --wc-green) */
 }
 
 /* Navbar elements (dark background) */
