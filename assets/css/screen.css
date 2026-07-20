@@ -6,7 +6,7 @@
 
 :root {
     /* Brand Colors — Wonder Cabinet */
-    --wc-green: #10A544;
+    --wc-green: #10A544; /* Brand green. ⚠ As a focus-ring / non-text color on cream this is 3.10:1 — only 0.10 above the WCAG 1.4.11 3:1 floor. Darkening or desaturating risks regressing focus-indicator visibility below 3:1; keep any edit ≥3:1 on cream. See #51, #40, #29. */
     --wc-green-text: #087834; /* WCAG AA compliant green for text on cream (4.5:1+) */
     --wc-black: #000000;
     --wc-cream: #FFFAEB;
@@ -3029,7 +3029,7 @@ body {
 /* Focus ring color variables by context */
 :root {
     --wc-focus-ring-light: var(--wc-cream);    /* For dark backgrounds */
-    --wc-focus-ring-dark: var(--show-accent);  /* For light backgrounds; follows active brand (defaults to --wc-green) */
+    --wc-focus-ring-dark: var(--show-accent);  /* For light backgrounds; follows active brand (defaults to --wc-green → 3.10:1 on cream, only 0.10 above the WCAG 3:1 non-text floor — do not let a --wc-green edit drop below 3:1. See #51). */
 }
 
 /* Navbar elements (dark background) */
@@ -3107,12 +3107,6 @@ body {
 .wc-episode-notes-content a:focus-visible,
 .wc-episode-links a:focus-visible {
     outline: 2px solid var(--wc-focus-ring-dark);
-    outline-offset: 2px;
-}
-
-/* Transcript toggle (dark background) */
-.wc-transcript-toggle:focus-visible {
-    outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }
 
