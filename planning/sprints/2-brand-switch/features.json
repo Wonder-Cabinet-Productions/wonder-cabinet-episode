@@ -1,0 +1,78 @@
+{
+  "sprint": 2,
+  "title": "Brand Switch — completion (theme-code lane)",
+  "invariant": "Every Luminous change is strictly gated on body.brand-luminous (CSS) or {{#has tag=\"luminous\"}} (template). The WC / untagged render path is byte-for-byte unchanged, proven in S2-06.",
+  "features": [
+    {
+      "id": "S2-01",
+      "title": "2.1 Migrate + normalize Luminous assets into assets/images/luminous/ (minimal reorg)",
+      "sprint": 2, "phase": "2.1", "lead": "implementer",
+      "backlogRef": "multi-brand #7, #8",
+      "acceptance": "Art & Sons Luminous exports (wavy bg SVG, dashed separator SVG, wordmark SVG, eye-icon PNG, cover PNG) present in assets/images/luminous/ with normalized names; NO existing WC asset moved; all current WC references intact.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S2-02",
+      "title": "2.2 Asymmetric CSS overrides under body.brand-luminous",
+      "sprint": 2, "phase": "2.2", "lead": "implementer",
+      "backlogRef": "multi-brand §6",
+      "acceptance": "Luminous hero bg (wavy), dashed divider, hidden cabinet + brackets, eye-icon are all set ONLY under body.brand-luminous selectors; base rules unchanged; WC computed styles identical; gscan green.",
+      "status": "pending", "blockedBy": ["S2-01"]
+    },
+    {
+      "id": "S2-03",
+      "title": "2.2 Asymmetric template guards ({{#has tag=\"luminous\"}})",
+      "sprint": 2, "phase": "2.2", "lead": "ghost-specialist",
+      "backlogRef": "multi-brand §6",
+      "acceptance": "footer.hbs cabinet <img> and default.hbs favicon are wrapped in {{#has tag=\"luminous\"}} guards; the WC/default branch emits the current markup byte-for-byte; Luminous branch hides cabinet + serves eye-icon favicon.",
+      "status": "pending", "blockedBy": ["S2-01"]
+    },
+    {
+      "id": "S2-04",
+      "title": "2.3 Fix index-luminous.hbs pagination gotcha",
+      "sprint": 2, "phase": "2.3", "lead": "ghost-specialist",
+      "backlogRef": "multi-brand #9",
+      "acceptance": "index-luminous.hbs no longer passes count=\"all\"; iterates route-provided posts via hasPagination=true; pagination partial works when the (deferred) collection activates. Dormant until then — no live-URL change.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S2-05",
+      "title": "2.3 Author docs/routes-luminous.reference.yaml mirror",
+      "sprint": 2, "phase": "2.3", "lead": "ghost-specialist",
+      "backlogRef": "multi-brand #9",
+      "acceptance": "Mirror doc declares the /luminous/ collection (filter: tag:luminous, paginate, permalink /luminous/{slug}/) referencing index-luminous.hbs (archive) and post.hbs (episode). Documented intent only — NOT applied to the live LXC routes.yaml.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S2-06",
+      "title": "2.4 Cross-brand QA — WC pixel-stability proof + Luminous verification",
+      "sprint": 2, "phase": "2.4", "lead": "cross-brand-qa",
+      "backlogRef": "multi-brand #10",
+      "acceptance": "PRIMARY GATE: before/after at the preview shows no visual or DOM diff on a WC post + home. Luminous: tag:luminous post + /tag/luminous/ render violet + wavy bg + dashed divider + eye-icon favicon + no cabinet/brackets. gscan green. assets/built rebuilt via CT loop and committed.",
+      "status": "pending", "blockedBy": ["S2-01", "S2-02", "S2-03", "S2-04"]
+    }
+  ],
+  "parallelLanes": [
+    {
+      "id": "S2-CONTENT",
+      "title": "Luminous content cleanup (slugs, canonicals, redirect artifact)",
+      "lead": "user-supervised + luminous-content agent",
+      "ref": "content-cleanup-brief.md, content-audit-findings.md",
+      "blocks": "only the DEFERRED live routes/redirect cutover — not this push"
+    },
+    {
+      "id": "S2-CONFIG-1",
+      "title": "Ghost Admin: set luminous_* podcast URLs (fields already defined in package.json) + luminous tag description/cover/meta",
+      "lead": "user",
+      "ref": "Ghost Admin → Settings → Design; makes S2-06 QA a real target",
+      "status": "actionable-now"
+    },
+    {
+      "id": "S2-CONFIG-2",
+      "title": "Stage (do NOT apply) /luminous/ routes.yaml + internal redirects on the LXC",
+      "lead": "user",
+      "ref": "routes-luminous.reference.yaml (mirror, S2-05) gives the block",
+      "status": "after-content-slugs-finalize"
+    }
+  ]
+}
