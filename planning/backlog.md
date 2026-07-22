@@ -72,6 +72,37 @@ Technical debt and hygiene — no user-facing impact.
 
 ---
 
+## Post-Luminous maintenance sprints
+
+Open GitHub issues compiled into sequenced sprints to execute **after** the Luminous brand arc lands its combined deploy (PRs #46 + #53). Full sequencing, dependencies, and the disposition of Luminous-resolved/entangled issues live in the roadmap → [`post-luminous-roadmap.md`](post-luminous-roadmap.md). Promote one sprint at a time into `sprints/current/` per [`TRIAGE.md`](TRIAGE.md).
+
+**Gate:** blocked until PRs #46 + #53 merge — that merge also closes #34/#51/#52 (verify-and-close batch in the roadmap).
+
+### Hygiene micro-batch (sub-threshold — one maintenance session)
+
+- [ ] **[2026-07-22]** [S4/hygiene] Delete orphaned `illustration-footer-cabinet-table.png` (only `.svg` referenced) - ([#42](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/42))
+- [ ] **[2026-07-22]** [S4/hygiene] Delete orphaned favicon/app-icon set (Option A) - ([#41](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/41))
+- [ ] **[2026-07-22]** [S4/docs] README: document highlight zones + featured-flag content workflow + tag-slug deps - ([#38](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/38))
+
+### Sprint 4 — Homepage content-density & discovery UX (dependency-ordered)
+
+- [ ] **[2026-07-22]** [S3/hbs] Fix highlight-zone double-render — `home.hbs` feed filter omits `island-of-knowledge` - ([#35](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/35))
+- [ ] **[2026-07-22]** [S4/feature] Load More Episodes (Content API) — enabler; branch `feature/load-more-episodes` in progress - ([#24](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/24))
+- [ ] **[2026-07-22]** [S4/enhancement] Content density — split newsletter highlight + 2nd featured box + ~6 episodes - ([#22](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/22))
+- [ ] **[2026-07-22]** [S4/enhancement] Archive-page experiment — 2-wide + infinite scroll (reuses #24) - ([#23](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/23))
+- [ ] **[2026-07-22]** [S4/enhancement] Consistent item count between highlight zones (unblocks post-deploy) - ([#39](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/39))
+
+### Sprint 5 — Component wiring & membership (design-gated, last)
+
+- [ ] **[2026-07-22]** [S4/feature] Wire `bracket-button` into live templates — WC-scoped (Luminous hides brackets) - ([#43](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/43))
+- [ ] **[2026-07-22]** [S4/feature] Paid-membership upgrade surfaces (navbar/support prompt/Portal) — needs mockups - ([#33](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/33))
+
+### Owned by the Luminous arc — not re-sprinted (see roadmap)
+
+- #40 residual SVG greens → Luminous Sprint 2.2 · #37 Luminous tag-page spacing → Sprint 2 template variants · #29 `--wc-dark-green` brand decision → Sprint 3 Impeccable audit
+
+---
+
 ## Recommended Execution Order
 
 1. **Accessibility + Mobile audit** — combine into one session (overlapping methodology, same templates/CSS)
