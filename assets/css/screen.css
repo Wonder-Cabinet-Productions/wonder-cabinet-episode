@@ -2140,17 +2140,22 @@ body {
 }
 
 /* Luminous: wavy organic hero replaces the galaxy raster (§6 asymmetric).
-   Rides the body.brand-luminous class already applied on tag:luminous pages —
-   no template change, so the WC hero markup stays byte-identical. */
-body.brand-luminous .wc-tag-hero-galaxy {
-    display: none;
-}
-body.brand-luminous .wc-tag-hero-bg {
+   The /luminous/ landing (index-luminous.hbs + components/luminous-hero.hbs) uses its own
+   hero-zone; the wavy fills the hero-zone galaxy layer under body.brand-luminous. */
+body.brand-luminous .wc-hero-zone::before {
     background-image: url(../images/luminous/bg-wavy.svg);
-    background-repeat: no-repeat;
-    background-position: center;
     background-size: cover;
     opacity: 0.9;
+}
+
+/* Luminous hero: eye-icon motif above the wordmark */
+.wc-hero-eye {
+    width: 72px;
+    height: 72px;
+    margin-bottom: var(--wc-spacing-sm);
+}
+.wc-hero-title--luminous {
+    max-width: 620px;
 }
 
 /* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the

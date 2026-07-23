@@ -1,0 +1,15 @@
+{{!--
+    Luminous Landing Hero
+    Mirrors components/home-hero.hbs, but for the /luminous/ collection: the eye-icon
+    motif above the LUMINOUS wordmark. The wordmark asset carries its own subtitle
+    ("Conversations from the Transdisciplinary Center…"), which fills the under-wordmark
+    slot that WC home fills with wc-hero-tagline. Wavy background lives on the
+    .wc-hero-zone wrapper (index-luminous.hbs).
+--}}
+
+<section class="wc-hero wc-hero--luminous">
+    <div class="wc-hero-content gh-inner">
+        <img src="{{asset "images/luminous/eye-icon-violet.png"}}" alt="" aria-hidden="true" class="wc-hero-eye">
+        <img src="{{asset "images/luminous/wordmark.svg"}}" alt="Luminous" class="wc-hero-title wc-hero-title--luminous">
+    </div>
+</section>
