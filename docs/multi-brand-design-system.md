@@ -187,9 +187,15 @@ When unsure whether a decorative element fits a brand, **consult the brand guide
 
 ---
 
-## 7. Show-scoping mechanism (roadmap — Sprint 2 / Backlog #5)
+## 7. Show-scoping mechanism (SHIPPED — Sprint 2 / Backlog #5)
 
-**Today (accent-only is wired; full brand-context is not):**
+**Status (2026-07-22): DECIDED + SHIPPED.** Option 1 (body class) was chosen and
+implemented — `default.hbs:48` sets `body.brand-luminous` from tag context, CSS overrides
+`--show-accent*` under `body.brand-luminous`, and `audio-player.js` reads `--show-accent`
+off `document.body`. The `/luminous/` `routes.yaml` collection is live on dev. See
+`planning/sprints/2-brand-switch/` (design.md, features.json).
+
+**Before Sprint 2 (baseline — now superseded):**
 - `.wc-highlight--series` / `--luminous` / `--newsletter` modifier classes swap an accent into a single highlight card. ✅ works.
 - `home.hbs` filters `tag:luminous` out of the main feed. ✅
 - There is **no** page-level "this page is Luminous" signal yet. The audio player now reads `--show-accent` (Sprint 1) but nothing overrides `--show-accent` per page, so it still resolves to green everywhere.
@@ -199,7 +205,10 @@ When unsure whether a decorative element fits a brand, **consult the brand guide
 1. **Body class** — `default.hbs` adds `brand-luminous` to `<body>` from tag/route context; CSS does `body.brand-luminous { --show-accent: var(--luminous-accent); … }`; JS reads `document.body.classList`.
 2. **Handlebars helper** — a custom helper resolves the brand once and exposes `brand`/`accent`/`assetPath` to descendant templates.
 
-The decision (and the `/luminous/` `routes.yaml` collection + permalink/redirect strategy) is a Sprint 2 human gate. Until it lands, **avoid brand-specific styling beyond the highlight-zone blocks in PRs.**
+**Resolved:** Option 1 (body class) was chosen and shipped in Sprint 2; the `/luminous/`
+collection + permalink is live on dev. The permalink/redirect **production** cutover remains
+the deferred human gate (see `docs/luminous/wpr-redirect-handoff.md` — note WPR broke the
+ttbook canonicals; revisit the canonical direction before the prod cutover).
 
 ---
 
