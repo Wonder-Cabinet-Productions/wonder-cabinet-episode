@@ -2181,6 +2181,16 @@ body.brand-luminous .wc-bracket-btn {
     padding: 14px 32px;
 }
 
+/* Luminous: dashed line separator replaces the solid rule (§6 asymmetric) */
+body.brand-luminous .wc-rule {
+    height: 0;
+    background: none;
+    border-top: 2px dashed var(--show-accent);
+}
+body.brand-luminous .wc-rule--thick {
+    border-top-width: 3px;
+}
+
 .wc-tag-hero-content {
     position: relative;
     z-index: 1;
