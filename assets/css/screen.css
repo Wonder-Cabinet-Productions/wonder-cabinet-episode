@@ -2139,6 +2139,20 @@ body {
     object-fit: contain;
 }
 
+/* Luminous: wavy organic hero replaces the galaxy raster (§6 asymmetric).
+   Rides the body.brand-luminous class already applied on tag:luminous pages —
+   no template change, so the WC hero markup stays byte-identical. */
+body.brand-luminous .wc-tag-hero-galaxy {
+    display: none;
+}
+body.brand-luminous .wc-tag-hero-bg {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    opacity: 0.9;
+}
+
 .wc-tag-hero-content {
     position: relative;
     z-index: 1;
