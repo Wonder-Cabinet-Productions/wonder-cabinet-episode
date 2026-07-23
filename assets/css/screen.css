@@ -2153,6 +2153,34 @@ body.brand-luminous .wc-tag-hero-bg {
     opacity: 0.9;
 }
 
+/* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
+   footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
+   is untouched; all scoped to body.brand-luminous. */
+body.brand-luminous .wc-footer-cabinet {
+    display: none;
+}
+body.brand-luminous .wc-footer-illustration {
+    width: auto;
+}
+body.brand-luminous .wc-footer-overlay {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+    padding: var(--wc-spacing-xl) 0;
+}
+
+/* Luminous CTAs are a flat violet button, no bracket corners (§6 asymmetric) */
+body.brand-luminous .wc-bracket-btn-corner {
+    display: none;
+}
+body.brand-luminous .wc-bracket-btn {
+    background: var(--show-accent);
+    color: var(--wc-black); /* black on #9A59FF ≈ 5.25:1 (AA) */
+    border-radius: 4px;
+    padding: 14px 32px;
+}
+
 .wc-tag-hero-content {
     position: relative;
     z-index: 1;
