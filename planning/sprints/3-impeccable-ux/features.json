@@ -1,0 +1,62 @@
+{
+  "sprint": 3,
+  "title": "Impeccable audit + dual UX testing (collaborative, gated)",
+  "mode": "human-in-the-loop — /impeccable is the audit engine; no autonomous runner. Findings are triaged with the user (3.1) before any implementation.",
+  "invariant": "WC-safety carries forward: any Luminous polish stays gated on body.brand-luminous / {{#has tag=\"luminous\"}}; WC render path byte-identical.",
+  "auditSurfaces": [
+    "https://wondercabinet.riechers.co/luminous/ (collection/landing)",
+    "https://wondercabinet.riechers.co/luminous/reclaiming-the-acid-queen/ (episode page)",
+    "cross-brand shared components (navbar, footer, CTA, audio player, comments) under WC + Luminous"
+  ],
+  "features": [
+    {
+      "id": "S3-SEED-01",
+      "title": "Live-verify Luminous POST page (waveform violet via JS, dashed rule, hidden cabinet/brackets, wavy hero)",
+      "sprint": 3, "phase": "3.0", "lead": "cross-brand-qa",
+      "backlogRef": "#46/#53 pre-deploy checklist",
+      "acceptance": "A tag:luminous episode page confirmed rendering all Luminous asymmetric elements + violet audio waveform; the archive is already verified.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S3-SEED-02",
+      "title": "Decide WC focus-ring contrast margin (#51 — 3.10:1, 0.10 above WCAG floor)",
+      "sprint": 3, "phase": "3.1", "lead": "adhd-friendly-ui-designer",
+      "backlogRef": "issue #51",
+      "acceptance": "Collaborative decision: keep guardrail-only or widen --wc-green focus margin ≥ a safer threshold; if changed, WC contrast re-verified.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S3-SEED-03",
+      "title": "Transcript :focus-visible root-cause (#52)",
+      "sprint": 3, "phase": "3.1", "lead": "spectral-engineer",
+      "backlogRef": "issue #52",
+      "acceptance": "Root-cause fix (beyond the shipped contradictory-rule deletion) decided and, if accepted, implemented.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S3-SEED-04",
+      "title": "Eye-icon favicon / publication-level Luminous icon (deferred from Sprint 2)",
+      "sprint": 3, "phase": "3.1", "lead": "spectral-engineer",
+      "backlogRef": "Sprint 2 deferral",
+      "acceptance": "Decide the approach (publication-level icon for the /luminous/ collection vs. skip); per-page favicon was rejected as unreliable + needs Ghost restart.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S3-SEED-05",
+      "title": "Navbar brand adoption — open design question",
+      "sprint": 3, "phase": "3.1", "lead": "brand-guardian",
+      "backlogRef": "Sprint 1/2 deferral",
+      "acceptance": "Decide whether the persistent nav (logo, Subscribe) follows per-page brand on Luminous pages or stays WC-green. Gate against the brand book.",
+      "status": "pending", "blockedBy": []
+    },
+    {
+      "id": "S3-SEED-06",
+      "title": "Process: .hbs edits require a Ghost restart on ghost01 (template cache)",
+      "sprint": 3, "phase": "3.4", "lead": "the-fixer",
+      "backlogRef": "session note 2026-07-22",
+      "acceptance": "Either fix the dev loop so .hbs hot-reloads, or correct the CLAUDE.md 'refresh is enough' note to reflect the restart requirement.",
+      "status": "pending", "blockedBy": []
+    }
+  ],
+  "notes": "features[] is seeded with known carry-forward items and grows with accepted /impeccable findings during 3.1 collaborative triage. §8 full asset reorg (shared/wc split) also remains deferred — add if the audit surfaces a need."
+}
