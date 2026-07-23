@@ -1,0 +1,34 @@
+# MIRROR of the live /luminous/ collection — NOT the live file itself.
+#
+# The live routes.yaml lives on LXC ghost01 at content/settings/routes.yaml (outside
+# git) and uploads via Ghost Admin → Settings → Labs. This mirror is a tracked, reviewable
+# record of the Luminous collection as it exists on DEV (verified 2026-07-22), plus the
+# default-collection exclusion it depends on.
+#
+# STATUS: the /luminous/ collection is ALREADY LIVE ON DEV — /tag/luminous/ 301-redirects
+# to /luminous/, and /luminous/ is served by index-luminous.hbs. The DEFERRED, human-gated
+# cutover (workplan gates #3/#4) is RECREATING this on PRODUCTION
+# (wondercabinetproductions.com), together with the redirect/canonical strategy in
+# docs/luminous/wpr-redirect-handoff.md.
+#
+# CAVEAT before the prod cutover: the ttbook.org canonicals that were meant to keep working
+# were broken by WPR — revisit the canonical direction (see wpr-redirect-handoff.md) before
+# recreating on production.
+
+collections:
+  # Default collection = Wonder Cabinet landing. EXCLUDES luminous (and newsletter) so those
+  # posts live only under their own collections, not at the site root.
+  /:
+    permalink: /{slug}/
+    filter: tag:wonder-cabinet+tag:-newsletter
+    template: index
+    data: tag.wonder-cabinet
+
+  # Luminous — full brand-context collection. Reassigns Luminous canonical URLs to
+  # /luminous/{slug}/. Archive template is index-luminous.hbs; episode pages fall through to
+  # post.hbs (both render violet via body.brand-luminous — no post-luminous.hbs needed).
+  /luminous/:
+    permalink: /luminous/{slug}/
+    filter: tag:luminous
+    template: index-luminous
+    data: tag.luminous
