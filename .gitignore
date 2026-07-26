@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Archives (theme zips from `npm run zip`, local asset drops)
+*.zip
+
 # Editor
 .vscode/
 *.swp
