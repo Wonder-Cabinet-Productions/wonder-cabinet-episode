@@ -29,9 +29,16 @@ These bake the old name as outlined vector paths or flattened raster. They canno
 regenerated from this repo: no licensed Futura, no vector sources here. All paths are
 relative to `design-assets/site-design/Luminous-Brand-Web-Podcast/` at the metarepo root.
 
+**Sequencing note (2026-07-26):** the show has **not relaunched yet**, which makes the
+template the most valuable thing to fix and the cheapest moment to fix it. Correcting
+`Episode-art-template.psd` before episode art starts being generated costs one edit;
+correcting it afterwards means re-cutting every episode's artwork retroactively. Ordered
+below by *cost of delay*, not by current visibility.
+
 | Priority | Asset | Why it matters |
 |---|---|---|
-| **1** | `PodcastGraphics/LuminousLogo_ShowCoverArt-3000x3000.png` | **Live in the Apple and Spotify feeds now.** Highest public exposure of the old name. |
+| **1** | `WebsiteGraphics/Episode-art-template.psd` | **Fix before relaunch.** Every future episode's art is cut from this; a stale name here propagates indefinitely and gets progressively more expensive to unwind. Cheapest fix available right now, and the window closes at relaunch. |
+| **1** | `PodcastGraphics/LuminousLogo_ShowCoverArt-3000x3000.png` | Show cover in the Apple and Spotify feeds — the single most-seen instance of the name. |
 | **1** | `PodcastGraphics/LuminousLogo_EpisodeDefault-3000x3000.png` | Default episode artwork; same feeds. |
 | 2 | `LogoAssets/Luminous-_PrimaryMarkOnWhite-1920x1920.png` | Primary lockup, light backgrounds |
 | 2 | `LogoAssets/Luminous-_PrimaryMarkOnViolet-1920x1920.png` | Primary lockup, violet |
@@ -39,8 +46,7 @@ relative to `design-assets/site-design/Luminous-Brand-Web-Podcast/` at the metar
 | 2 | `LogoAssets/Luminous-_HorzontalPrimaryMarkOnWhite-1920wide.png` | Horizontal lockup |
 | 2 | `LogoAssets/Luminous-_HorzontalPrimaryMarkOnViolet.png` | Horizontal lockup, violet |
 | 2 | `LogoAssets/Luminous-_WordmarkOnWhite-1920x1920 copy.png` | Wordmark-only treatment |
-| 3 | `WebsiteGraphics/Episode-art-template.psd` | Template — stale text propagates into every new episode's art |
-| 3 | `Luminous_BrandGuide.ai` / `.pdf` | Brand guide masters |
+| 3 | `Luminous_BrandGuide.ai` / `.pdf` | Brand guide masters — reference, not shipped to listeners |
 
 Eye icons, the wavy background, and the line separator carry **no** text and need no rework.
 
