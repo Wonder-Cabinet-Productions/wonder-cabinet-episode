@@ -31,13 +31,20 @@
 - Produces:
   - `parse_frontmatter(text: str) -> dict` — returns `{}` for any malformed or absent frontmatter, never raises
   - `extract_requires(text: str) -> dict[str, list[str]]` — returns only keys whose value is a list
+  - `frontmatter_status(text: str) -> str` — one of `"ok"`, `"absent"`, `"unparseable"`, `"ambiguous"`. Task 5's `check_file` turns anything other than `ok`/`absent` into a failing `Result`.
+
+**Why `frontmatter_status` exists.** This tool's whole purpose is preventing silent false passes. A partial parse that drops a present, valid `requires:` block makes the tool report `PASS 0 reference(s) resolved` having read nothing — the exact failure it exists to catch. `"ambiguous"` means *a different valid reading of this same file would have found a `requires:` block that the canonical reading does not see*. Detection compares candidate parses against each other rather than pattern-matching the body, so a legitimate `---` horizontal rule in the document body is not a false positive.
 
 - [ ] **Step 1: Write the failing test**
 
 Create `~/Developer/the-lodge/tests/reference_check/test_frontmatter.py`:
 
 ```python
-from reference_check import parse_frontmatter, extract_requires
+from reference_check import (
+    extract_requires,
+    frontmatter_status,
+    parse_frontmatter,
+)
 
 DOC = """---
 name: wc-theme-qa
@@ -101,6 +108,68 @@ def test_extract_requires_absent_returns_empty():
 def test_extract_requires_drops_non_list_values():
     doc = "---\nrequires:\n  agents: brand-guardian\n  skills: [browser-tooling]\n---\n"
     assert extract_requires(doc) == {"skills": ["browser-tooling"]}
+
+
+# --- "never raises" is a contract, and yaml.YAMLError does not cover it ---
+
+def test_parse_frontmatter_invalid_calendar_date_does_not_raise():
+    """yaml.safe_load raises ValueError, not YAMLError, on 2023-02-30."""
+    assert parse_frontmatter("---\npublished: 2023-02-30\n---\n") == {}
+
+
+def test_parse_frontmatter_deep_nesting_does_not_raise():
+    """Deeply nested flow collections raise RecursionError, not YAMLError."""
+    doc = "---\nagents: " + "[" * 20000 + "]" * 20000 + "\n---\n"
+    assert parse_frontmatter(doc) == {}
+
+
+# --- frontmatter_status: the silent-drop detector ---
+
+BLOCK_SCALAR_SWALLOW = (
+    '---\n'
+    'description: |\n'
+    '  ---\n'
+    '  a horizontal rule inside a literal block\n'
+    'requires:\n'
+    '  agents: [brand-guardian]\n'
+    '---\n'
+)
+
+
+def test_frontmatter_status_ok():
+    assert frontmatter_status("---\nrequires:\n  agents: [x]\n---\nbody\n") == "ok"
+
+
+def test_frontmatter_status_absent():
+    assert frontmatter_status("# heading\n") == "absent"
+
+
+def test_frontmatter_status_unparseable_malformed():
+    assert frontmatter_status("---\n: : :\n---\n") == "unparseable"
+
+
+def test_frontmatter_status_unparseable_unterminated():
+    assert frontmatter_status("---\nname: x\nno close\n") == "unparseable"
+
+
+def test_frontmatter_status_ok_without_requires():
+    assert frontmatter_status("---\nname: x\n---\n") == "ok"
+
+
+def test_frontmatter_status_ambiguous_on_block_scalar():
+    """The class-closing regression: a bare `---` line inside a block scalar.
+
+    The canonical parse truncates and loses `requires:` entirely. A later
+    candidate parse finds it. Reporting "ambiguous" is what stops the tool
+    from claiming PASS on references it never read.
+    """
+    assert frontmatter_status(BLOCK_SCALAR_SWALLOW) == "ambiguous"
+    assert extract_requires(BLOCK_SCALAR_SWALLOW) == {}
+
+
+def test_frontmatter_status_not_fooled_by_body_horizontal_rule():
+    """A `---` rule in the BODY must not be reported as ambiguous."""
+    assert frontmatter_status("---\nrequires:\n  agents: [x]\n---\n\n---\n") == "ok"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -128,28 +197,71 @@ from __future__ import annotations
 import yaml
 
 
-def parse_frontmatter(text: str) -> dict:
-    """Return the YAML frontmatter mapping, or {} if absent or malformed.
+def _candidate_blocks(lines: list[str]) -> list[str]:
+    """Every possible frontmatter block — one per line-anchored `---` terminator.
 
-    The closing delimiter is matched line-anchored, never by substring split:
-    `text.split("---", 2)` truncates at a `---` inside a quoted value, YAML
-    then fails, and the entire requires block silently disappears — the tool
-    would report PASS having read nothing.
+    Line-anchored, never a substring split: `text.split("---", 2)` truncates at
+    a `---` inside a quoted value, YAML then fails, and the whole requires block
+    silently disappears.
     """
+    return [
+        "\n".join(lines[1:index])
+        for index in range(1, len(lines))
+        if lines[index].strip() == "---"
+    ]
+
+
+def _load_mapping(block: str) -> dict | None:
+    """Parse one block to a mapping, or None if it is not a valid YAML mapping.
+
+    Catches bare `Exception` deliberately. `yaml.safe_load` raises `ValueError`
+    on an invalid calendar date (`2023-02-30` — ordinary frontmatter content)
+    and `RecursionError` on deeply nested flow collections. Neither subclasses
+    `yaml.YAMLError`, and the interface contract is that parsing never raises.
+    """
+    try:
+        data = yaml.safe_load(block)
+    except Exception:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def parse_frontmatter(text: str) -> dict:
+    """Return the YAML frontmatter mapping, or {} if absent or malformed."""
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return {}
-    for index in range(1, len(lines)):
-        if lines[index].strip() == "---":
-            block = "\n".join(lines[1:index])
-            break
-    else:
-        return {}
-    try:
-        data = yaml.safe_load(block)
-    except yaml.YAMLError:
-        return {}
-    return data if isinstance(data, dict) else {}
+    for block in _candidate_blocks(lines):
+        data = _load_mapping(block)
+        if data is not None:
+            return data
+    return {}
+
+
+def frontmatter_status(text: str) -> str:
+    """Classify the parse: "ok" | "absent" | "unparseable" | "ambiguous".
+
+    "ambiguous" means a different valid reading of this same file WOULD have
+    found a `requires:` block that the canonical reading cannot see — a bare
+    `---` line inside a YAML block scalar produces exactly that. Left
+    unreported, it makes the tool claim PASS on references it never read.
+
+    Detection compares candidate parses against each other rather than
+    pattern-matching the body, so a legitimate `---` horizontal rule in the
+    document body is not a false positive.
+    """
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return "absent"
+    parsed = [_load_mapping(block) for block in _candidate_blocks(lines)]
+    canonical = next((i for i, data in enumerate(parsed) if data is not None), None)
+    if canonical is None:
+        return "unparseable"
+    if "requires" not in parsed[canonical]:
+        for data in parsed[canonical + 1:]:
+            if data is not None and "requires" in data:
+                return "ambiguous"
+    return "ok"
 
 
 def extract_requires(text: str) -> dict[str, list[str]]:
@@ -166,7 +278,7 @@ def extract_requires(text: str) -> dict[str, list[str]]:
 cd ~/Developer/the-lodge && pytest tests/reference_check/test_frontmatter.py -v
 ```
 
-Expected: PASS — 9 passed
+Expected: PASS — 18 passed
 
 - [ ] **Step 5: Commit**
 
@@ -318,7 +430,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 15 passed
+Expected: PASS — 24 passed
 
 - [ ] **Step 5: Commit**
 
@@ -533,7 +645,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 29 passed
+Expected: PASS — 38 passed
 
 - [ ] **Step 5: Commit**
 
@@ -683,7 +795,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 35 passed
+Expected: PASS — 44 passed
 
 - [ ] **Step 5: Commit**
 
@@ -702,7 +814,7 @@ git commit -m "feat(reference-check): resolve url and selector references under 
 - Test: `~/Developer/the-lodge/tests/reference_check/test_cli.py`
 
 **Interfaces:**
-- Consumes: every resolver from Tasks 2–4
+- Consumes: every resolver from Tasks 2–4, plus `frontmatter_status` from Task 1
 - Produces:
   - `check_file(path: Path, live: bool, tokens_json: Path | None) -> list[Result]`
   - `format_report(path: Path, results: list[Result], live: bool) -> str`
@@ -778,6 +890,35 @@ def test_main_exit_two_on_missing_file(capsys):
 
 def test_main_exit_two_on_no_arguments(capsys):
     assert main([]) == 2
+
+
+def test_check_file_reports_ambiguous_frontmatter(fake_home, tmp_path):
+    """A swallowed requires: block must FAIL, never pass as zero references."""
+    doc = write_doc(tmp_path, (
+        '---\n'
+        'description: |\n'
+        '  ---\n'
+        '  a rule inside a literal block\n'
+        'requires:\n'
+        '  agents: [brand-guardian]\n'
+        '---\n'
+    ))
+    results = check_file(doc, live=False, tokens_json=None)
+    assert [r.kind for r in results] == ["frontmatter"]
+    assert results[0].ok is False
+    assert results[0].ref == "ambiguous"
+
+
+def test_main_exit_one_on_ambiguous_frontmatter(fake_home, tmp_path):
+    doc = write_doc(tmp_path, (
+        '---\n'
+        'description: |\n'
+        '  ---\n'
+        'requires:\n'
+        '  agents: [brand-guardian]\n'
+        '---\n'
+    ))
+    assert main([str(doc)]) == 1
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -797,12 +938,27 @@ STATIC_CLASSES = ("agents", "skills", "bins", "paths", "tokens")
 LIVE_CLASSES = ("urls", "selectors")
 
 
+FRONTMATTER_DETAIL = {
+    "unparseable": "frontmatter present but could not be parsed — declared "
+                   "references, if any, were not read",
+    "ambiguous": "frontmatter parse is ambiguous (a bare `---` line inside a "
+                 "block scalar); a different reading finds a requires: block "
+                 "this one cannot see",
+}
+
+
 def check_file(path: Path, live: bool, tokens_json: Path | None) -> list[Result]:
     path = Path(path)
-    requires = extract_requires(path.read_text())
+    text = path.read_text()
+    results: list[Result] = []
+
+    status = frontmatter_status(text)
+    if status in FRONTMATTER_DETAIL:
+        results.append(Result("frontmatter", status, False, FRONTMATTER_DETAIL[status]))
+
+    requires = extract_requires(text)
     base = path.parent
     urls = list(requires.get("urls", []))
-    results: list[Result] = []
 
     for name in requires.get("agents", []):
         results.append(resolve_agent(name, base))
@@ -883,7 +1039,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 43 passed
+Expected: PASS — 54 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1153,6 +1309,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 9 → 15 → 29 → 35 → 43.
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 18 → 24 → 38 → 44 → 54 (verified: Task 1's 18 confirmed by extracting the plan's own code blocks and running pytest against them).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
