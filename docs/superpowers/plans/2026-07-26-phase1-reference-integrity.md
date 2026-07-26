@@ -70,6 +70,25 @@ def test_parse_frontmatter_malformed_yaml_returns_empty():
     assert parse_frontmatter("---\n: : :\n---\n") == {}
 
 
+def test_parse_frontmatter_value_containing_triple_dash():
+    """Regression: a `---` inside a quoted value must not terminate the block.
+
+    A substring split truncates here, YAML then fails, and the whole requires
+    block silently vanishes — reference-check would report PASS having read
+    nothing. The delimiter must be line-anchored.
+    """
+    doc = (
+        '---\n'
+        'description: "uses --- as a separator"\n'
+        'requires:\n'
+        '  agents: [brand-guardian]\n'
+        '---\n'
+        'body\n'
+    )
+    assert parse_frontmatter(doc)["description"] == "uses --- as a separator"
+    assert extract_requires(doc) == {"agents": ["brand-guardian"]}
+
+
 def test_extract_requires_returns_declared_classes():
     got = extract_requires(DOC)
     assert got == {"agents": ["brand-guardian"], "bins": ["agent-browser>=0.33.0"]}
@@ -110,14 +129,24 @@ import yaml
 
 
 def parse_frontmatter(text: str) -> dict:
-    """Return the YAML frontmatter mapping, or {} if absent or malformed."""
-    if not text.startswith("---"):
+    """Return the YAML frontmatter mapping, or {} if absent or malformed.
+
+    The closing delimiter is matched line-anchored, never by substring split:
+    `text.split("---", 2)` truncates at a `---` inside a quoted value, YAML
+    then fails, and the entire requires block silently disappears — the tool
+    would report PASS having read nothing.
+    """
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
         return {}
-    parts = text.split("---", 2)
-    if len(parts) < 3:
+    for index in range(1, len(lines)):
+        if lines[index].strip() == "---":
+            block = "\n".join(lines[1:index])
+            break
+    else:
         return {}
     try:
-        data = yaml.safe_load(parts[1])
+        data = yaml.safe_load(block)
     except yaml.YAMLError:
         return {}
     return data if isinstance(data, dict) else {}
@@ -137,7 +166,7 @@ def extract_requires(text: str) -> dict[str, list[str]]:
 cd ~/Developer/the-lodge && pytest tests/reference_check/test_frontmatter.py -v
 ```
 
-Expected: PASS — 8 passed
+Expected: PASS — 9 passed
 
 - [ ] **Step 5: Commit**
 
@@ -289,7 +318,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 14 passed
+Expected: PASS — 15 passed
 
 - [ ] **Step 5: Commit**
 
@@ -504,7 +533,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 28 passed
+Expected: PASS — 29 passed
 
 - [ ] **Step 5: Commit**
 
@@ -654,7 +683,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 34 passed
+Expected: PASS — 35 passed
 
 - [ ] **Step 5: Commit**
 
@@ -854,7 +883,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 42 passed
+Expected: PASS — 43 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1124,6 +1153,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 8 → 14 → 28 → 34 → 42.
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 9 → 15 → 29 → 35 → 43.
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.

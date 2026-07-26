@@ -263,6 +263,7 @@ where possible and masked where not, rather than absorbed into a loose global th
 | `motion-ignores-preference` | drop the `prefers-reduced-motion` guard | G9 |
 | `lost-focus-ring` | `outline: none` on a focusable | G10 |
 | `dangling-agent` | frontmatter names a nonexistent agent | G1 |
+| `frontmatter-swallowed` | a `---` inside a quoted frontmatter value | G1 |
 
 Run mode: apply → run gate → **assert the named check FAILS** → revert. A fixture that passes
 means the check is broken; that reports as a **self-test failure**, which invalidates the entire
@@ -271,6 +272,13 @@ run and is louder than any content failure.
 This is the defense against the `documentElement` class of bug. `unbranded-luminous-post` strips
 the class; a check reading `:root` reports green — the same thing it reports on a *correct* page
 — so it cannot distinguish, and the fixture exposes that in one run.
+
+`frontmatter-swallowed` guards the same class one level up, in the resolver itself. Phase 1's
+first implementation split frontmatter on the substring `---`, which truncates at a `---` inside a
+quoted value; YAML then fails, the `requires:` block vanishes, and `reference-check` reports
+`PASS 0 reference(s) resolved` — a silent false pass in the tool built to prevent silent false
+passes. Fixed in Phase 1 with a line-anchored delimiter; this fixture keeps it fixed. **The
+verifier is not exempt from verification.**
 
 ### 6.4 Applying fixtures without touching the working tree
 
