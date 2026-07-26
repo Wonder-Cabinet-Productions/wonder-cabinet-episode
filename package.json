@@ -42,10 +42,6 @@
         },
         "card_assets": true,
         "custom": {
-            "background_color": {
-                "type": "color",
-                "default": "#000000"
-            },
             "email_signup_text": {
                 "type": "text",
                 "default": "Subscribe to make sure you never miss an episode."

@@ -172,7 +172,6 @@ Defined in `package.json` under `config.custom`:
 
 | Setting | Type | Purpose |
 |---------|------|---------|
-| `background_color` | color | Page background (default: #000000) |
 | `email_signup_text` | text | CTA section heading |
 | `apple_podcasts_link` | text | Apple Podcasts URL |
 | `spotify_link` | text | Spotify URL |
