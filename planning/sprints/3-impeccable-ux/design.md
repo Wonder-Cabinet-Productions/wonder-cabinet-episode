@@ -1,6 +1,10 @@
 # Sprint 3 — Impeccable audit + dual UX testing: kickoff
 
-**Date:** 2026-07-22 · **Branch:** `sprint/3-impeccable-ux` (stacked on `sprint/2-brand-switch`)
+**Date:** 2026-07-22 · **Branch:** `sprint/3-impeccable-ux` · **PR targets:** `dev/luminous`
+
+Stacked on `sprint/2-brand-switch` until #53 lands in `dev/luminous`; restack with `--onto` after
+that merge (recipe in `docs/BRANCHING.md`). The series ships as one gated `dev/luminous` → `main`
+rollup — merging this sprint does **not** deploy.
 · **Umbrella spec:** `docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md` §3 (Sprint 3)
 
 Kickoff scaffold authored at the Sprint 3 boundary. **Collaborative, human-in-the-loop by
