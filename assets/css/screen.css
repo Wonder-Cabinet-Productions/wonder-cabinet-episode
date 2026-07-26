@@ -3052,17 +3052,26 @@ body.brand-luminous .wc-head-logo-img--luminous {
     transform: rotate(180deg);
 }
 
+/* Accordion via grid-template-rows 0fr→1fr: animates cleanly with no layout thrash
+   (unlike max-height, which also can't interpolate to `none`, so it never truly
+   animated). The overflow-hidden collapsing element is .wc-transcript-inner; padding
+   lives on the nested .wc-transcript-body so it's clipped flat when collapsed. */
 .wc-transcript-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
 }
 
 .wc-transcript-content.is-open {
-    max-height: none;
+    grid-template-rows: 1fr;
 }
 
 .wc-transcript-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.wc-transcript-body {
     padding: var(--wc-spacing-md) 0;
 }
 
@@ -3095,7 +3104,7 @@ body.brand-luminous .wc-head-logo-img--luminous {
         height: 16px;
     }
 
-    .wc-transcript-inner {
+    .wc-transcript-body {
         padding: var(--wc-spacing-sm) 0;
     }
 }

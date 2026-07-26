@@ -840,10 +840,16 @@
         var contentInner = document.createElement('div');
         contentInner.className = 'wc-transcript-inner';
 
+        // Padding lives on .wc-transcript-body (inside the overflow-hidden inner) so
+        // the grid-template-rows 0fr collapse clips it flat with no sliver.
+        var contentBody = document.createElement('div');
+        contentBody.className = 'wc-transcript-body';
+
         for (var i = 0; i < transcriptContent.length; i++) {
-            contentInner.appendChild(transcriptContent[i]);
+            contentBody.appendChild(transcriptContent[i]);
         }
 
+        contentInner.appendChild(contentBody);
         contentWrapper.appendChild(contentInner);
         section.appendChild(toggle);
         section.appendChild(contentWrapper);
