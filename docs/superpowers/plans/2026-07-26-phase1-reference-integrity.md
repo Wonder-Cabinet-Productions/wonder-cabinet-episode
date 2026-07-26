@@ -33,7 +33,18 @@
   - `extract_requires(text: str) -> dict[str, list[str]]` — returns only keys whose value is a list
   - `frontmatter_status(text: str) -> str` — one of `"ok"`, `"absent"`, `"unparseable"`, `"ambiguous"`. Task 5's `check_file` turns anything other than `ok`/`absent` into a failing `Result`.
 
-**Why `frontmatter_status` exists.** This tool's whole purpose is preventing silent false passes. A partial parse that drops a present, valid `requires:` block makes the tool report `PASS 0 reference(s) resolved` having read nothing — the exact failure it exists to catch. `"ambiguous"` means *a different valid reading of this same file would have found a `requires:` block that the canonical reading does not see*. Detection compares candidate parses against each other rather than pattern-matching the body, so a legitimate `---` horizontal rule in the document body is not a false positive.
+**Why `frontmatter_status` exists.** This tool's whole purpose is preventing silent false passes. A partial parse that drops declared dependencies makes the tool report a pass on references it never read — the exact failure it exists to catch. `"ambiguous"` means *a different valid reading of this same file yields a different dependency set than the canonical reading*.
+
+A bare `---` line inside a YAML block scalar produces that in **two** shapes, and both must be caught:
+
+| Shape | What survives | Caught by |
+|---|---|---|
+| Whole block truncated away | no `requires` key at all | key-presence check |
+| Truncated **mid-block** | `requires` present, later keys silently gone | **set comparison** |
+
+Comparing the resolved dependency *set* — not merely whether the `requires` key is present — is what catches the second shape. Presence-only checking reports `"ok"` on it.
+
+Detection compares candidate parses against each other rather than pattern-matching the body. Soundness rests on a property of the format: a later candidate block can only parse at all when the intervening `---` sat inside a block scalar, because anywhere else it makes the block multi-document YAML, which raises. So a legitimate `---` horizontal rule in the document body never yields a second valid candidate, and never a false positive.
 
 - [ ] **Step 1: Write the failing test**
 
