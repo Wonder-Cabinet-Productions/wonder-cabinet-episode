@@ -36,26 +36,53 @@ jobs:
     name: Base Branch Guard
     if: github.base_ref == 'main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
-      - name: Reject sprint branches targeting main
+      - name: Reject sprint work targeting main
         env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
           HEAD_REF: ${{ github.head_ref }}
           # Escape hatch, evaluated inside the step rather than as a job-level `if`, so the
           # check still reports and cannot deadlock a locked-down main.
           OVERRIDE: ${{ contains(github.event.pull_request.labels.*.name, 'base-guard-override') }}
         run: |
+          RETARGET="Retarget with: gh pr edit $PR --base dev/<series>. See docs/BRANCHING.md. Override with the 'base-guard-override' label."
+
           if [ "$OVERRIDE" = "true" ]; then
             echo "::notice::'base-guard-override' label present — skipping base branch check."
             exit 0
           fi
 
+          # The two sanctioned ways into main. Checked first so a rollup PR never pays for
+          # the file listing below, which can be thousands of files for a whole series.
           case "$HEAD_REF" in
+            dev/*|hotfix/*)
+              echo "'$HEAD_REF' -> main is allowed (series rollup or hotfix)."
+              exit 0
+              ;;
             sprint/*)
-              msg="'$HEAD_REF' targets main. Sprint work merges into the series integration branch (dev/<series>), which then rolls up to main as one gated deploy. Retarget with: gh pr edit <n> --base dev/<series>. See docs/BRANCHING.md. Override with the 'base-guard-override' label."
-              echo "::error::$msg"
+              echo "::error::'$HEAD_REF' targets main. Sprint work merges into the series integration branch (dev/<series>), which then rolls up to main as one gated deploy. $RETARGET"
               exit 1
               ;;
           esac
 
-          echo "'$HEAD_REF' -> main is allowed (series rollup, hotfix, or repo plumbing)."
+          # Branch naming is not a reliable signal — agent worktrees produce names like
+          # 'name-change' or 'worktree/brave-cloud-8ac8' that no pattern anticipates. What
+          # actually distinguishes sprint work from repo plumbing is whether it carries theme
+          # source. Plumbing (docs, planning, CI) never does; a partial series always does.
+          THEME=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' \
+                  | grep -E '^(assets/|partials/)|\.hbs$' || true)
+
+          if [ -n "$THEME" ]; then
+            echo "::error::'$HEAD_REF' targets main and changes theme source, which would deploy a partial series. Land it in dev/<series> so the whole series ships together. $RETARGET"
+            echo "Theme files in this PR:"
+            echo "$THEME" | sed 's/^/  /' | head -30
+            exit 1
+          fi
+
+          echo "'$HEAD_REF' -> main touches no theme source — allowed (repo plumbing)."
