@@ -8,6 +8,12 @@
     <div class="wc-hero-content gh-inner">
         <span class="wc-hero-welcome">Welcome to</span>
         <img src="{{@custom.hero_title_image}}" alt="Wonder Cabinet" class="wc-hero-title">
-        <p class="wc-hero-tagline">From the creators of <em>To The Best Of Our Knowledge</em></p>
+        {{!-- Tagline is editable in Ghost Admin → Design (custom.hero_tagline).
+             Triple-stache is deliberate: the field carries <em> around the show
+             title, and Ghost custom settings have no rich-text type. Only
+             Admins/Owner can edit Design settings. --}}
+        {{#if @custom.hero_tagline}}
+            <p class="wc-hero-tagline">{{{@custom.hero_tagline}}}</p>
+        {{/if}}
     </div>
 </section>
