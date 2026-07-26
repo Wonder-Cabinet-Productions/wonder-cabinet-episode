@@ -54,7 +54,15 @@ Do not deviate from the brand spec unless explicitly instructed.
 3. **Verify at https://wondercabinet.riechers.co** — refresh the browser (`.hbs` edits show immediately; CSS/JS edits show after the ~2 s rebuild). chrome-devtools MCP works against this URL for one-off visual checks. Admin is at `/ghost/`.
 4. **Before merging anything touching shared CSS, `partials/components/`, `audio-player.js`, or `--show-accent`** — work `docs/luminous/cross-brand-qa-checklist.md` **by hand** across both brand contexts: the §A "WC is a visual no-op" invariant, accent variables, AA contrast, and WC-vocabulary leaks. It catches *unintended* drift only — `brand-guardian` still gates design intent.
 
-   ⚠️ **This gate is manual today.** The `wc-theme-qa` skill that was to automate it **does not exist yet** — `~/.claude/skills/wc-theme-qa` is a broken symlink (its target was never created), so invoking it fails rather than running checks. Its design (`docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md`) is still "pending implementation". Do not record the gate as satisfied on the strength of a skill that did not run. See `docs/BRANCHING.md` § "The `wc-theme-qa` skill is not available yet".
+   The **`wc-theme-qa`** skill automates the mechanizable parts of that checklist (via `agent-browser`) and reports what it did *not* cover. Prefer it when it loads — but **check that it does before relying on it**, and fall back to the manual pass when it doesn't:
+
+   ```bash
+   ls ~/.claude/skills/wc-theme-qa/SKILL.md   # exists → the skill will load
+   ```
+
+   ⚠️ Its availability is **not yet durable.** `~/.claude/skills/wc-theme-qa` is a symlink into the `the-lodge` checkout, and the skill still lives on an **unmerged branch** there (`mriechers/the-lodge#478`). It resolves only while that checkout is parked on a branch containing it — a branch switch in `the-lodge` makes it vanish mid-sprint, silently. Until #478 merges, treat the skill as a convenience and the checklist as the gate.
+
+   Whichever way it ran: **do not record the gate as satisfied unless checks actually executed.** A skill that failed to load is not a pass.
 
    When checking brand vars by hand: read from `document.body`, **not** `document.documentElement`. Sprint 2 moved brand context to a body class, so querying `:root` returns WC green even on a correctly-branded Luminous page.
 
