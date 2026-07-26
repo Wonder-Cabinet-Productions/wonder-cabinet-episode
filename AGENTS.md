@@ -133,6 +133,18 @@ Before deploying, run GScan:
 npm run test
 ```
 
+## Branch Model
+
+Full contract: **`docs/BRANCHING.md`**. Pick the right base *before* opening a PR:
+
+- **Sprint work targets the active `dev/<series>` integration branch — never `main`.** CI enforces this: a `sprint/*` branch opened against `main` fails the **Base Branch Guard** check. Fix with `gh pr edit <n> --base dev/<series>`.
+- `main` accepts exactly three things: a **series rollup** (`dev/<series>` → `main`, rebase-merged), an **S1 hotfix** (`planning/TRIAGE.md`), and **repo plumbing** that touches no theme source.
+- Merging to `main` **deploys to production** (`wondercabinetproductions.com`). Merging to `dev/<series>` does not — that branch is the QA target on `wondercabinet.riechers.co`.
+- Sprint PRs squash-merge into the dev branch (one commit per sprint). After each merge, restack the sibling sprint branches — recipe in `docs/BRANCHING.md`.
+- Both tiers require gscan (`Validate Theme`) to pass. `dev/**` is **strict**: a sprint branch must be up to date with the dev tip before it can merge.
+
+Active series: **`dev/luminous`**.
+
 ## Commit Discipline
 
 This theme is a nested Git repository within a larger workspace.

@@ -261,6 +261,11 @@ Common fixes:
 
 ## Deployment
 
+> The manual zip-and-upload flow below is a fallback. Production deploys are automated: merging
+> to `main` runs `.github/workflows/deploy-theme.yml`. **Which branch you merge to, and when,
+> is governed by `docs/BRANCHING.md`** — sprint work goes to a `dev/<series>` integration
+> branch, not `main`.
+
 ### Creating a Zip
 
 ```bash
