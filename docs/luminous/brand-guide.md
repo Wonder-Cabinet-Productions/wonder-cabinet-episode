@@ -43,6 +43,8 @@ All files live in `design-assets/site-design/Luminous-Brand-Web-Podcast/LogoAsse
 | Eye icon (violet) | `Luminous-_EyeIconViolet-800x800.png` | 3334×3334 | Brand-colored icon use |
 | Eye icon (web-optimized) | `LuminousWeb-eyeicon.png` | 800×800 | Standard web icon |
 
+> **Filename caveat (verified 2026-06-08):** the pixel labels baked into the filenames *understate* the actual exports — e.g. `…-1920x1920.png` is really **8000×8000**, the `…-800x800` eye icons are **3334×3334**, and the `…-3000x3000` cover art is **12500×12500**. The "Dimensions" column above reflects the true exported size (confirmed via `sips`); treat the filename numbers as legacy labels, not real dimensions.
+
 **Working files**: `LuminousLogos.ai` and `LuminousLogo-web-podcast.ai` (master vector sources).
 
 ---
@@ -64,8 +66,17 @@ All files live in `design-assets/site-design/Luminous-Brand-Web-Podcast/LogoAsse
 - **Black** carries the eye-mark and body text on cream.
 - **Cream** is the shared background across both brands. *Do not introduce a Luminous-specific background color* — keep the warmth consistent so cross-brand UI (navbar, footer) remains coherent.
 
-### Derived tokens (TBD)
-The Wonder Cabinet brand defines two derived colors for accessibility (`--wc-green-text` #087834 and `--wc-dark-green` #043013). Luminous does **not** yet have published equivalents. Until they are commissioned, the theme will use violet at full strength on cream — verify WCAG contrast in context before declaring complete. See [`multi-brand-design-system.md` § Backlog](../multi-brand-design-system.md#9-backlog-refactor-work-this-doc-surfaces) item #6.
+### Derived tokens (resolved 2026-06-08, Sprint 1)
+The Wonder Cabinet brand defines two derived colors for accessibility (`--wc-green-text` #087834 and `--wc-dark-green` #043013). Luminous now has equivalents, derived and contrast-verified during Sprint 1 — because **`#9A59FF` at full strength fails WCAG AA as body text on cream (3.84:1)** and must not be used for small/normal text:
+
+| Token | Hex | Contrast on cream `#FFFAEB` | Use |
+|---|---|---|---|
+| `--luminous-accent` | `#9A59FF` | 3.84:1 (✗ AA text) | Signature: badges, borders, large display text (≥18pt bold) only |
+| `--luminous-accent-text-on-cream` | `#8B4DEB` | 4.62:1 (✓ AA) | Violet rendered **as readable text** on cream — links, headings. Luminous parallel to `--wc-green-text`. |
+| `--luminous-accent-text` | `#000000` (`var(--wc-black)`) | 5.25:1 on violet (✓ AA) | Text placed **on** the violet accent (highlight badge/button). |
+| `--luminous-accent-dark` | `#1F0F33` | — | Deep-violet for dark UI. Parallel to `--wc-dark-green`. |
+
+Full derivation math, token semantics, and how these map to the `--show-accent*` indirection live in [`../multi-brand-design-system.md`](../multi-brand-design-system.md).
 
 ### Color variance note
 The brand guide PDF specifies cream as `#FFFAEB`, but the embedded SVG in `LuminousWeb_WebsiteBackground.svg` uses `#FFF9E8` (a slightly cooler variant). The PDF value is canonical. SVGs should be normalized to `#FFFAEB` (or routed through `var(--wc-cream)`) if rendered inline in the theme.
