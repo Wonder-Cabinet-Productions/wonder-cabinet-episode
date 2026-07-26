@@ -103,7 +103,8 @@ Each brand declares its raw palette. Components never read these directly (excep
 | Slot | WC | Luminous | IoK |
 |---|---|---|---|
 | Hero background | `bg-galaxy-spiral-1200w@2x.png` (raster) | `WebsiteGraphics/LuminousWeb_WebsiteBackground.svg` (vector wavy) | — |
-| Wordmark / title | `WonderCabinet-title.png` | `WebsiteGraphics/LuminousWeb_Website-Wordmark.svg` | — |
+| Wordmark / title | `WonderCabinet-title.png` | `WebsiteGraphics/LuminousWeb_Website-Wordmark.svg` | Luminous copy is trimmed to wordmark + dot leader only (viewBox 2400×419); the sponsor tagline it used to bake in is now live text via `luminous_hero_tagline` |
+| Hero tagline | `hero_tagline` custom setting | `luminous_hero_tagline` custom setting | Both are content slots, not assets. Rendered with triple-stache so `<em>` survives |
 | Logo on dark | `logo-primary-dark-bg-800w.png` | `LogoAssets/Luminous-_PrimaryMarkOnDark-1920wide.png` | — |
 | Favicon / mark | WC cabinet icon | `LogoAssets/Luminous-_EyeIconBlack-800x800.png` | — |
 | Section divider | `ui-wave-divider-light.svg` | `WebsiteGraphics/LuminousWeb_LineSeparator.svg` (dotted, cream) | — |
