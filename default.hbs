@@ -45,7 +45,17 @@
     {{ghost_head}}
 </head>
 
-<body class="{{body_class}}{{{block "body_class"}}}">
+{{!-- Brand-context body classes (docs/multi-brand-design-system.md §7).
+     {{#if tag}} brand-{{tag.slug}} brands COLLECTIONS / tag archives — they set a `tag`
+     context via `data: tag.X` in routes.yaml (home → brand-wonder-cabinet, /luminous/ →
+     brand-luminous). {{#if post.primary_tag}} brand-{{post.primary_tag.slug}} brands POSTS
+     by their primary tag, so a Luminous EPISODE page gets brand-luminous too. NOTE: in the
+     LAYOUT context the post is nested under `post` (post.hbs wraps its body in {{#post}}),
+     so root-level {{primary_tag}}/{{#has tag=}} resolve to nothing here — must go through
+     `post.`. Generic N-brand hook: only brand-luminous is styled today; other brand-{slug}
+     classes are inert. (Replaces a {{#has tag="luminous"}} clause that never fired on
+     posts — the episode-branding bug.) --}}
+<body class="{{body_class}}{{{block "body_class"}}}{{#if tag}} brand-{{tag.slug}}{{/if}}{{#if post.primary_tag}} brand-{{post.primary_tag.slug}}{{/if}}">
 <div class="gh-site">
 
     {{!-- Skip to content link for keyboard accessibility (WCAG 2.4.1) --}}
