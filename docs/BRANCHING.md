@@ -53,10 +53,26 @@ The `dev/**` glob is what CI and the branch-protection ruleset key on. A branch 
 
 ## Which base branch?
 
-**Sprint work targets `dev/<series>`. Never `main`.** This is enforced: a `sprint/*` branch
-opened against `main` fails the **Base Branch Guard** check in CI. The error names the fix
-(`gh pr edit <n> --base dev/<series>`). If you genuinely need the exception, add the
-`base-guard-override` label to the PR and re-run.
+**Sprint work targets `dev/<series>`. Never `main`.** This is enforced by the **Base Branch
+Guard** check, which is required on `main`. Its decision order:
+
+| # | Condition | Result |
+|---|---|---|
+| 1 | PR has the `base-guard-override` label | **pass** |
+| 2 | head is `dev/**` or `hotfix/*` | **pass** — series rollup or hotfix |
+| 3 | head is `sprint/*` | **fail** |
+| 4 | PR changes `assets/`, `partials/`, or any `*.hbs` | **fail** — that's a partial series |
+| 5 | otherwise | **pass** — repo plumbing |
+
+Rule 4 exists because **branch naming is not a reliable signal.** Agent worktrees produce names
+like `name-change` or `worktree/brave-cloud-8ac8` that no pattern anticipates, and a `sprint/*`
+deny-list alone would wave them straight into production. What actually separates sprint work
+from plumbing is whether it carries theme source: plumbing (docs, planning, CI) never does, a
+partial series always does.
+
+The error message names the fix (`gh pr edit <n> --base dev/<series>`). If you genuinely need the
+exception, add the `base-guard-override` label and re-trigger — note that a *re-run* replays the
+original event payload and won't see the new label, so push a commit or reopen the PR instead.
 
 `main` accepts exactly three things: a series rollup from `dev/<series>`, an S1 hotfix, and repo
 plumbing that touches no theme source.
