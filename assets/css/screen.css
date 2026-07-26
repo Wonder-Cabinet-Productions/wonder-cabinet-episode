@@ -16,9 +16,11 @@
     --iok-accent: #b6d0d8;
     --iok-accent-text: #1a3a44;
 
-    /* Brand Colors — Luminous (placeholder until brand is finalized) */
-    --luminous-accent: #D4A843;
-    --luminous-accent-text: var(--wc-black);
+    /* Brand Colors — Luminous (finalized — Art & Sons, May 2026; see docs/luminous/brand-guide.md) */
+    --luminous-accent: #9A59FF;               /* signature violet — badges/borders/large display only; fails AA as body text on cream (3.84:1) */
+    --luminous-accent-text: var(--wc-black);  /* text ON the violet accent — 5.25:1 on #9A59FF (AA) */
+    --luminous-accent-text-on-cream: #8B4DEB; /* violet as readable text on cream — 4.62:1 (AA); parallel to --wc-green-text */
+    --luminous-accent-dark: #1F0F33;          /* deep violet for dark UI; parallel to --wc-dark-green */
 
     /* Show-Agnostic Tokens
        Components use these instead of --wc-* directly.
@@ -718,7 +720,7 @@ body {
     flex-direction: row;
     gap: var(--wc-spacing-lg) !important;
     padding: 30px; /* Figma spec: ~30px internal padding */
-    border: 2px solid var(--wc-green);
+    border: 2px solid var(--show-accent);
     background-color: var(--wc-black);
     text-decoration: none;
 }
@@ -732,7 +734,7 @@ body {
     position: absolute;
     top: -1px;
     right: 20px;
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     color: var(--wc-black);
     font-family: var(--font-heading);
     font-size: 1.1rem;
@@ -766,7 +768,7 @@ body {
 }
 
 .wc-episode-card-inner:hover {
-    border-color: var(--wc-green);
+    border-color: var(--show-accent);
 }
 
 .wc-episode-card-image {
@@ -841,7 +843,7 @@ body {
     margin-top: auto;
     min-height: 45px;
     padding: 0 20px;
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     color: var(--wc-cream);
     font-family: var(--font-heading);
     font-size: 1.6rem;
@@ -1074,7 +1076,7 @@ body {
     display: flex;
     align-items: center;
     padding: 0 var(--wc-spacing-md);
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
@@ -1555,7 +1557,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin: 0 0 var(--wc-spacing-md);
 }
 
@@ -1574,12 +1576,12 @@ body {
 }
 
 .wc-episode-notes-content a {
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     text-decoration: underline;
 }
 
 .wc-episode-notes-content a:hover {
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 /* Images in episode notes content — allow full width display */
@@ -1659,7 +1661,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text);
+    color: var(--show-accent-text);
     margin: var(--wc-spacing-lg) 0 var(--wc-spacing-sm);
 }
 
@@ -1680,7 +1682,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text);
+    color: var(--show-accent-text);
     margin-bottom: var(--wc-spacing-sm);
 }
 
@@ -1704,7 +1706,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin: 0 0 var(--wc-spacing-md);
 }
 
@@ -1713,7 +1715,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.4rem; /* Figma spec: 14px Bold */
     font-weight: 700;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin-bottom: var(--wc-spacing-xs);
     text-decoration: none;
 }
@@ -1850,12 +1852,12 @@ body {
 
 .kg-callout-card-blue {
     background-color: rgba(16, 165, 68, 0.1); /* Use green instead of blue */
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 .kg-callout-card-green {
     background-color: rgba(16, 165, 68, 0.1);
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 .kg-callout-card-yellow {
@@ -1875,7 +1877,7 @@ body {
 }
 
 .kg-callout-card-accent {
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     color: var(--wc-cream);
 }
 
@@ -1955,7 +1957,7 @@ body {
 }
 
 .kg-btn-accent {
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     color: var(--wc-cream);
 }
 
@@ -1999,7 +2001,7 @@ body {
 }
 
 .kg-file-card-icon {
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     color: var(--wc-cream);
     padding: var(--wc-spacing-sm);
     border-radius: var(--wc-radius);
@@ -2060,7 +2062,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin-bottom: var(--wc-spacing-md);
 }
 
@@ -2396,7 +2398,7 @@ body {
 .wc-rule {
     border: none;
     height: 2px;
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     max-width: 810px;
     margin: var(--wc-spacing-sm) auto;
 }
@@ -2488,11 +2490,11 @@ body {
 }
 
 .wc-page-content .gh-content a {
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
 }
 
 .wc-page-content .gh-content a:hover {
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 /* Page Content Mobile Responsive */
@@ -2785,7 +2787,7 @@ body {
     background: rgba(8, 120, 52, 0.08); /* Match --wc-green-text */
     border: 1px solid rgba(8, 120, 52, 0.2);
     border-radius: 4px;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
@@ -2800,7 +2802,7 @@ body {
 }
 
 .wc-transcript-toggle:focus-visible {
-    outline: 2px solid var(--wc-green-text);
+    outline: 2px solid var(--show-accent-text);
     outline-offset: 2px;
 }
 
@@ -2889,7 +2891,7 @@ body {
     transform: translateX(-50%);
     z-index: 9999;
     padding: var(--wc-spacing-sm) var(--wc-spacing-md);
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     color: var(--wc-cream);
     font-family: var(--font-heading);
     font-size: 1.6rem;
@@ -3059,7 +3061,7 @@ body {
 
 /* CTA email input and button */
 .wc-cta-input:focus-visible {
-    outline: 2px solid var(--wc-green);
+    outline: 2px solid var(--show-accent);
     outline-offset: 0;
 }
 
@@ -3142,8 +3144,8 @@ body {
     margin: 0 auto;
     padding-top: var(--wc-spacing-lg);
     padding-bottom: var(--wc-spacing-lg);
-    border-top: 2px solid var(--wc-green);
-    border-bottom: 2px solid var(--wc-green);
+    border-top: 2px solid var(--show-accent);
+    border-bottom: 2px solid var(--show-accent);
 }
 
 /* Grid container — single column by default, two columns when multi */
@@ -3201,7 +3203,7 @@ body {
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid var(--wc-green);
+    border: 2px solid var(--show-accent);
     transition: border-color 0.2s ease;
 }
 
@@ -3225,7 +3227,7 @@ body {
 }
 
 .wc-author-name a:hover {
-    color: var(--wc-green);
+    color: var(--show-accent);
 }
 
 /* Bio text */
@@ -3274,7 +3276,7 @@ body {
 }
 
 .wc-author-link:hover {
-    color: var(--wc-green);
+    color: var(--show-accent);
     opacity: 1;
 }
 
@@ -3330,7 +3332,7 @@ body {
     margin: 0 auto var(--wc-spacing-md) auto;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid var(--wc-green);
+    border: 3px solid var(--show-accent);
 }
 
 .gh-archive-image img {
@@ -3384,7 +3386,7 @@ body {
 }
 
 .gh-archive-social a:hover {
-    color: var(--wc-green);
+    color: var(--show-accent);
     opacity: 1;
 }
 
@@ -3451,7 +3453,7 @@ body {
 .wc-form-select:focus,
 .wc-form-textarea:focus {
     outline: none;
-    border-color: var(--wc-green);
+    border-color: var(--show-accent);
 }
 
 .wc-form-select {
@@ -3482,19 +3484,19 @@ body {
     font-size: 1.6rem;
     font-weight: 500;
     color: var(--wc-cream);
-    background-color: var(--wc-green);
-    border: 2px solid var(--wc-green);
+    background-color: var(--show-accent);
+    border: 2px solid var(--show-accent);
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .wc-form-submit:hover {
-    background-color: var(--wc-dark-green);
-    border-color: var(--wc-dark-green);
+    background-color: var(--show-accent-dark);
+    border-color: var(--show-accent-dark);
 }
 
 .wc-form-submit:focus-visible {
-    outline: 2px solid var(--wc-green);
+    outline: 2px solid var(--show-accent);
     outline-offset: 4px;
 }
 
@@ -3508,7 +3510,7 @@ body {
     font-family: var(--font-heading);
     font-size: 3.2rem;
     font-weight: 700;
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
     margin-bottom: var(--wc-spacing-sm);
 }
 
