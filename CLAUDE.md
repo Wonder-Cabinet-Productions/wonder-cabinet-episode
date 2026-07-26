@@ -17,6 +17,18 @@ This directory exists on **two machines**, kept identical by a mutagen sync (`wc
 
 `node_modules/` is NOT synced (platform-specific) — `npm install` separately per machine if needed. `assets/built/` is generated on the CT and syncs back; never hand-edit it.
 
+## ⚠️ Branch model — pick the right base BEFORE opening a PR
+
+Full contract: **`docs/BRANCHING.md`**. The short version:
+
+- **Sprint work targets the active `dev/<series>` integration branch — never `main`.** CI enforces this: a `sprint/*` branch opened against `main` fails the **Base Branch Guard** check. Fix with `gh pr edit <n> --base dev/<series>`.
+- `main` accepts exactly three things: a **series rollup** (`dev/<series>` → `main`, rebase-merged), an **S1 hotfix** (`planning/TRIAGE.md`), and **repo plumbing** that touches no theme source.
+- Merging to `main` **deploys to production** (`wondercabinetproductions.com`). Merging to `dev/<series>` does not — that branch is the QA target on `wondercabinet.riechers.co`.
+- Sprint PRs squash-merge into the dev branch (one commit per sprint). After each merge, restack the sibling sprint branches — recipe in `docs/BRANCHING.md`.
+- Both tiers require gscan (`Validate Theme`) to pass. `dev/**` is **strict**: a sprint branch must be up to date with the dev tip before it can merge.
+
+Active series: **`dev/luminous`**.
+
 ## Project Overview
 
 **Wonder Cabinet** is a custom Ghost theme for a podcast from the creators of *To The Best Of Our Knowledge*. Built on Ghost's **Episode** theme (official podcast theme) using `@tryghost/shared-theme-assets` v2 for Ghost CMS 5.0+.

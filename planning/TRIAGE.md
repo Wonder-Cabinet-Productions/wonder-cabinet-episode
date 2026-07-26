@@ -2,6 +2,11 @@
 
 Standardized process for handling feedback and bugs on the live Wonder Cabinet theme.
 
+> **Where does the fix branch from?** See `docs/BRANCHING.md` for the full contract. In short:
+> S1 hotfixes branch from `main` and merge back to `main` (deploying immediately) — the process
+> below is unchanged and still legal. Everything routed into a **sprint** branches from the
+> active `dev/<series>` integration branch and merges back into it, never into `main`.
+
 ---
 
 ## Issue Tracking: GitHub Issues + backlog.md
@@ -92,7 +97,8 @@ REPORTED → CATEGORIZE (assign category label + severity label)
 
 ## S1 Hotfix Process
 
-For critical issues that break the site for all visitors:
+For critical issues that break the site for all visitors. This is one of only three things that
+may target `main` directly (see `docs/BRANCHING.md`):
 
 1. **Branch** from `main`: `hotfix/brief-description`
 2. **Fix** the issue
@@ -101,6 +107,8 @@ For critical issues that break the site for all visitors:
 5. **Commit** with `fix:` prefix
 6. **Merge** to `main` (auto-deploys to Ghost(Pro))
 7. **Log** in `progress.md`, mark complete in `backlog.md`, close GitHub Issue
+8. **Back-merge**: if a `dev/<series>` branch is active, merge `main` into it so the series
+   doesn't regress the hotfix when it rolls up
 
 ---
 
@@ -108,11 +116,16 @@ For critical issues that break the site for all visitors:
 
 When **3+ related issues** accumulate in the same category:
 
-1. Create `planning/sprints/current/design.md` and `features.json`
-2. Move related items from backlog into sprint features
-3. Assign agent team and execute per sprint conventions
+1. Open the series if one isn't active: branch `dev/<series>` off `main` and push it. The
+   `dev/**` branch-protection ruleset picks it up automatically — nothing to configure.
+2. Create `planning/sprints/current/design.md` and `features.json`
+3. Move related items from backlog into sprint features
+4. Branch `sprint/N-<name>` off `dev/<series>`; its PR targets `dev/<series>`
+5. Assign agent team and execute per sprint conventions
 
 This transitions the work from **maintenance mode** to a **sprint** for that cluster of issues.
+The series ships as one gated deploy when `dev/<series>` rolls up to `main` — see
+`docs/BRANCHING.md`.
 
 ---
 

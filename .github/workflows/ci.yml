@@ -2,10 +2,14 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    # `main` is production. `dev/**` is the sprint-series integration tier — PRs into it
+    # must clear the same gscan gate, or a series arrives at main having never been validated.
+    # See docs/BRANCHING.md.
+    branches: [main, 'dev/**']
 
 jobs:
   validate:
+    # Job name is the required-status-check context on both rulesets. Do not rename.
     name: Validate Theme
     runs-on: ubuntu-latest
 
@@ -24,3 +28,34 @@ jobs:
 
       - name: GScan Validation
         run: npm run test
+
+  base-guard:
+    # Required check on main. Runs on every PR into main (never on dev/** PRs) so it always
+    # reports a real conclusion — a skipped job counting as success is not something to lean on
+    # when main's ruleset has no bypass actors.
+    name: Base Branch Guard
+    if: github.base_ref == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Reject sprint branches targeting main
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          # Escape hatch, evaluated inside the step rather than as a job-level `if`, so the
+          # check still reports and cannot deadlock a locked-down main.
+          OVERRIDE: ${{ contains(github.event.pull_request.labels.*.name, 'base-guard-override') }}
+        run: |
+          if [ "$OVERRIDE" = "true" ]; then
+            echo "::notice::'base-guard-override' label present — skipping base branch check."
+            exit 0
+          fi
+
+          case "$HEAD_REF" in
+            sprint/*)
+              msg="'$HEAD_REF' targets main. Sprint work merges into the series integration branch (dev/<series>), which then rolls up to main as one gated deploy. Retarget with: gh pr edit <n> --base dev/<series>. See docs/BRANCHING.md. Override with the 'base-guard-override' label."
+              echo "::error::$msg"
+              exit 1
+              ;;
+          esac
+
+          echo "'$HEAD_REF' -> main is allowed (series rollup, hotfix, or repo plumbing)."
