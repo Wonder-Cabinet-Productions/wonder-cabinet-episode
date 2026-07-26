@@ -758,19 +758,36 @@ body.tag-template.brand-luminous .wc-head {
     left: 0;
     right: 0;
     bottom: 0;
-    /* WC: galaxy spiral anchored near the top so it reads behind the nav + hero. */
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center 90px;
-    background-size: clamp(400px, 55vw, 687px) auto;
+    /* WC: galaxy spiral — heart centered on the WONDER CABINET wordmark (~436px from
+       band-top), sized large enough that its faint outer stars bleed UP behind the
+       transparent nav (no black header cutoff) and fade into the dark. Same treatment
+       as the Luminous swirl. Length-based Y positions the image TOP, so subtract half
+       the size to keep the heart on the wordmark as the size flexes. */
+    background-image: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp));
+    background-repeat: no-repeat;
+    background-size: min(880px, 72vw) auto;
+    background-position: center calc(436px - min(440px, 36vw));
     opacity: 0.45; /* Figma spec */
     pointer-events: none;
     z-index: 0;
 }
 
-/* Luminous: the wavy is a PATTERN — cover the whole band so it truly bleeds everywhere. */
+/* ── Luminous: static "swirl" behind the hero, WC-style ───────────────────
+   Mirrors WC's galaxy: the wavy radial burst lives in the band's ::before, so it
+   SCROLLS WITH THE HERO (no parallax) and its heart stays locked on the LUMINOUS
+   wordmark at every screen size. Sized (not `cover`) so it radiates from the
+   wordmark and fades into the dark — no hard pane edge. The band is pulled up
+   behind the transparent nav (shared nav-bleed rule + default band padding) and
+   the burst is large enough to reach the very top, so it bleeds behind the nav
+   with NO black header cutoff. Tune the heart with background-position, the spread
+   with background-size. */
 body.brand-luminous .wc-brand-band::before {
     background-image: url(../images/luminous/bg-wavy.svg);
-    background-position: center top;
-    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: min(1000px, 120vw) auto;   /* burst spread — shrink for more black around it */
+    /* Length-based Y positions the image's TOP, so subtract half the burst height
+       to keep the HEART locked on the wordmark (~440px from band-top) as size changes. */
+    background-position: center calc(440px - min(500px, 60vw));
     opacity: 0.9;
 }
 
@@ -803,6 +820,17 @@ body.home-template .wc-brand-band .wc-podcast-services {
     body.home-template,
     body.tag-template.brand-luminous {
         --wc-nav-h: 84px;
+    }
+    /* Re-anchor the swirl heart on the higher mobile wordmark (WC ~332px, Luminous
+       ~318px from band-top), kept large enough (720px, half = 360px) that it still
+       bleeds up behind the shorter mobile nav. Calibrated ~500px — fine-tune on device. */
+    body.home-template .wc-brand-band::before {
+        background-size: 720px auto;
+        background-position: center -28px; /* 332 wordmark − 360 half */
+    }
+    body.brand-luminous .wc-brand-band::before {
+        background-size: 720px auto;
+        background-position: center -42px; /* 318 wordmark − 360 half */
     }
 }
 
@@ -2244,14 +2272,24 @@ body.brand-luminous .wc-hero-zone::before {
     opacity: 0.9;
 }
 
-/* Luminous hero: eye-icon motif above the wordmark */
+/* Luminous hero: eye-icon motif above the wordmark. Sized to the Primary Logo
+   lockup in Luminous_BrandGuide.pdf (Art & Sons) p2: the eye lens ≈ 0.68× the
+   wordmark's width. The eye asset is a square canvas whose violet lens fills ~88%
+   width / ~49% height (measured), so the element is ~0.77× the wordmark width and
+   we crop the transparent top/bottom with aspect-ratio + object-fit so the lens
+   sits tight above the wordmark. --lum-eye-w is the one knob to tune. */
 .wc-hero-eye {
-    width: 72px;
-    height: 72px;
-    margin-bottom: var(--wc-spacing-sm);
+    --lum-eye-w: 480px; /* ≈ 0.77 × the 620px wordmark → lens ≈ 0.68× (brand spec) */
+    width: min(var(--lum-eye-w), 72vw);
+    height: auto;
+    aspect-ratio: 1 / 0.56; /* crop the square canvas down toward the 1.80:1 lens */
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: var(--wc-spacing-xs);
 }
 .wc-hero-title--luminous {
     max-width: 620px;
+    width: 100%;
 }
 
 /* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
@@ -2282,14 +2320,42 @@ body.brand-luminous .wc-bracket-btn {
     padding: 14px 32px;
 }
 
-/* Luminous: dashed line separator replaces the solid rule (§6 asymmetric) */
+/* Luminous: the designer's LineSeparator deliverable — a fine DOTTED line in cream
+   (#FFFAEB) — replaces the solid green rule (§6 asymmetric). Rooted in
+   Luminous_BrandGuide.pdf + WebsiteGraphics/LuminousWeb_LineSeparator.svg (round
+   cream dots, stroke #fffaeb), and echoes the dotted underline baked into the
+   wordmark. NOT dashed, NOT violet — the earlier CSS approximation drifted from
+   spec. Rendered as a repeating radial-gradient so it scales full-width and crisp. */
 body.brand-luminous .wc-rule {
-    height: 0;
+    height: 6px;
     background: none;
-    border-top: 2px dashed var(--show-accent);
+    border: none;
+    background-image: radial-gradient(circle, var(--wc-cream) 0 2px, transparent 2.4px);
+    background-size: 18px 6px;
+    background-position: center;
+    background-repeat: repeat-x;
 }
 body.brand-luminous .wc-rule--thick {
-    border-top-width: 3px;
+    height: 9px;
+    background-image: radial-gradient(circle, var(--wc-cream) 0 3px, transparent 3.4px);
+    background-size: 24px 9px;
+}
+
+/* Luminous nav logo: swap the WC green cabinet mark for a violet-cabinet variant
+   (logo-cabinet-violet-800.png — recolored from the brand raster) so it shows on the
+   dark nav and matches the violet scheme instead of clashing with green. Both marks
+   are in navbar.hbs; toggled by brand. Luminous-only. */
+.wc-head-logo-img--luminous {
+    display: none;
+}
+body.brand-luminous .wc-head-logo-img--default {
+    display: none;
+}
+body.brand-luminous .wc-head-logo-img--luminous {
+    display: block;
+    width: 68px;      /* explicit — the shrink-to-fit anchor + max-width:100% was clamping it to 0 */
+    height: 68px;
+    max-width: none;
 }
 
 .wc-tag-hero-content {

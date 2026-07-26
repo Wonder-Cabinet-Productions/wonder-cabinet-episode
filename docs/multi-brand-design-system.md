@@ -20,7 +20,7 @@ This theme hosts one CMS, one content database, one theme — and N brands selec
 | Brand | Tag | Participation level | What renders branded |
 |---|---|---|---|
 | **Wonder Cabinet** | (default / untagged) | **Host brand** | Everything by default. Green, galaxy, cabinet, brackets. |
-| **Luminous** | `tag:luminous` | **Full brand-context** *(in progress — this is the active work)* | A whole page flips: violet accent, eye-icon, wavy bg, dashed dividers, own `/luminous/` collection + templates. |
+| **Luminous** | `tag:luminous` | **Full brand-context** *(in progress — this is the active work)* | A whole page flips: violet accent, eye-icon, wavy bg, dotted dividers, own `/luminous/` collection + templates. |
 | **Island of Knowledge** | `tag:island-of-knowledge` | **Accent-only** | A highlight-zone card within WC pages picks up the IoK steel-blue. No page-level switch, no own templates. |
 | *(newsletter)* | `tag:newsletter` | **Content-type accent** (not a brand) | Highlight-zone card uses cream accent. Listed here because it shares the same mechanism. |
 
@@ -48,7 +48,7 @@ A brand can graduate from accent-only to full brand-context later (IoK could, if
    │  green          violet              steel-blue      cream      │
    │  galaxy         wavy SVG            —                —         │
    │  cabinet        eye icon           —                —         │
-   │  brackets       dashed divider     —                —         │
+   │  brackets       dotted divider     —                —         │
    └───────────────────────────────────────────────────────────────┘
                            │
         brand selected per page:
@@ -106,7 +106,7 @@ Each brand declares its raw palette. Components never read these directly (excep
 | Wordmark / title | `WonderCabinet-title.png` | `WebsiteGraphics/LuminousWeb_Website-Wordmark.svg` | — |
 | Logo on dark | `logo-primary-dark-bg-800w.png` | `LogoAssets/Luminous-_PrimaryMarkOnDark-1920wide.png` | — |
 | Favicon / mark | WC cabinet icon | `LogoAssets/Luminous-_EyeIconBlack-800x800.png` | — |
-| Section divider | `ui-wave-divider-light.svg` | `WebsiteGraphics/LuminousWeb_LineSeparator.svg` (dashed) | — |
+| Section divider | `ui-wave-divider-light.svg` | `WebsiteGraphics/LuminousWeb_LineSeparator.svg` (dotted, cream) | — |
 | Show / episode cover | `Show_Cover-Wonder-Cabinet.png` | `PodcastGraphics/LuminousLogo_ShowCoverArt-3000x3000.png` (+ `…_EpisodeDefault…`) | — |
 | Footer illustration | `illustration-footer-cabinet-table.svg` | *(none — §6 asymmetric)* | — |
 | Bracket ornaments | `ui-bracket-corner-*.svg` (4) | *(none — §6 asymmetric)* | — |
@@ -180,7 +180,7 @@ Before writing CSS, editing a partial, or adding an asset reference, ask in orde
 | Bracket corner ornaments | yes | no | no | WC-only ornament. Luminous CTAs use a flat violet button, no corners. |
 | Galaxy / cosmic imagery | yes | no | no | WC-only visual vocabulary. Never add to Luminous. |
 | Wavy organic SVG | no | yes | no | Luminous-only hero. |
-| Dashed line separator | no | yes | no | Luminous-only divider (WC uses the wave divider). |
+| Dotted line separator | no | yes | no | Luminous-only divider (WC uses the wave divider). |
 | Eye-icon motif | no | yes | no | Luminous-only iconography. |
 
 When unsure whether a decorative element fits a brand, **consult the brand guide**, not aesthetic intuition. Per `.impeccable.md` principle #3 (Brand-strict), each brand's vocabulary is locked.
@@ -220,7 +220,7 @@ Today `assets/images/` is flat. Proposed brand-scoped layout (adopt in Sprint 2,
 assets/images/
   shared/     # cream UI, podcast-service logos, generic icons
   wc/         # galaxy, cabinet, brackets, wordmark, cover
-  luminous/   # eye icon, wavy bg, wordmark, cover, dashed separator
+  luminous/   # eye icon, wavy bg, wordmark, cover, dotted separator
   (legacy)    # existing flat files until migrated
 ```
 **Do not copy Luminous assets into `assets/images/` until that coordinated pass** — reference them from `design-assets/…` in drafts until then.
