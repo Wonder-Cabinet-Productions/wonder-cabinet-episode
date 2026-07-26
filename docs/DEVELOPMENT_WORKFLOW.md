@@ -1,5 +1,8 @@
 # Development Workflow
 
+> **⚠️ STALE — retained for generic Ghost-theming reference only (rev 2026-06-05).**
+> The actual dev environment no longer runs on this machine. Ghost + the build watcher run on homelab LXC `ghost01`; you edit here, mutagen syncs, gulp rebuilds on the container, and you verify at **https://wondercabinet.riechers.co**. Do NOT run `npm run dev` or start a local Ghost. The current workflow is documented in this repo's `AGENTS.md` / `CLAUDE.md` ("Development Workflow" / "Dev Environment" sections). Also note: the build system is **gulp** (`gulpfile.js`), not Rollup as described below.
+
 Guide to developing and testing the wonder-cabinet Ghost theme locally.
 
 ## Prerequisites

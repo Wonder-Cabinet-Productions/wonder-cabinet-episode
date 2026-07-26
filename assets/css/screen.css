@@ -6,7 +6,7 @@
 
 :root {
     /* Brand Colors — Wonder Cabinet */
-    --wc-green: #10A544;
+    --wc-green: #10A544; /* Brand green. ⚠ As a focus-ring / non-text color on cream this is 3.10:1 — only 0.10 above the WCAG 1.4.11 3:1 floor. Darkening or desaturating risks regressing focus-indicator visibility below 3:1; keep any edit ≥3:1 on cream. See #51, #40, #29. */
     --wc-green-text: #087834; /* WCAG AA compliant green for text on cream (4.5:1+) */
     --wc-black: #000000;
     --wc-cream: #FFFAEB;
@@ -28,6 +28,7 @@
        body class, data attribute, or tag-specific context. */
     --show-accent: var(--wc-green);
     --show-accent-text: var(--wc-green-text);
+    --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
 
     /* Typography */
@@ -48,6 +49,20 @@
 
     /* Border radius */
     --wc-radius: 0;
+}
+
+/* ============================================
+   Brand context activation (multi-brand scoping)
+   A page-level body class (set in default.hbs) overrides the
+   --show-accent* indirection tokens to the active show's palette.
+   Wonder Cabinet is the default (no class). Add a body.brand-{show}
+   block per full-brand-context show. See docs/multi-brand-design-system.md §7.
+   ============================================ */
+body.brand-luminous {
+    --show-accent: var(--luminous-accent);
+    --show-accent-text: var(--luminous-accent-text-on-cream);
+    --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
+    --show-accent-dark: var(--luminous-accent-dark);
 }
 
 body {
@@ -279,7 +294,8 @@ body {
     opacity: 0.8;
 }
 
-/* Subscribe button - simple green rectangle per Figma */
+/* Subscribe button - brand-accent rectangle per Figma (green on WC, violet on Luminous
+   via the --show-accent indirection token). */
 .wc-head-subscribe {
     display: inline-flex;
     align-items: center;
@@ -291,7 +307,7 @@ body {
     font-size: 1.6rem;
     font-weight: 500;
     color: var(--wc-cream);
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     text-decoration: none;
     border: none;
     cursor: pointer;
@@ -300,6 +316,12 @@ body {
 
 .wc-head-subscribe:hover {
     opacity: 0.85;
+}
+
+/* Luminous: dark label on the violet accent for AA contrast (5.27:1 vs cream's 3.6:1).
+   Matches the brand book's documented "text ON violet = black" pairing. */
+body.brand-luminous .wc-head-subscribe {
+    color: var(--wc-black);
 }
 
 /* Wave divider - sits between navbar and hero on homepage */
@@ -692,6 +714,123 @@ body {
         clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border: 0;
+    }
+}
+
+/* ============================================
+   Brand Band — continuous artwork bleed
+   Wraps hero + thick-rule + podcast-services so ONE backdrop bleeds behind the
+   (translucent) nav, the hero, and the podcast bar. Present ONLY on the two
+   LANDING pages: WC home (body.home-template) and the Luminous collection index
+   (body.tag-template.brand-luminous). Episode pages have no .wc-brand-band, so
+   nothing here touches them.
+   ============================================ */
+
+/* Nav height reserved by the bleed; tune here if the header height changes. */
+body.home-template,
+body.tag-template.brand-luminous {
+    --wc-nav-h: 112px;
+}
+
+.wc-brand-band {
+    position: relative;
+    background-color: var(--wc-black);
+    /* Nav bleed: the nav gives back its height (negative margin below) and goes
+       transparent, so the band slides up beneath it; we pad the band's content
+       back down by the same amount, leaving only the backdrop behind the nav. */
+    padding-top: var(--wc-nav-h, 112px);
+}
+
+/* Nav goes translucent on the landing pages and yields its vertical space. */
+body.home-template .wc-head,
+body.tag-template.brand-luminous .wc-head {
+    background-color: transparent;
+    position: relative;
+    z-index: 10;
+    margin-bottom: calc(-1 * var(--wc-nav-h, 112px));
+}
+
+/* Shared brand backdrop spanning the whole band (behind nav + hero + podcast bar). */
+.wc-brand-band::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* WC: galaxy spiral — heart centered on the WONDER CABINET wordmark (~436px from
+       band-top), sized large enough that its faint outer stars bleed UP behind the
+       transparent nav (no black header cutoff) and fade into the dark. Same treatment
+       as the Luminous swirl. Length-based Y positions the image TOP, so subtract half
+       the size to keep the heart on the wordmark as the size flexes. */
+    background-image: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp));
+    background-repeat: no-repeat;
+    background-size: min(880px, 72vw) auto;
+    background-position: center calc(436px - min(440px, 36vw));
+    opacity: 0.45; /* Figma spec */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Luminous: static "swirl" behind the hero, WC-style ───────────────────
+   Mirrors WC's galaxy: the wavy radial burst lives in the band's ::before, so it
+   SCROLLS WITH THE HERO (no parallax) and its heart stays locked on the LUMINOUS
+   wordmark at every screen size. Sized (not `cover`) so it radiates from the
+   wordmark and fades into the dark — no hard pane edge. The band is pulled up
+   behind the transparent nav (shared nav-bleed rule + default band padding) and
+   the burst is large enough to reach the very top, so it bleeds behind the nav
+   with NO black header cutoff. Tune the heart with background-position, the spread
+   with background-size. */
+body.brand-luminous .wc-brand-band::before {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-repeat: no-repeat;
+    background-size: min(1000px, 120vw) auto;   /* burst spread — shrink for more black around it */
+    /* Length-based Y positions the image's TOP, so subtract half the burst height
+       to keep the HEART locked on the wordmark (~440px from band-top) as size changes. */
+    background-position: center calc(440px - min(500px, 60vw));
+    opacity: 0.9;
+}
+
+/* Band children paint above the backdrop. */
+.wc-brand-band > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero-zone + podcast bar go transparent so the single band backdrop shows through.
+   The hero-zone's own galaxy ::before is now redundant (moved up to the band). */
+.wc-brand-band .wc-hero-zone,
+.wc-brand-band .wc-podcast-services {
+    background-color: transparent;
+}
+.wc-brand-band .wc-hero-zone::before {
+    display: none;
+}
+
+/* WC podcast bar: the galaxy is a discrete spiral up top, so instead of flat black
+   here, spill a faint cosmic glow down from the hero — reads as the same starfield
+   continuing. Kept whisper-low so the podcast text stays crisp. WC-only; Luminous's
+   wavy pattern already covers its whole band. */
+body.home-template .wc-brand-band .wc-podcast-services {
+    background:
+        radial-gradient(ellipse 110% 100% at 50% -15%, rgba(255, 250, 235, 0.07), transparent 62%);
+}
+
+@media (max-width: 767px) {
+    body.home-template,
+    body.tag-template.brand-luminous {
+        --wc-nav-h: 84px;
+    }
+    /* Re-anchor the swirl heart on the higher mobile wordmark (WC ~332px, Luminous
+       ~318px from band-top), kept large enough (720px, half = 360px) that it still
+       bleeds up behind the shorter mobile nav. Calibrated ~500px — fine-tune on device. */
+    body.home-template .wc-brand-band::before {
+        background-size: 720px auto;
+        background-position: center -28px; /* 332 wordmark − 360 half */
+    }
+    body.brand-luminous .wc-brand-band::before {
+        background-size: 720px auto;
+        background-position: center -42px; /* 318 wordmark − 360 half */
     }
 }
 
@@ -2124,6 +2263,101 @@ body {
     object-fit: contain;
 }
 
+/* Luminous: wavy organic hero replaces the galaxy raster (§6 asymmetric).
+   The /luminous/ landing (index-luminous.hbs + components/luminous-hero.hbs) uses its own
+   hero-zone; the wavy fills the hero-zone galaxy layer under body.brand-luminous. */
+body.brand-luminous .wc-hero-zone::before {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-size: cover;
+    opacity: 0.9;
+}
+
+/* Luminous hero: eye-icon motif above the wordmark. Sized to the Primary Logo
+   lockup in Luminous_BrandGuide.pdf (Art & Sons) p2: the eye lens ≈ 0.68× the
+   wordmark's width. The eye asset is a square canvas whose violet lens fills ~88%
+   width / ~49% height (measured), so the element is ~0.77× the wordmark width and
+   we crop the transparent top/bottom with aspect-ratio + object-fit so the lens
+   sits tight above the wordmark. --lum-eye-w is the one knob to tune. */
+.wc-hero-eye {
+    --lum-eye-w: 480px; /* ≈ 0.77 × the 620px wordmark → lens ≈ 0.68× (brand spec) */
+    width: min(var(--lum-eye-w), 72vw);
+    height: auto;
+    aspect-ratio: 1 / 0.56; /* crop the square canvas down toward the 1.80:1 lens */
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: var(--wc-spacing-xs);
+}
+.wc-hero-title--luminous {
+    max-width: 620px;
+    width: 100%;
+}
+
+/* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
+   footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
+   is untouched; all scoped to body.brand-luminous. */
+body.brand-luminous .wc-footer-cabinet {
+    display: none;
+}
+body.brand-luminous .wc-footer-illustration {
+    width: auto;
+}
+body.brand-luminous .wc-footer-overlay {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+    padding: var(--wc-spacing-xl) 0;
+}
+
+/* Luminous CTAs are a flat violet button, no bracket corners (§6 asymmetric) */
+body.brand-luminous .wc-bracket-btn-corner {
+    display: none;
+}
+body.brand-luminous .wc-bracket-btn {
+    background: var(--show-accent);
+    color: var(--wc-black); /* black on #9A59FF ≈ 5.25:1 (AA) */
+    border-radius: 4px;
+    padding: 14px 32px;
+}
+
+/* Luminous: the designer's LineSeparator deliverable — a fine DOTTED line in cream
+   (#FFFAEB) — replaces the solid green rule (§6 asymmetric). Rooted in
+   Luminous_BrandGuide.pdf + WebsiteGraphics/LuminousWeb_LineSeparator.svg (round
+   cream dots, stroke #fffaeb), and echoes the dotted underline baked into the
+   wordmark. NOT dashed, NOT violet — the earlier CSS approximation drifted from
+   spec. Rendered as a repeating radial-gradient so it scales full-width and crisp. */
+body.brand-luminous .wc-rule {
+    height: 6px;
+    background: none;
+    border: none;
+    background-image: radial-gradient(circle, var(--wc-cream) 0 2px, transparent 2.4px);
+    background-size: 18px 6px;
+    background-position: center;
+    background-repeat: repeat-x;
+}
+body.brand-luminous .wc-rule--thick {
+    height: 9px;
+    background-image: radial-gradient(circle, var(--wc-cream) 0 3px, transparent 3.4px);
+    background-size: 24px 9px;
+}
+
+/* Luminous nav logo: swap the WC green cabinet mark for a violet-cabinet variant
+   (logo-cabinet-violet-800.png — recolored from the brand raster) so it shows on the
+   dark nav and matches the violet scheme instead of clashing with green. Both marks
+   are in navbar.hbs; toggled by brand. Luminous-only. */
+.wc-head-logo-img--luminous {
+    display: none;
+}
+body.brand-luminous .wc-head-logo-img--default {
+    display: none;
+}
+body.brand-luminous .wc-head-logo-img--luminous {
+    display: block;
+    width: 68px;      /* explicit — the shrink-to-fit anchor + max-width:100% was clamping it to 0 */
+    height: 68px;
+    max-width: none;
+}
+
 .wc-tag-hero-content {
     position: relative;
     z-index: 1;
@@ -2784,8 +3018,8 @@ body {
     gap: var(--wc-spacing-sm);
     width: 100%;
     padding: var(--wc-spacing-sm) var(--wc-spacing-md);
-    background: rgba(8, 120, 52, 0.08); /* Match --wc-green-text */
-    border: 1px solid rgba(8, 120, 52, 0.2);
+    background: rgba(var(--show-accent-text-rgb), 0.08); /* accent-text @ 8% — follows active brand */
+    border: 1px solid rgba(var(--show-accent-text-rgb), 0.2);
     border-radius: 4px;
     color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     font-family: var(--font-heading);
@@ -2798,7 +3032,7 @@ body {
 }
 
 .wc-transcript-toggle:hover {
-    background: rgba(8, 120, 52, 0.12); /* Match --wc-green-text */
+    background: rgba(var(--show-accent-text-rgb), 0.12); /* accent-text @ 12% — follows active brand */
 }
 
 .wc-transcript-toggle:focus-visible {
@@ -2818,17 +3052,26 @@ body {
     transform: rotate(180deg);
 }
 
+/* Accordion via grid-template-rows 0fr→1fr: animates cleanly with no layout thrash
+   (unlike max-height, which also can't interpolate to `none`, so it never truly
+   animated). The overflow-hidden collapsing element is .wc-transcript-inner; padding
+   lives on the nested .wc-transcript-body so it's clipped flat when collapsed. */
 .wc-transcript-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
 }
 
 .wc-transcript-content.is-open {
-    max-height: none;
+    grid-template-rows: 1fr;
 }
 
 .wc-transcript-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.wc-transcript-body {
     padding: var(--wc-spacing-md) 0;
 }
 
@@ -2861,7 +3104,7 @@ body {
         height: 16px;
     }
 
-    .wc-transcript-inner {
+    .wc-transcript-body {
         padding: var(--wc-spacing-sm) 0;
     }
 }
@@ -3014,7 +3257,7 @@ body {
 /* Focus ring color variables by context */
 :root {
     --wc-focus-ring-light: var(--wc-cream);    /* For dark backgrounds */
-    --wc-focus-ring-dark: var(--wc-green);     /* For light backgrounds */
+    --wc-focus-ring-dark: var(--show-accent);  /* For light backgrounds; follows active brand (defaults to --wc-green → 3.10:1 on cream, only 0.10 above the WCAG 3:1 non-text floor — do not let a --wc-green edit drop below 3:1. See #51). */
 }
 
 /* Navbar elements (dark background) */
@@ -3092,12 +3335,6 @@ body {
 .wc-episode-notes-content a:focus-visible,
 .wc-episode-links a:focus-visible {
     outline: 2px solid var(--wc-focus-ring-dark);
-    outline-offset: 2px;
-}
-
-/* Transcript toggle (dark background) */
-.wc-transcript-toggle:focus-visible {
-    outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }
 

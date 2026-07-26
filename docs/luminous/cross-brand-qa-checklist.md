@@ -4,7 +4,16 @@
 
 **When to run**: any PR that edits `assets/css/screen.css` shared rules, a shared partial in `partials/components/`, `assets/js/audio-player.js`, or anything reading `--show-accent*`. Skip only for changes provably scoped to one brand's vocabulary (e.g., a galaxy-hero-only tweak).
 
-**How to verify**: edit on the Mac → mutagen syncs to LXC `ghost01` → gulp rebuilds → inspect `https://wondercabinet.riechers.co` (chrome-devtools MCP works against it). There is no local Ghost.
+**How to verify**: edit on the Mac → mutagen syncs to LXC `ghost01` → gulp rebuilds → inspect `https://wondercabinet.riechers.co`. There is no local Ghost.
+
+**Automated helper**: the `wc-theme-qa` skill runs the mechanizable items below via
+`agent-browser` — §A's visual no-op invariant (`diff screenshot --baseline`), the accent
+variables in §B/§C (`eval` on `document.body`), AA contrast (`a11y`), the raw `--wc-green`
+grep, and WC-vocabulary leaks. It reports what it could *not* check and never judges design
+intent — that stays with `brand-guardian`. This checklist remains the source of truth; the
+skill automates it, and items not listed in the skill are still manual.
+
+For one-off visual inspection, chrome-devtools MCP also works against this URL.
 
 ---
 
@@ -26,7 +35,16 @@ Until the Sprint 2 show-scoping mechanism lands, **WC is the only full brand con
 - [ ] **WC contact form** — focus rings + submit button green.
 - [ ] **Intended change present** — the homepage **"From Luminous" highlight card is violet `#9A59FF`** (border + badge), not the old gold `#D4A843`.
 - [ ] **IoK highlight card** (if a featured `island-of-knowledge` post exists) still renders steel-blue `#b6d0d8` — unchanged.
-- [ ] **Audio player console check** — on a WC post, `getComputedStyle(document.documentElement).getPropertyValue('--show-accent')` resolves to the green value; waveform matches.
+- [ ] **Audio player console check** — on a WC post, `getComputedStyle(document.body).getPropertyValue('--show-accent')` resolves to the green value; waveform matches.
+
+  > ⚠️ **Read from `document.body`, not `document.documentElement`.** Sprint 2 moved brand
+  > context onto a body class (`body.brand-wonder-cabinet` / `body.brand-luminous`). Custom
+  > properties set there cascade *down*, so querying `documentElement` returns the `:root`
+  > default — **WC green even on a correctly-branded Luminous page**. This check appeared to
+  > pass for WC by accident and silently false-negatived on Luminous until corrected 2026-07-25.
+  >
+  > Real variable names: `--show-accent`, `--show-accent-text`, `--show-accent-dark`,
+  > `--show-accent-text-rgb`. There is no `--show-accent-deep`.
 - [ ] **Remaining raw `--wc-green*`** — `grep` confirms only the intentional exceptions survive: the `--show-accent*` definitions, `.wc-head-subscribe`, error pages, `--wc-focus-ring-dark`.
 
 ### Known deferred decisions (not blockers, log for later)

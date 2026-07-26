@@ -10,9 +10,12 @@
             {{navigation}}
         </nav>
 
-        {{!-- Centered logo (spiral icon only per Figma) --}}
+        {{!-- Centered logo (spiral icon only per Figma). Default WC green cabinet; on
+             Luminous a violet-cabinet variant (CSS-toggled by brand) so it shows on the
+             dark nav and matches the violet scheme instead of clashing with green. --}}
         <a class="gh-head-logo wc-head-logo" href="/">
-            <img src="{{@site.logo}}" alt="{{@site.title}}">
+            <img class="wc-head-logo-img wc-head-logo-img--default" src="{{@site.logo}}" alt="{{@site.title}}">
+            <img class="wc-head-logo-img wc-head-logo-img--luminous" src="{{asset "images/logo-cabinet-violet-800.png"}}" alt="{{@site.title}}">
         </a>
 
         {{!-- Right actions --}}

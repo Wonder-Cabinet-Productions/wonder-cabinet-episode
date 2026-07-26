@@ -237,9 +237,11 @@
         audio.src = audioUrl;
 
         // Resolve active brand accent from CSS custom property.
-        // --show-accent is set on :root by the brand context (Sprint 2+).
-        // Falls back to WC green so this is a no-op today.
-        var showAccent = getComputedStyle(document.documentElement)
+        // The brand context sets --show-accent on <body> (body.brand-{show},
+        // see default.hbs), so read from document.body — NOT documentElement:
+        // a custom property set on <body> does not cascade up to <html>.
+        // Falls back to WC green so this is a no-op under the default brand.
+        var showAccent = getComputedStyle(document.body)
             .getPropertyValue('--show-accent').trim() || '#10A544';
 
         // Create WaveSurfer instance with brand styling, using <audio> backend
@@ -838,10 +840,16 @@
         var contentInner = document.createElement('div');
         contentInner.className = 'wc-transcript-inner';
 
+        // Padding lives on .wc-transcript-body (inside the overflow-hidden inner) so
+        // the grid-template-rows 0fr collapse clips it flat with no sliver.
+        var contentBody = document.createElement('div');
+        contentBody.className = 'wc-transcript-body';
+
         for (var i = 0; i < transcriptContent.length; i++) {
-            contentInner.appendChild(transcriptContent[i]);
+            contentBody.appendChild(transcriptContent[i]);
         }
 
+        contentInner.appendChild(contentBody);
         contentWrapper.appendChild(contentInner);
         section.appendChild(toggle);
         section.appendChild(contentWrapper);
