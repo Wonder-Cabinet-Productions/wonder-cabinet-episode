@@ -170,6 +170,32 @@ def test_frontmatter_status_ambiguous_on_block_scalar():
 def test_frontmatter_status_not_fooled_by_body_horizontal_rule():
     """A `---` rule in the BODY must not be reported as ambiguous."""
     assert frontmatter_status("---\nrequires:\n  agents: [x]\n---\n\n---\n") == "ok"
+
+
+def test_frontmatter_status_ambiguous_on_mid_block_truncation():
+    """The harder shape: `requires:` SURVIVES but loses keys after the `---`.
+
+    Checking only whether the `requires` key is present reports "ok" here while
+    silently dropping `bins`. The dependency SET must be compared, not the key.
+    """
+    doc = (
+        '---\n'
+        'requires:\n'
+        '  agents: [brand-guardian]\n'
+        '  notes: |\n'
+        '    ---\n'
+        '  bins: ["agent-browser>=0.33.0"]\n'
+        '---\n'
+    )
+    assert frontmatter_status(doc) == "ambiguous"
+    assert "bins" not in extract_requires(doc)
+
+
+def test_frontmatter_status_ok_for_harmless_block_scalar():
+    """A block scalar with no embedded `---` yields no second candidate."""
+    doc = "---\nnotes: |\n  harmless\nrequires:\n  agents: [x]\n---\n"
+    assert frontmatter_status(doc) == "ok"
+    assert extract_requires(doc) == {"agents": ["x"]}
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -238,17 +264,33 @@ def parse_frontmatter(text: str) -> dict:
     return {}
 
 
+def _requires_of(mapping: dict) -> dict[str, list[str]]:
+    """The resolved dependency set of one parsed mapping."""
+    requires = mapping.get("requires")
+    if not isinstance(requires, dict):
+        return {}
+    return {k: list(v) for k, v in requires.items() if isinstance(v, list)}
+
+
 def frontmatter_status(text: str) -> str:
     """Classify the parse: "ok" | "absent" | "unparseable" | "ambiguous".
 
-    "ambiguous" means a different valid reading of this same file WOULD have
-    found a `requires:` block that the canonical reading cannot see — a bare
-    `---` line inside a YAML block scalar produces exactly that. Left
-    unreported, it makes the tool claim PASS on references it never read.
+    "ambiguous" means a different valid reading of this same file yields a
+    DIFFERENT dependency set than the canonical reading. A bare `---` line
+    inside a YAML block scalar causes exactly that, in two shapes:
 
-    Detection compares candidate parses against each other rather than
-    pattern-matching the body, so a legitimate `---` horizontal rule in the
-    document body is not a false positive.
+      * the whole `requires:` block truncated away, and
+      * `requires:` surviving but truncated MID-BLOCK, losing later keys.
+
+    Comparing the resolved dependency set — not merely whether the `requires`
+    key is present — is what catches the second shape. Checking presence alone
+    reports "ok" while silently dropping every key after the embedded `---`.
+
+    Soundness rests on a property of the format: a later candidate block can
+    only parse at all when the intervening `---` sat inside a block scalar.
+    Anywhere else it makes the block multi-document YAML, which raises. So a
+    legitimate `---` horizontal rule in the document body never produces a
+    second valid candidate, and never a false positive.
     """
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
@@ -257,19 +299,16 @@ def frontmatter_status(text: str) -> str:
     canonical = next((i for i, data in enumerate(parsed) if data is not None), None)
     if canonical is None:
         return "unparseable"
-    if "requires" not in parsed[canonical]:
-        for data in parsed[canonical + 1:]:
-            if data is not None and "requires" in data:
-                return "ambiguous"
+    baseline = _requires_of(parsed[canonical])
+    for data in parsed[canonical + 1:]:
+        if data is not None and _requires_of(data) != baseline:
+            return "ambiguous"
     return "ok"
 
 
 def extract_requires(text: str) -> dict[str, list[str]]:
     """Return the `requires:` block, keeping only keys whose value is a list."""
-    requires = parse_frontmatter(text).get("requires")
-    if not isinstance(requires, dict):
-        return {}
-    return {k: list(v) for k, v in requires.items() if isinstance(v, list)}
+    return _requires_of(parse_frontmatter(text))
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -278,7 +317,7 @@ def extract_requires(text: str) -> dict[str, list[str]]:
 cd ~/Developer/the-lodge && pytest tests/reference_check/test_frontmatter.py -v
 ```
 
-Expected: PASS — 18 passed
+Expected: PASS — 20 passed
 
 - [ ] **Step 5: Commit**
 
@@ -430,7 +469,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 24 passed
+Expected: PASS — 26 passed
 
 - [ ] **Step 5: Commit**
 
@@ -645,7 +684,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 38 passed
+Expected: PASS — 40 passed
 
 - [ ] **Step 5: Commit**
 
@@ -795,7 +834,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 44 passed
+Expected: PASS — 46 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1039,7 +1078,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 54 passed
+Expected: PASS — 56 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1309,6 +1348,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 18 → 24 → 38 → 44 → 54 (verified: Task 1's 18 confirmed by extracting the plan's own code blocks and running pytest against them).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 20 → 26 → 40 → 46 → 56 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (56 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
