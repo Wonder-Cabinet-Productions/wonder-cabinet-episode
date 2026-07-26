@@ -60,7 +60,7 @@ Do not deviate from the brand spec unless explicitly instructed.
    ls ~/.claude/skills/wc-theme-qa/SKILL.md   # exists → the skill will load
    ```
 
-   ⚠️ Its availability is **not yet durable.** `~/.claude/skills/wc-theme-qa` is a symlink into the `the-lodge` checkout, and the skill still lives on an **unmerged branch** there (`mriechers/the-lodge#478`). It resolves only while that checkout is parked on a branch containing it — a branch switch in `the-lodge` makes it vanish mid-sprint, silently. Until #478 merges, treat the skill as a convenience and the checklist as the gate.
+   `~/.claude/skills/wc-theme-qa` is a symlink into the `the-lodge` checkout, so it can fail to resolve for reasons nothing in this repo will signal. The checklist stays the gate; the skill automates it.
 
    Whichever way it ran: **do not record the gate as satisfied unless checks actually executed.** A skill that failed to load is not a pass.
 

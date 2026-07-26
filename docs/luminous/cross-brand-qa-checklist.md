@@ -14,11 +14,9 @@ intent — that stays with `brand-guardian`. This checklist remains the source o
 skill automates it, and items not listed in the skill are still manual.
 
 > ⚠️ **Confirm the skill loads before relying on it** — `ls ~/.claude/skills/wc-theme-qa/SKILL.md`.
-> It is a symlink into the `the-lodge` checkout and still lives on an unmerged branch there
-> (`mriechers/the-lodge#478`), so it resolves only while that checkout is parked on a branch
-> containing it. A branch switch over there removes it from every session with nothing in this
-> repo changing. If it doesn't load, work the items below by hand — **a gate is only satisfied
-> if checks actually ran.**
+> It is a symlink into the `the-lodge` checkout, so it can fail to resolve for reasons nothing in
+> this repo will signal. If it doesn't load, work the items below by hand — **a gate is only
+> satisfied if checks actually ran.**
 
 For one-off visual inspection, chrome-devtools MCP also works against this URL.
 
