@@ -87,7 +87,7 @@ The 10 backlog items from `multi-brand-design-system.md` map onto three sequenti
 
 **Pagination rule (the gotcha):** the episode archive must iterate the **route-provided `posts`** collection (`hasPagination=true` path in `partials/components/list.hbs`) so Ghost's pagination + `pagination.hbs` work. It must **not** be built with a hand-rolled `{{#get "posts" filter="tag:luminous"}}` block — that fetches a fixed slice and silently opts out of route pagination. Hero/services zones may use `{{#get}}`; the paginated list may not.
 
-**Gate:** Luminous pages fully branded + working pagination + WC unchanged + redirects live + gscan green → merge to `main` → Actions deploys.
+**Gate:** Luminous pages fully branded + working pagination + WC unchanged + redirects live + gscan green → merge to **`dev/luminous`**. This does *not* deploy — the whole series ships in one gated rollup `dev/luminous` → `main` after Sprint 3 (see `docs/BRANCHING.md`).
 
 ### Sprint 3 — Impeccable audit + dual UX testing *(collaborative, gated)*
 *Goal: harden and polish the now-live brand switch with expert + human review. Depends on Sprint 2 being live.*
@@ -162,11 +162,17 @@ The 5 role→subagent mappings live once here (§2); `features.json` references 
 | **3 — Impeccable + UX** | **Manual dispatch, human-in-the-loop**; `/impeccable:impeccable` is the audit engine; no autonomous runner. | Collaborative by design. |
 
 ### Human gates (hard stops)
+
+Sprints merge into the series integration branch **`dev/luminous`**, never into `main`. Gates 2 and
+4 therefore approve a merge *into the series*, not a production deploy; the deploy is gate 6.
+Branch model: `docs/BRANCHING.md`.
+
 1. **After 1.0** — approve foundation-vs-rederive per doc.
-2. **End of Sprint 1** — approve foundation merge against a WC pixel-diff proof.
+2. **End of Sprint 1** — approve foundation merge into `dev/luminous`, against a WC pixel-diff proof.
 3. **In 2.0** — approve the scoping decision (body-class vs. handlebars helper) **and** the permalink/redirect strategy (SEO blast radius).
-4. **End of Sprint 2** — approve the brand switch going live.
+4. **End of Sprint 2** — approve the brand switch merging into `dev/luminous`.
 5. **3.1 & 3.3** — collaborative triage + user UX pass.
+6. **Series rollup** — QA the whole arc on `wondercabinet.riechers.co` with the primary worktree parked on `dev/luminous`, then approve the `dev/luminous` → `main` PR. **This is the one that goes live.**
 
 ### Success criteria
 - **Sprint 1:** every brand-aware consumer routes through `--show-accent`; WC renders **pixel-identical** (visual diff gate); violet correct + WCAG-AA contrast tokens defined; gscan green.
