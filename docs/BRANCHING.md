@@ -180,16 +180,26 @@ Two things that bite:
   **invisible** to the dev instance — those directories are not synced. Push it and land it in
   the dev branch to see it live.
 
-### The `wc-theme-qa` skill is not available yet
+### The `wc-theme-qa` skill loads, but not durably
 
-`CLAUDE.md` instructs agents to run the `wc-theme-qa` skill before merging anything touching
-shared CSS, `partials/components/`, `audio-player.js`, or `--show-accent`. As of 2026-07-26 that
-skill **does not load** — `~/.claude/skills/wc-theme-qa` is a broken symlink, and its design
-(`docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md`) is still marked *pending
-implementation*.
+`CLAUDE.md` points agents at the `wc-theme-qa` skill before merging anything touching shared CSS,
+`partials/components/`, `audio-player.js`, or `--show-accent`. As of 2026-07-26 that skill
+**does load** — it landed mid-sprint and `~/.claude/skills/wc-theme-qa` resolves.
 
-Until it ships, that gate is the **manual** checklist at
-`docs/luminous/cross-brand-qa-checklist.md`. Do not treat the skill reference as a gate that ran.
+It is **not merged upstream**, though. The skill lives on an unmerged branch in `the-lodge`
+(`mriechers/the-lodge#478`), and `~/.claude/skills/wc-theme-qa` is a symlink into that checkout.
+It resolves only while that checkout is parked on a branch containing it — a branch switch over
+there removes the skill from every session, silently, with nothing in this repo changing.
+
+So confirm it before relying on it:
+
+```bash
+ls ~/.claude/skills/wc-theme-qa/SKILL.md   # exists → it will load
+```
+
+Until #478 merges, the skill is a convenience and `docs/luminous/cross-brand-qa-checklist.md` is
+the gate. Either way: **do not record the gate as satisfied unless checks actually ran** — a
+skill that failed to load is not a pass.
 
 ---
 
