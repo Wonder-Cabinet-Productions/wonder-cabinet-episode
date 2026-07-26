@@ -184,3 +184,5 @@ to `main`, deploying immediately. Full process in `planning/TRIAGE.md` § S1 Hot
 
 After a hotfix lands, merge `main` into the active `dev/<series>` so the series does not
 regress it on rollup.
+
+<!-- guard probe, to be deleted -->
