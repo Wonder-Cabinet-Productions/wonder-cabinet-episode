@@ -19,13 +19,27 @@
                      string that already serves as this page's meta description. Single
                      source of truth; edit it in Ghost Admin, not here. Uses {{#get}}
                      rather than the collection's `data: tag.luminous` binding so it does
-                     not depend on routes.yaml staying wired that way. --}}
+                     not depend on routes.yaml staying wired that way.
+
+                     Both failure modes fall back to @site.description so this slot can
+                     never silently empty: the tag going missing (outer {{else}}) and the
+                     tag existing with a blank description (inner {{else}}). The fallback
+                     is deliberately another editable Ghost field rather than hardcoded
+                     copy — copy duplicated here would only render when something is
+                     already broken, which is exactly when nobody would notice it had gone
+                     stale. Caveat: @site.description is currently Wonder Cabinet's blurb,
+                     so a Luminous page in fallback shows the network's copy, not the
+                     show's. Degraded mode, not the happy path. --}}
                 {{#get "tags" filter="slug:luminous" limit="1"}}
                     {{#foreach tags}}
                         {{#if description}}
                             <p class="wc-podcast-services-desc">{{description}}</p>
+                        {{else}}
+                            <p class="wc-podcast-services-desc">{{@site.description}}</p>
                         {{/if}}
                     {{/foreach}}
+                {{else}}
+                    <p class="wc-podcast-services-desc">{{@site.description}}</p>
                 {{/get}}
                 <div class="wc-podcast-services-links">
                     {{#if @custom.luminous_apple_podcasts_link}}
