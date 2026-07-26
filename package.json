@@ -86,6 +86,12 @@
                 "default": "",
                 "group": "homepage"
             },
+            "luminous_hero_tagline": {
+                "type": "text",
+                "default": "Conversations from the University of Wisconsin–Madison Center for Psychedelic Research and Education",
+                "description": "Luminous hero tagline / sponsor credit. Renders as raw HTML — not escaped or filtered.",
+                "group": "homepage"
+            },
             "instagram_link": {
                 "type": "text",
                 "default": ""
@@ -122,7 +128,7 @@
             "hero_tagline": {
                 "type": "text",
                 "default": "From the creators of <em>To The Best Of Our Knowledge</em>",
-                "description": "Homepage hero tagline. Limited inline HTML (e.g. <em>) is allowed.",
+                "description": "Homepage hero tagline. Renders as raw HTML — not escaped or filtered.",
                 "group": "homepage"
             },
             "hero_title_image": {
