@@ -52,9 +52,11 @@ Do not deviate from the brand spec unless explicitly instructed.
 1. **Edit theme files here and save.** That's the whole job — no build or run step.
 2. A mutagen session (`wc-theme`) syncs saves to the CT in ~1–2 s, where a gulp watcher (`ghost-theme-watch.service`) rebuilds `assets/built/` automatically and syncs it back here.
 3. **Verify at https://wondercabinet.riechers.co** — refresh the browser (`.hbs` edits show immediately; CSS/JS edits show after the ~2 s rebuild). chrome-devtools MCP works against this URL for one-off visual checks. Admin is at `/ghost/`.
-4. **Before merging anything touching shared CSS, `partials/components/`, `audio-player.js`, or `--show-accent`** — run the **`wc-theme-qa`** skill. It automates `docs/luminous/cross-brand-qa-checklist.md` across both brand contexts via `agent-browser`: the §A "WC is a visual no-op" invariant, accent variables, AA contrast, and WC-vocabulary leaks. It catches *unintended* drift only — `brand-guardian` still gates design intent.
+4. **Before merging anything touching shared CSS, `partials/components/`, `audio-player.js`, or `--show-accent`** — work `docs/luminous/cross-brand-qa-checklist.md` **by hand** across both brand contexts: the §A "WC is a visual no-op" invariant, accent variables, AA contrast, and WC-vocabulary leaks. It catches *unintended* drift only — `brand-guardian` still gates design intent.
 
-   Note when checking brand vars by hand: read from `document.body`, **not** `document.documentElement`. Sprint 2 moved brand context to a body class, so querying `:root` returns WC green even on a correctly-branded Luminous page.
+   ⚠️ **This gate is manual today.** The `wc-theme-qa` skill that was to automate it **does not exist yet** — `~/.claude/skills/wc-theme-qa` is a broken symlink (its target was never created), so invoking it fails rather than running checks. Its design (`docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md`) is still "pending implementation". Do not record the gate as satisfied on the strength of a skill that did not run. See `docs/BRANCHING.md` § "The `wc-theme-qa` skill is not available yet".
+
+   When checking brand vars by hand: read from `document.body`, **not** `document.documentElement`. Sprint 2 moved brand context to a body class, so querying `:root` returns WC green even on a correctly-branded Luminous page.
 
 If changes don't appear: `mutagen sync list` (expect `wc-theme … Watching for changes`) and `ssh wc-ghostdev 'systemctl is-active ghost-dev ghost-theme-watch'`. Never start Ghost or gulp locally. Full container reference: `../../../knowledge/ghost01-lxc-readme.md` (+ `ghost01-lxc-notes.md`) in the ghost-dev workspace.
 
