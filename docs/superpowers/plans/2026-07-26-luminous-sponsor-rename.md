@@ -142,6 +142,14 @@ Ghost already serves as this page's meta description. The collection
 binds data: tag.luminous, so the template can read it directly."
 ```
 
+> **Amendment (post-implementation, 2026-07-26):** Step 1's probe resolved the other way —
+> the plan above presents `{{tag.description}}` as the primary path and the `{{#get}}`
+> block as the documented fallback. What actually shipped (commit `0b1a3715`) is the
+> `{{#get "tags" filter="slug:luminous" limit="1"}}` form, used unconditionally rather than
+> as a fallback, because it doesn't depend on `routes.yaml`'s `data: tag.luminous` binding
+> staying wired that way. This note records what was built, not what the plan predicted;
+> the steps above are left as originally written.
+
 ---
 
 ## Task 2: Move the Wonder Cabinet hero tagline into a custom setting

@@ -2295,7 +2295,9 @@ body.brand-luminous .wc-hero-zone::before {
 /* Luminous hero tagline: the sponsor credit, formerly baked into wordmark.svg.
    A ~99-character institutional name rather than WC's short quip, so it takes a
    smaller size and its own measure. Roman, not italic — WC's italic marks a show
-   title and there is none here. Sits on the near-black brand band (~19:1 on cream). */
+   title and there is none here. Sits on the near-black brand band — actual contrast
+   unverified (the band's cream/violet wavy overlay at 0.9 opacity means the real
+   backdrop isn't flat black; see handoff item 7). */
 .wc-hero-tagline--luminous {
     font-style: normal;
     font-size: 1.8rem;

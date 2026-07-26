@@ -14,6 +14,10 @@
     <div class="wc-hero-content gh-inner">
         <img src="{{asset "images/luminous/eye-icon-violet.png"}}" alt="" aria-hidden="true" class="wc-hero-eye">
         <img src="{{asset "images/luminous/wordmark.svg"}}" alt="Luminous" class="wc-hero-title wc-hero-title--luminous">
+        {{!-- Triple-stache is deliberate, same reasoning as home-hero.hbs: Ghost custom
+             settings have no rich-text type, and the field carries raw HTML (currently
+             plain text, but not escaped or filtered). Only Admins/Owner can edit Design
+             settings. --}}
         {{#if @custom.luminous_hero_tagline}}
             <p class="wc-hero-tagline wc-hero-tagline--luminous">{{{@custom.luminous_hero_tagline}}}</p>
         {{/if}}
