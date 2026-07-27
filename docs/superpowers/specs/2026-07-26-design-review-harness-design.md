@@ -3,10 +3,11 @@ requires:
   agents: [brand-guardian, spectral-engineer]
   bins: ["agent-browser>=0.33.0"]
   paths:
-    - docs/luminous/cross-brand-qa-checklist.md
     - docs/multi-brand-design-system.md
-    - docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md
-    - docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md
+    - docs/wonder-cabinet/brand-guide.json
+    - docs/luminous/brand-guide.md
+    - planning/TRIAGE.md
+    - .impeccable.md
   urls: ["https://wondercabinet.riechers.co/"]
 ---
 
@@ -574,6 +575,25 @@ require inventing Phase 4 detail that Phase 3 has not yet determined.
 ---
 
 ## 12. References
+
+**On the `requires:` block above, and why it does not list everything cited here.**
+`requires:` is a machine-checked contract about the tree this file lives in — not a bibliography.
+This spec sits on a `main`-based branch, deliberately, so that a docs PR cannot drag the unmerged
+Luminous sprint commits into a production deploy. Several documents cited below therefore exist
+only on `dev/luminous` and cannot resolve here.
+
+They were originally declared anyway, and `reference-check` failed the spec on its first live run —
+finding a defect in the document that commissioned it. Author, review, and self-review had all read
+those paths as fine, because they *were* fine in the tree they were read from.
+
+Leaving them declared would have made the check permanently red, which trains the operator to
+ignore red — the precise failure §6's severity model warns against. So the block declares what must
+resolve **now**; everything else is cited in prose below and becomes declarable when the Luminous
+series merges to `main`.
+
+Cited but not declared (live on `dev/luminous`): `docs/luminous/cross-brand-qa-checklist.md`,
+`docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md`,
+`docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md`.
 
 - `docs/luminous/cross-brand-qa-checklist.md` — current merge gate; becomes the human-readable companion to `design-contract/`
 - `docs/multi-brand-design-system.md` — architectural contract (§4 token indirection, §5 decision tree, §6 asymmetry)
