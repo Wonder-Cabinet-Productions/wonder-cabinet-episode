@@ -382,6 +382,8 @@ git commit -m "feat(reference-check): parse requires block from frontmatter"
 Create `~/Developer/the-lodge/tests/reference_check/test_resolve_fs.py`:
 
 ```python
+import os
+
 import pytest
 
 from reference_check import Result, resolve_agent, resolve_skill
@@ -434,6 +436,57 @@ def test_resolve_skill_requires_skill_md(fake_home, tmp_path):
 
 def test_result_is_comparable():
     assert Result("agents", "a", True) == Result("agents", "a", True)
+
+
+# --- a resolver that reports ok on something it cannot read is the whole
+# --- failure this tool exists to prevent
+
+def test_resolve_agent_rejects_path_traversal(fake_home, tmp_path):
+    """`../../../x` must not resolve outside the scope directories."""
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "secret.md").write_text("x")
+    proj = tmp_path / "proj"
+    (proj / ".claude" / "agents").mkdir(parents=True)
+    got = resolve_agent("../../../outside/secret", proj)
+    assert got.ok is False
+    assert got.detail == "invalid reference name"
+
+
+def test_resolve_skill_rejects_path_traversal(fake_home, tmp_path):
+    outside = tmp_path / "outside" / "realskill"
+    outside.mkdir(parents=True)
+    (outside / "SKILL.md").write_text("x")
+    proj = tmp_path / "proj"
+    (proj / ".claude" / "skills").mkdir(parents=True)
+    got = resolve_skill("../../../outside/realskill", proj)
+    assert got.ok is False
+    assert got.detail == "invalid reference name"
+
+
+def test_resolvers_reject_empty_and_dot_names(fake_home, tmp_path):
+    """An empty name must not resolve against a stray SKILL.md at the root."""
+    proj = tmp_path / "proj"
+    (proj / ".claude" / "skills").mkdir(parents=True)
+    (proj / ".claude" / "skills" / "SKILL.md").write_text("x")
+    for bad in ("", ".", "..", " lead", "trail "):
+        assert resolve_skill(bad, proj).ok is False
+        assert resolve_agent(bad, proj).ok is False
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses read permissions")
+def test_resolve_agent_unreadable_file_is_not_ok(fake_home, tmp_path):
+    """is_file() is True for a chmod-000 file; resolving it would be a false pass."""
+    proj = tmp_path / "proj"
+    agents = proj / ".claude" / "agents"
+    agents.mkdir(parents=True)
+    locked = agents / "locked.md"
+    locked.write_text("x")
+    locked.chmod(0o000)
+    try:
+        assert resolve_agent("locked", proj).ok is False
+    finally:
+        locked.chmod(0o644)
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -469,18 +522,45 @@ def skill_dirs(cwd: Path) -> list[Path]:
     return [Path(cwd) / ".claude" / "skills", Path.home() / ".claude" / "skills"]
 
 
+def _valid_ref_name(name: str) -> bool:
+    """A reference name is a bare identifier, never a path.
+
+    Without this guard `../../../secret` resolves to a file outside every
+    `.claude/agents` and `.claude/skills` tree and is reported as found —
+    resolution escaping its own scope. Rejecting separators is what confines
+    it; with no separator present, `..` cannot traverse.
+    """
+    if not name or name != name.strip() or name in (".", ".."):
+        return False
+    return "/" not in name and "\\" not in name
+
+
+def _readable_file(path: Path) -> bool:
+    """Resolve only to a regular file this process can actually read.
+
+    `is_file()` alone returns True for a file with no read permission. That is
+    a silent false pass: the reference is announced as resolving even though
+    nothing can read it — the exact failure this tool exists to prevent.
+    """
+    return path.is_file() and os.access(path, os.R_OK)
+
+
 def resolve_agent(name: str, cwd: Path) -> Result:
+    if not _valid_ref_name(name):
+        return Result("agents", name, False, "invalid reference name")
     for directory in agent_dirs(cwd):
         candidate = directory / f"{name}.md"
-        if candidate.is_file():
+        if _readable_file(candidate):
             return Result("agents", name, True, str(candidate))
     return Result("agents", name, False, "not found in any agent directory")
 
 
 def resolve_skill(name: str, cwd: Path) -> Result:
+    if not _valid_ref_name(name):
+        return Result("skills", name, False, "invalid reference name")
     for directory in skill_dirs(cwd):
         candidate = directory / name / "SKILL.md"
-        if candidate.is_file():
+        if _readable_file(candidate):
             return Result("skills", name, True, str(candidate))
     return Result("skills", name, False, "not found in any skill directory")
 ```
@@ -490,6 +570,7 @@ Update the top-of-file import line to `import yaml` plus the new stdlib imports 
 ```python
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -502,7 +583,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 27 passed
+Expected: PASS — 31 passed
 
 - [ ] **Step 5: Commit**
 
@@ -717,7 +798,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 41 passed
+Expected: PASS — 45 passed
 
 - [ ] **Step 5: Commit**
 
@@ -867,7 +948,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 47 passed
+Expected: PASS — 51 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1113,7 +1194,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 58 passed
+Expected: PASS — 62 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1383,6 +1464,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 27 → 41 → 47 → 58 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (58 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 31 → 45 → 51 → 62 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (62 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
