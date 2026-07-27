@@ -27,7 +27,7 @@ verification, and the numbers are unambiguous enough to change how Phase 2 is bu
 | Review agents dispatched | 14 — 7 verdicts first try, 3 after a follow-up, **4 silent** |
 | Final test count | 85 |
 
-Two of the five silent reviewers were sitting on real defects. **A silent reviewer is
+Two of the four silent reviewers were sitting on real defects. **A silent reviewer is
 indistinguishable from an approving one unless you count them.**
 
 ## 2. The three defects that matter most
@@ -50,7 +50,7 @@ Task 5 test assertion mandated it. The plan contradicted itself; the constraint 
 
 That last one is the Sprint 2 failure in miniature, committed inside the tool built to prevent it.
 
-## 3. The failure mode that recurred four times
+## 3. The failure mode that recurred five times
 
 **Fixing the instance a reviewer named rather than the shape it belonged to.**
 
@@ -60,9 +60,10 @@ That last one is the Sprint 2 failure in miniature, committed inside the tool bu
 | empty-name rejection | agents, skills | `resolve_path` |
 | case-exactness (`_exact_path`) | agents, skills | `resolve_path` |
 | subprocess exit status | selector's *count* call | selector's *open* call, `resolve_bin` |
+| case-exactness, again | agents, skills, paths, tokens | `resolve_bin` — see §3a |
 
-Four separate occurrences — and I named this failure mode myself after the second one, then
-committed it twice more. It is not an attention lapse. It is structural: a reviewer scoped to one
+Five separate occurrences — and I named this failure mode myself after the second one, then
+committed it three more times, the last one *while running a purpose-built audit for it*. It is not an attention lapse. It is structural: a reviewer scoped to one
 task's diff **cannot** see it, and the author is exactly the person least likely to.
 
 **The fix is a required step, not a good habit:** when a fix lands, build the guard × component
@@ -99,16 +100,6 @@ I also adjudicated merge-readiness while a review was outstanding, having spent 
 insisting a silent reviewer is not an approving one. The review then arrived with two findings, one
 of them the worst defect in the build.
 
-## 4. Twice, a fix was wrong in a way only execution revealed
-
-Both on the same six-line function.
-
-The version guard first excluded *hyphenated* dates. Then it excluded a preceding **digit** — which
-looked right and was **worse than no guard at all**: in `2024.01.15` the regex scan restarts after
-the dot and matches `01.15`, which compares *greater* than a `1.0.0` floor. An absurd `2024.x.x`
-became a plausible `1.15` that silently clears realistic floors, and a reviewer reading that diff
-would see a date guard and reasonably conclude it worked. Only `(?<![\d.])` closes it.
-
 ## 3b. The worst defect: a BOM erased every declaration
 
 `check_file` read with `read_text()`. That **swallows a UTF-8 BOM without raising**, so the
@@ -122,6 +113,17 @@ identical file without the BOM          →  FAIL 1 unresolved reference(s) exit
 
 A tool built to prevent silent false passes, producing one, on exit 0, in its own input path. One
 line: `encoding="utf-8-sig"`.
+
+## 4. Twice, a fix was wrong in a way only execution revealed
+
+Both on the same six-line function.
+
+The version guard first excluded *hyphenated* dates. Then it excluded a preceding **digit** — which
+looked right and was **worse than no guard at all**: in `2024.01.15` the regex scan restarts after
+the dot and matches `01.15`, which compares *greater* than a `1.0.0` floor. An absurd `2024.x.x`
+became a plausible `1.15` that silently clears realistic floors, and a reviewer reading that diff
+would see a date guard and reasonably conclude it worked. Only `(?<![\d.])` closes it.
+
 
 ## 5. What to carry into Phase 2
 
