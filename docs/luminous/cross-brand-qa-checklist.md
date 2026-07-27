@@ -13,6 +13,11 @@ grep, and WC-vocabulary leaks. It reports what it could *not* check and never ju
 intent — that stays with `brand-guardian`. This checklist remains the source of truth; the
 skill automates it, and items not listed in the skill are still manual.
 
+> ⚠️ **Confirm the skill loads before relying on it** — `ls ~/.claude/skills/wc-theme-qa/SKILL.md`.
+> It is a symlink into the `the-lodge` checkout, so it can fail to resolve for reasons nothing in
+> this repo will signal. If it doesn't load, work the items below by hand — **a gate is only
+> satisfied if checks actually ran.**
+
 For one-off visual inspection, chrome-devtools MCP also works against this URL.
 
 ---
