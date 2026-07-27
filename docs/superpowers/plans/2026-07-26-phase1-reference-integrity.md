@@ -35,11 +35,12 @@
 
 **Two defences, and the order matters.**
 
-**First, parse correctly.** The delimiter is a `---` at **column 0**. Matching `line.strip() == "---"` also matches an indented `  ---`, which is ordinary content inside a YAML block scalar — treating it as a terminator truncates the frontmatter and silently drops every key after it. Jekyll, gray-matter and python-frontmatter all anchor at column 0. Anchoring there means these files simply parse, with nothing to detect:
+**First, parse correctly.** The delimiter is a `---` at **column 0**. Matching `line.strip() == "---"` also matches an indented `  ---` — and indented, that is ordinary content in any YAML continuation context, not a delimiter. Both a block scalar (`|`/`>`) and a plain multi-line scalar produce it; `d: abc` / `  ---` / `  def` folds to `"abc --- def"` with no block indicator at all. Treating it as a terminator truncates the frontmatter and silently drops every key after it. Jekyll, gray-matter and python-frontmatter all anchor at column 0. Anchoring there means these files simply parse, with nothing to detect:
 
 | Input | Permissive matching | Column-0 anchoring |
 |---|---|---|
-| `---` indented inside a block scalar | frontmatter truncated, keys lost | **read correctly** |
+| indented `---` inside a block scalar | frontmatter truncated, keys lost | **read correctly** |
+| indented `---` in a plain multi-line scalar | same truncation | **read correctly** |
 | indented `---` mid-`requires:` | later keys silently dropped | **all keys read** |
 | malformed declaration after one | reports pass, zero references | **`unparseable`** |
 
@@ -256,11 +257,13 @@ def _candidate_blocks(lines: list[str]) -> list[str]:
        inside a quoted value; YAML then fails and the whole requires block
        disappears.
     2. **Column 0, not merely line-anchored.** `lines[i].strip() == "---"` also
-       matches an *indented* `  ---`, which is ordinary content inside a YAML
-       block scalar — not a delimiter. Treating it as one truncates the
-       frontmatter mid-block. Jekyll, gray-matter and python-frontmatter all
-       anchor at column 0; matching them means block scalars containing `---`
-       simply parse correctly, with nothing to detect.
+       matches an *indented* `  ---`. Indented, that is ordinary content — not
+       a delimiter — in any continuation context: a block scalar (`|` or `>`),
+       and equally a plain multi-line scalar, where `d: abc` / `  ---` / `  def`
+       folds to `"abc --- def"` with no block indicator present at all.
+       Treating it as a delimiter truncates the frontmatter mid-block. Jekyll,
+       gray-matter and python-frontmatter all anchor at column 0; matching them
+       means every such file simply parses, with nothing to detect.
     """
     return [
         "\n".join(lines[1:index])
