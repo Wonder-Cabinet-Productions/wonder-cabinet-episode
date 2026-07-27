@@ -180,16 +180,22 @@ Two things that bite:
   **invisible** to the dev instance — those directories are not synced. Push it and land it in
   the dev branch to see it live.
 
-### The `wc-theme-qa` skill is not available yet
+### Confirm the `wc-theme-qa` skill loaded before recording the gate
 
-`CLAUDE.md` instructs agents to run the `wc-theme-qa` skill before merging anything touching
-shared CSS, `partials/components/`, `audio-player.js`, or `--show-accent`. As of 2026-07-26 that
-skill **does not load** — `~/.claude/skills/wc-theme-qa` is a broken symlink, and its design
-(`docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md`) is still marked *pending
-implementation*.
+`CLAUDE.md` points agents at the `wc-theme-qa` skill before merging anything touching shared CSS,
+`partials/components/`, `audio-player.js`, or `--show-accent`. It automates the mechanizable
+parts of `docs/luminous/cross-brand-qa-checklist.md` and reports what it did not cover.
 
-Until it ships, that gate is the **manual** checklist at
-`docs/luminous/cross-brand-qa-checklist.md`. Do not treat the skill reference as a gate that ran.
+`~/.claude/skills/wc-theme-qa` is a **symlink into the `the-lodge` checkout**, so it can fail to
+resolve for reasons nothing in this repo will signal. Confirm it before relying on it:
+
+```bash
+ls ~/.claude/skills/wc-theme-qa/SKILL.md   # exists → it will load
+```
+
+If it doesn't load, work the checklist by hand. Either way the checklist is the gate and the
+skill automates it — and **do not record the gate as satisfied unless checks actually ran.** A
+skill that failed to load is not a pass.
 
 ---
 
