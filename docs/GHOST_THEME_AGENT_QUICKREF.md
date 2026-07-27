@@ -68,7 +68,7 @@ home.hbs        → index.hbs
 | Object | Scope | Examples |
 |--------|-------|---------|
 | `@site` | Global | `{{@site.title}}`, `{{@site.logo}}`, `{{@site.navigation}}` |
-| `@custom` | Global | `{{@custom.background_color}}` (theme settings from `package.json`) |
+| `@custom` | Global | `{{@custom.email_signup_text}}` (theme settings from `package.json`) |
 | `{{title}}`, `{{content}}`, `{{url}}` | Post/Page | Direct output in context |
 | `{{posts}}` | Index/Tag/Author | Loop with `{{#foreach posts}}` |
 
@@ -139,7 +139,6 @@ npm run test     # GScan validation
 
 ### Custom Admin Settings (in `package.json`)
 ```
-@custom.background_color    — Page background (default: #000000)
 @custom.email_signup_text   — CTA section heading
 @custom.apple_podcasts_link — Apple Podcasts URL
 @custom.spotify_link        — Spotify URL

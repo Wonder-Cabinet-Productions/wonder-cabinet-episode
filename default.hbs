@@ -21,7 +21,9 @@
 
     <style>
         :root {
-            --background-color: {{@custom.background_color}};
+            /* Literal fallback is load-bearing: the inline script below parses this value
+               as a hex string, so it must never resolve empty if --wc-black is renamed. */
+            --background-color: var(--wc-black, #000000);
             {{#if @custom.galaxy_background_image}}
             --wc-galaxy-bg: url({{@custom.galaxy_background_image}});
             {{/if}}

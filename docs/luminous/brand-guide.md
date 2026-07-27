@@ -115,7 +115,14 @@ All files live in `design-assets/site-design/Luminous-Brand-Web-Podcast/WebsiteG
 **`LuminousWeb_WebsiteBackground.svg`** — Wavy organic background pattern in cream and violet at low opacity. 2400×2400 viewBox, fully scalable. Functional analog to Wonder Cabinet's raster `bg-galaxy-spiral-1200w@2x.png`, but more abstract and lighter in tone.
 
 ### Website Wordmark
-**`LuminousWeb_Website-Wordmark.svg`** — Decorative "LUMINOUS" wordmark in cream with dot-leader treatment. 2400×758 viewBox.
+**`LuminousWeb_Website-Wordmark.svg`** — Decorative "LUMINOUS" wordmark in cream with
+dot-leader treatment. 2400×758 viewBox.
+
+> **The source asset also carries the sponsor tagline** as outlined vector paths beneath
+> the dot leader — a detail this guide originally omitted. The theme's copy
+> (`assets/images/luminous/wordmark.svg`) has had those paths removed and its viewBox
+> cropped to 2400×419; the credit is now live text from the `luminous_hero_tagline`
+> custom setting. See [`sponsor-rename-handoff.md`](./sponsor-rename-handoff.md).
 
 ### Line Separator
 **`LuminousWeb_LineSeparator.svg`** — Dashed horizontal divider in cream, 1200×152 viewBox, stroke dasharray ~1.18/29.59 at 9.86px weight. Functional analog to WC's `ui-wave-divider-light.svg` (smooth wave) — Luminous uses a quieter dashed treatment instead.
@@ -170,6 +177,27 @@ Luminous lacks the following decorative elements that WC has. These are **delibe
 | Wave divider | Dashed line separator | Direct slot swap |
 | Show cover (Wonder Cabinet) | Show cover art (Luminous) | Direct slot swap |
 | Wordmark title graphic | SVG wordmark | Direct slot swap |
+
+---
+
+## Sponsor rename (2026-07-26)
+
+The center sponsoring *Luminous* changed its name:
+
+| | |
+|---|---|
+| **Was** | Transdisciplinary Center for Research in Psychoactive Substances (TCRPS) |
+| **Now** | Center for Psychedelic Research and Education (CPRE) |
+| **Parent** | University of Wisconsin–Madison, School of Pharmacy |
+| **URL** | https://research.pharmacy.wisc.edu/cpre/ |
+
+Same entity — CPRE's site still carries legacy "TCRPS" in its Rennebohm Hall address block,
+which confirms continuity rather than a new center. Note the **en dash** in
+"Wisconsin–Madison" (UW house style).
+
+Every logo lockup and both podcast cover arts in the asset drop still bake the old name and
+need re-exports from Art & Sons — tracked in
+[`sponsor-rename-handoff.md`](./sponsor-rename-handoff.md).
 
 ---
 
