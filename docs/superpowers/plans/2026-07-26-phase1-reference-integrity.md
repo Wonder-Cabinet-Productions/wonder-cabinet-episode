@@ -882,6 +882,18 @@ def test_resolve_bin_rejects_a_failed_version_call(tmp_path):
     assert got.detail == "--version exited non-zero"
 
 
+def test_resolve_bin_is_case_sensitive():
+    """`GIT` must not resolve to `git`.
+
+    shutil.which is case-insensitive here and echoes the REQUESTED spelling, so
+    the returned path does not exist as written. Resolves on macOS, dangles on
+    Linux CI, and detail hides it. Every other resolver already had this guard.
+    """
+    assert resolve_bin("git").ok is True
+    assert resolve_bin("GIT").ok is False
+    assert resolve_bin("Git").ok is False
+
+
 def test_resolve_path_rejects_absolute(tmp_path):
     """pathlib DISCARDS base when rel is absolute — /etc/hosts must not pass."""
     (tmp_path / ".git").mkdir()
@@ -973,6 +985,15 @@ def resolve_bin(spec: str) -> Result:
     path = shutil.which(name)
     if path is None:
         return Result("bins", spec, False, "not on PATH")
+    # shutil.which is case-insensitive on this filesystem and ECHOES the
+    # requested spelling, so which("GIT") returns ".../GIT" — a path that does
+    # not exist. Resolves here, dangles on Linux CI, and detail conceals it.
+    # Same defect as resolve_path's; this was the last resolver without the
+    # guard, and it was missed because the audit exempted "PATH lookup".
+    real = _exact_path(Path(path).parent, Path(path).name)
+    if real is None:
+        return Result("bins", spec, False, "not on PATH")
+    path = str(real)
     if floor is None:
         return Result("bins", spec, True, path)
     try:
@@ -1062,7 +1083,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 58 passed
+Expected: PASS — 59 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1359,7 +1380,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 70 passed
+Expected: PASS — 71 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1472,6 +1493,24 @@ def test_format_report_does_not_count_skipped_as_resolved(fake_home, tmp_path):
     assert "PASS 1 reference(s) resolved" not in text
 
 
+def test_check_file_reads_through_a_bom(fake_home, tmp_path):
+    """A UTF-8 BOM must not make declared references vanish.
+
+    read_text() consumes a BOM without raising, so the unreadable-input guard
+    never fires; lines[0] becomes "\ufeff---", frontmatter reads as absent, and
+    the tool reports PASS 0 resolved on exit 0 for a file whose declared
+    references are broken. The worst shape this tool can produce.
+    """
+    (tmp_path / ".git").mkdir()
+    doc = tmp_path / "bom.md"
+    doc.write_bytes(
+        b"\xef\xbb\xbf---\nrequires:\n  agents: [ghost-agent]\n---\nbody\n"
+    )
+    results = check_file(doc, live=False, tokens_json=None)
+    assert [r.kind for r in results] == ["agents"]
+    assert results[0].ok is False
+
+
 def test_main_exit_two_on_missing_file(capsys):
     assert main(["/nonexistent/file.md"]) == 2
 
@@ -1540,7 +1579,12 @@ FRONTMATTER_DETAIL = {
 def check_file(path: Path, live: bool, tokens_json: Path | None) -> list[Result]:
     path = Path(path)
     try:
-        text = path.read_text()
+        # utf-8-sig, not utf-8: read_text() SWALLOWS a BOM without raising, so
+        # lines[0] becomes "\ufeff---", the frontmatter classes as "absent",
+        # and every declared reference silently vanishes — the tool reporting
+        # PASS 0 resolved on exit 0 for a file that declares broken references.
+        # The guard below never fires, because nothing raised.
+        text = path.read_text(encoding="utf-8-sig")
     except (OSError, UnicodeDecodeError) as exc:
         # _readable_file guards every REFERENCED file; the file under check was
         # never guarded. An unreadable or non-UTF-8 input raised, which exits 1
@@ -1644,7 +1688,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 83 passed
+Expected: PASS — 85 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1919,6 +1963,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 58 → 70 → 83 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (83 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 59 → 71 → 85 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (85 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
