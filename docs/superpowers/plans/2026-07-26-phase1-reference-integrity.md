@@ -33,18 +33,17 @@
   - `extract_requires(text: str) -> dict[str, list[str]]` — returns only keys whose value is a list
   - `frontmatter_status(text: str) -> str` — one of `"ok"`, `"absent"`, `"unparseable"`, `"ambiguous"`. Task 5's `check_file` turns anything other than `ok`/`absent` into a failing `Result`.
 
-**Why `frontmatter_status` exists.** This tool's whole purpose is preventing silent false passes. A partial parse that drops declared dependencies makes the tool report a pass on references it never read — the exact failure it exists to catch. `"ambiguous"` means *a different valid reading of this same file yields a different dependency set than the canonical reading*.
+**Two defences, and the order matters.**
 
-A bare `---` line inside a YAML block scalar produces that in **two** shapes, and both must be caught:
+**First, parse correctly.** The delimiter is a `---` at **column 0**. Matching `line.strip() == "---"` also matches an indented `  ---`, which is ordinary content inside a YAML block scalar — treating it as a terminator truncates the frontmatter and silently drops every key after it. Jekyll, gray-matter and python-frontmatter all anchor at column 0. Anchoring there means these files simply parse, with nothing to detect:
 
-| Shape | What survives | Caught by |
+| Input | Permissive matching | Column-0 anchoring |
 |---|---|---|
-| Whole block truncated away | no `requires` key at all | key-presence check |
-| Truncated **mid-block** | `requires` present, later keys silently gone | **set comparison** |
+| `---` indented inside a block scalar | frontmatter truncated, keys lost | **read correctly** |
+| indented `---` mid-`requires:` | later keys silently dropped | **all keys read** |
+| malformed declaration after one | reports pass, zero references | **`unparseable`** |
 
-Comparing the resolved dependency *set* — not merely whether the `requires` key is present — is what catches the second shape. Presence-only checking reports `"ok"` on it.
-
-Detection compares candidate parses against each other rather than pattern-matching the body. Soundness rests on a property of the format: a later candidate block can only parse at all when the intervening `---` sat inside a block scalar, because anywhere else it makes the block multi-document YAML, which raises. So a legitimate `---` horizontal rule in the document body never yields a second valid candidate, and never a false positive.
+**Second, `frontmatter_status` as a backstop.** Correct parsing is not the same as proving nothing was missed, and this tool exists to prevent silent false passes. `"unparseable"` is the load-bearing branch — a file whose frontmatter cannot be read must fail, never report zero references. `"absent"` distinguishes "declares nothing" from "we could not tell". `"ambiguous"` — a second valid reading yielding a different dependency set — should now be unreachable in practice, because a later candidate needs a column-0 `---` inside it, which makes it multi-document YAML and raises. It is retained deliberately as defence in depth: it costs six lines, and the whole point of this phase is that the verifier is not exempt from verification.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -134,15 +133,25 @@ def test_parse_frontmatter_deep_nesting_does_not_raise():
     assert parse_frontmatter(doc) == {}
 
 
-# --- frontmatter_status: the silent-drop detector ---
+# --- column-0 anchoring: an indented `---` is CONTENT, not a delimiter ---
 
-BLOCK_SCALAR_SWALLOW = (
+BLOCK_SCALAR = (
     '---\n'
     'description: |\n'
     '  ---\n'
     '  a horizontal rule inside a literal block\n'
     'requires:\n'
     '  agents: [brand-guardian]\n'
+    '---\n'
+)
+
+MID_BLOCK_SCALAR = (
+    '---\n'
+    'requires:\n'
+    '  agents: [brand-guardian]\n'
+    '  notes: |\n'
+    '    ---\n'
+    '  bins: ["agent-browser>=0.33.0"]\n'
     '---\n'
 )
 
@@ -167,15 +176,25 @@ def test_frontmatter_status_ok_without_requires():
     assert frontmatter_status("---\nname: x\n---\n") == "ok"
 
 
-def test_frontmatter_status_ambiguous_on_block_scalar():
-    """The class-closing regression: a bare `---` line inside a block scalar.
+def test_indented_delimiter_is_content_not_terminator():
+    """An indented `  ---` inside a block scalar must be READ, not flagged.
 
-    The canonical parse truncates and loses `requires:` entirely. A later
-    candidate parse finds it. Reporting "ambiguous" is what stops the tool
-    from claiming PASS on references it never read.
+    Matching `line.strip() == "---"` treats it as a frontmatter terminator,
+    truncating the block and losing every key after it. Real frontmatter
+    parsers anchor at column 0; doing the same makes this file parse plainly.
     """
-    assert frontmatter_status(BLOCK_SCALAR_SWALLOW) == "ambiguous"
-    assert extract_requires(BLOCK_SCALAR_SWALLOW) == {}
+    assert frontmatter_status(BLOCK_SCALAR) == "ok"
+    assert extract_requires(BLOCK_SCALAR) == {"agents": ["brand-guardian"]}
+    assert parse_frontmatter(BLOCK_SCALAR)["description"].startswith("---")
+
+
+def test_indented_delimiter_mid_block_keeps_later_keys():
+    """The harder shape: keys AFTER the indented `---` must survive."""
+    assert frontmatter_status(MID_BLOCK_SCALAR) == "ok"
+    assert extract_requires(MID_BLOCK_SCALAR) == {
+        "agents": ["brand-guardian"],
+        "bins": ["agent-browser>=0.33.0"],
+    }
 
 
 def test_frontmatter_status_not_fooled_by_body_horizontal_rule():
@@ -183,23 +202,16 @@ def test_frontmatter_status_not_fooled_by_body_horizontal_rule():
     assert frontmatter_status("---\nrequires:\n  agents: [x]\n---\n\n---\n") == "ok"
 
 
-def test_frontmatter_status_ambiguous_on_mid_block_truncation():
-    """The harder shape: `requires:` SURVIVES but loses keys after the `---`.
+def test_frontmatter_status_unparseable_when_declaration_is_malformed():
+    """Malformed frontmatter must FAIL, never pass as zero references.
 
-    Checking only whether the `requires` key is present reports "ok" here while
-    silently dropping `bins`. The dependency SET must be compared, not the key.
+    Here `agents: [x` never closes. With column-0 anchoring there is exactly
+    one candidate and it does not parse, so the file reports "unparseable"
+    rather than silently resolving nothing.
     """
-    doc = (
-        '---\n'
-        'requires:\n'
-        '  agents: [brand-guardian]\n'
-        '  notes: |\n'
-        '    ---\n'
-        '  bins: ["agent-browser>=0.33.0"]\n'
-        '---\n'
-    )
-    assert frontmatter_status(doc) == "ambiguous"
-    assert "bins" not in extract_requires(doc)
+    doc = '---\nnotes: |\n  ---\nrequires:\n  agents: [x\n---\n'
+    assert frontmatter_status(doc) == "unparseable"
+    assert extract_requires(doc) == {}
 
 
 def test_frontmatter_status_ok_for_harmless_block_scalar():
@@ -235,16 +247,25 @@ import yaml
 
 
 def _candidate_blocks(lines: list[str]) -> list[str]:
-    """Every possible frontmatter block — one per line-anchored `---` terminator.
+    """Every possible frontmatter block — one per **column-0** `---` terminator.
 
-    Line-anchored, never a substring split: `text.split("---", 2)` truncates at
-    a `---` inside a quoted value, YAML then fails, and the whole requires block
-    silently disappears.
+    Two properties matter here, and getting either wrong silently drops
+    declared dependencies:
+
+    1. **Never a substring split.** `text.split("---", 2)` truncates at a `---`
+       inside a quoted value; YAML then fails and the whole requires block
+       disappears.
+    2. **Column 0, not merely line-anchored.** `lines[i].strip() == "---"` also
+       matches an *indented* `  ---`, which is ordinary content inside a YAML
+       block scalar — not a delimiter. Treating it as one truncates the
+       frontmatter mid-block. Jekyll, gray-matter and python-frontmatter all
+       anchor at column 0; matching them means block scalars containing `---`
+       simply parse correctly, with nothing to detect.
     """
     return [
         "\n".join(lines[1:index])
         for index in range(1, len(lines))
-        if lines[index].strip() == "---"
+        if lines[index].rstrip() == "---"
     ]
 
 
@@ -266,7 +287,7 @@ def _load_mapping(block: str) -> dict | None:
 def parse_frontmatter(text: str) -> dict:
     """Return the YAML frontmatter mapping, or {} if absent or malformed."""
     lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
+    if not lines or lines[0].rstrip() != "---":
         return {}
     for block in _candidate_blocks(lines):
         data = _load_mapping(block)
@@ -286,25 +307,23 @@ def _requires_of(mapping: dict) -> dict[str, list[str]]:
 def frontmatter_status(text: str) -> str:
     """Classify the parse: "ok" | "absent" | "unparseable" | "ambiguous".
 
-    "ambiguous" means a different valid reading of this same file yields a
-    DIFFERENT dependency set than the canonical reading. A bare `---` line
-    inside a YAML block scalar causes exactly that, in two shapes:
+    The backstop behind correct parsing (`_candidate_blocks`). Reporting a
+    pass on references that were never read is the failure this whole tool
+    exists to prevent, so a file that cannot be read must say so:
 
-      * the whole `requires:` block truncated away, and
-      * `requires:` surviving but truncated MID-BLOCK, losing later keys.
-
-    Comparing the resolved dependency set — not merely whether the `requires`
-    key is present — is what catches the second shape. Checking presence alone
-    reports "ok" while silently dropping every key after the embedded `---`.
-
-    Soundness rests on a property of the format: a later candidate block can
-    only parse at all when the intervening `---` sat inside a block scalar.
-    Anywhere else it makes the block multi-document YAML, which raises. So a
-    legitimate `---` horizontal rule in the document body never produces a
-    second valid candidate, and never a false positive.
+      * "absent"      — no frontmatter at all; declares nothing.
+      * "unparseable" — frontmatter present, no reading of it parses. Load
+                        bearing: without it a malformed declaration resolves
+                        to zero references and reports a pass.
+      * "ambiguous"   — a second valid reading yields a DIFFERENT dependency
+                        set. With column-0 anchoring this should be
+                        unreachable, since a later candidate needs a column-0
+                        `---` inside it, which makes the block multi-document
+                        YAML and raises. Kept as defence in depth: six lines,
+                        and the verifier is not exempt from verification.
     """
     lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
+    if not lines or lines[0].rstrip() != "---":
         return "absent"
     parsed = [_load_mapping(block) for block in _candidate_blocks(lines)]
     canonical = next((i for i, data in enumerate(parsed) if data is not None), None)
@@ -328,7 +347,7 @@ def extract_requires(text: str) -> dict[str, list[str]]:
 cd ~/Developer/the-lodge && pytest tests/reference_check/test_frontmatter.py -v
 ```
 
-Expected: PASS — 20 passed
+Expected: PASS — 21 passed
 
 - [ ] **Step 5: Commit**
 
@@ -480,7 +499,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 26 passed
+Expected: PASS — 27 passed
 
 - [ ] **Step 5: Commit**
 
@@ -695,7 +714,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 40 passed
+Expected: PASS — 41 passed
 
 - [ ] **Step 5: Commit**
 
@@ -845,7 +864,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 46 passed
+Expected: PASS — 47 passed
 
 - [ ] **Step 5: Commit**
 
@@ -942,8 +961,18 @@ def test_main_exit_two_on_no_arguments(capsys):
     assert main([]) == 2
 
 
-def test_check_file_reports_ambiguous_frontmatter(fake_home, tmp_path):
-    """A swallowed requires: block must FAIL, never pass as zero references."""
+def test_check_file_reports_unparseable_frontmatter(fake_home, tmp_path):
+    """Unreadable frontmatter must FAIL, never pass as zero references."""
+    doc = write_doc(tmp_path, '---\nrequires:\n  agents: [brand-guardian\n---\n')
+    results = check_file(doc, live=False, tokens_json=None)
+    assert [r.kind for r in results] == ["frontmatter"]
+    assert results[0].ok is False
+    assert results[0].ref == "unparseable"
+
+
+def test_check_file_reads_through_indented_delimiter(fake_home, tmp_path):
+    """An indented `---` is block-scalar content — the agent must still resolve."""
+    (fake_home / ".claude" / "agents" / "brand-guardian.md").write_text("x")
     doc = write_doc(tmp_path, (
         '---\n'
         'description: |\n'
@@ -954,20 +983,12 @@ def test_check_file_reports_ambiguous_frontmatter(fake_home, tmp_path):
         '---\n'
     ))
     results = check_file(doc, live=False, tokens_json=None)
-    assert [r.kind for r in results] == ["frontmatter"]
-    assert results[0].ok is False
-    assert results[0].ref == "ambiguous"
+    assert [r.kind for r in results] == ["agents"]
+    assert results[0].ok is True
 
 
-def test_main_exit_one_on_ambiguous_frontmatter(fake_home, tmp_path):
-    doc = write_doc(tmp_path, (
-        '---\n'
-        'description: |\n'
-        '  ---\n'
-        'requires:\n'
-        '  agents: [brand-guardian]\n'
-        '---\n'
-    ))
+def test_main_exit_one_on_unparseable_frontmatter(fake_home, tmp_path):
+    doc = write_doc(tmp_path, '---\nrequires:\n  agents: [brand-guardian\n---\n')
     assert main([str(doc)]) == 1
 ```
 
@@ -1089,7 +1110,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 56 passed
+Expected: PASS — 58 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1359,6 +1380,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 20 → 26 → 40 → 46 → 56 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (56 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 27 → 41 → 47 → 58 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (58 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
