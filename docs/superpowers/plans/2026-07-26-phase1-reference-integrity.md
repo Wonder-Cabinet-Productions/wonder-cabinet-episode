@@ -1063,6 +1063,42 @@ def test_resolve_selector_without_urls_is_not_ok():
     got = resolve_selector(".x", [], runner=lambda *a, **k: FakeProc("0"))
     assert got.ok is False
     assert got.detail == "no urls declared to resolve selector against"
+
+
+def test_resolve_selector_missing_binary_returns_result(tmp_path):
+    """agent-browser absent must report, not crash the whole run."""
+    def missing(cmd, **kwargs):
+        raise FileNotFoundError(2, "No such file or directory", cmd[0])
+
+    got = resolve_selector(".x", ["https://example.test/"], runner=missing)
+    assert got.ok is False
+    assert got.detail == "agent-browser unavailable"
+
+
+def test_resolve_selector_error_output_is_not_a_count():
+    """`Error 404: no such page` must not read as 404 matches.
+
+    Taking the first integer in stdout makes a selector report as RESOLVING
+    because the browser failed — the exact silent false pass this tool exists
+    to prevent.
+    """
+    def failing(cmd, **kwargs):
+        proc = FakeProc("Error 404: no such page")
+        proc.returncode = 1
+        return proc
+
+    got = resolve_selector(".x", ["https://example.test/"], runner=failing)
+    assert got.ok is False
+    assert got.detail == "agent-browser returned no usable count"
+
+
+def test_resolve_selector_nonzero_exit_is_not_a_match():
+    def nonzero(cmd, **kwargs):
+        proc = FakeProc("7")
+        proc.returncode = 2
+        return proc
+
+    assert resolve_selector(".x", ["https://example.test/"], runner=nonzero).ok is False
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1089,22 +1125,47 @@ def resolve_url(url: str, opener=urllib.request.urlopen) -> Result:
 
 
 def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> Result:
+    """Count selector matches on any declared URL.
+
+    Two traps here, and the second is the worst shape this tool can produce:
+
+    * `subprocess.run` RAISES `FileNotFoundError` when `agent-browser` is not
+      installed. Unhandled, the verifier crashes instead of reporting.
+    * Taking "the first integer in stdout" turns an error line — say
+      `Error 404: no such page` — into a count of 404 matches, so a selector
+      reports as RESOLVING precisely because the browser failed.
+
+    Hence: the command must exit 0, and stdout must be exactly a number.
+    Anything else is not a count, and a URL that produced no usable count is
+    reported as such rather than folded into "0 matches".
+    """
     if not urls:
         return Result(
             "selectors", selector, False, "no urls declared to resolve selector against"
         )
+    unusable = 0
     for url in urls:
-        runner(["agent-browser", "open", url], capture_output=True, text=True, timeout=60)
-        proc = runner(
-            ["agent-browser", "get", "count", selector],
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        digits = re.findall(r"\d+", proc.stdout or "")
-        count = int(digits[0]) if digits else 0
-        if count > 0:
-            return Result("selectors", selector, True, f"{count} match(es) on {url}")
+        try:
+            runner(["agent-browser", "open", url], capture_output=True, text=True, timeout=60)
+            proc = runner(
+                ["agent-browser", "get", "count", selector],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return Result("selectors", selector, False, "agent-browser unavailable")
+        if getattr(proc, "returncode", 0) != 0:
+            unusable += 1
+            continue
+        text = (proc.stdout or "").strip()
+        if not text.isdigit():
+            unusable += 1
+            continue
+        if int(text) > 0:
+            return Result("selectors", selector, True, f"{text} match(es) on {url}")
+    if unusable == len(urls):
+        return Result("selectors", selector, False, "agent-browser returned no usable count")
     return Result("selectors", selector, False, "0 matches on any declared url")
 ```
 
@@ -1114,7 +1175,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 59 passed
+Expected: PASS — 62 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1360,7 +1421,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 70 passed
+Expected: PASS — 73 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1630,6 +1691,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 53 → 59 → 70 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (70 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 53 → 62 → 73 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (73 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
