@@ -500,6 +500,32 @@ def test_resolve_skill_is_case_sensitive(fake_home, tmp_path):
     assert resolve_skill("Browser-Tooling", proj).ok is False
 
 
+def test_resolve_agent_survives_unicode_normalization(fake_home, tmp_path):
+    """NFC and NFD spellings of the same name must resolve to each other.
+
+    Case-sensitivity must not be bought with a normalization false negative:
+    `os.listdir` returns stored bytes, so an NFD on-disk name and an NFC
+    reference are different strings even though every OS path API opens them
+    interchangeably. Both directions are tested.
+    """
+    import unicodedata
+
+    proj = tmp_path / "proj"
+    agents = proj / ".claude" / "agents"
+    agents.mkdir(parents=True)
+    nfc = unicodedata.normalize("NFC", "café-agent")
+    nfd = unicodedata.normalize("NFD", "café-agent")
+
+    (agents / f"{nfc}.md").write_text("x")
+    assert resolve_agent(nfc, proj).ok is True
+    assert resolve_agent(nfd, proj).ok is True
+
+    (agents / f"{nfc}.md").unlink()
+    (agents / f"{nfd}.md").write_text("x")
+    assert resolve_agent(nfd, proj).ok is True
+    assert resolve_agent(nfc, proj).ok is True
+
+
 @pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses read permissions")
 def test_resolve_agent_unreadable_file_is_not_ok(fake_home, tmp_path):
     """is_file() is True for a chmod-000 file; resolving it would be a false pass."""
@@ -581,15 +607,25 @@ def _exact_path(directory: Path, *parts: str) -> Path | None:
     reports the *requested* path, the report would conceal the mismatch.
     Checking each component against `os.listdir` makes resolution as
     case-sensitive as the thing it is predicting.
+
+    Comparison is Unicode-normalized (NFC) on both sides. `os.listdir` returns
+    whatever bytes the filesystem stores, and APFS keeps names as written — so
+    a name authored NFD (`e` + combining acute) and a reference typed NFC (`é`)
+    are different strings for a raw `in` test, even though every OS path API
+    opens them interchangeably. Comparing raw would trade the case false
+    positive for a normalization false negative. The matched **on-disk** name
+    is what gets returned, so `detail` reports reality rather than the request.
     """
     current = directory
     for part in parts:
         try:
-            if part not in os.listdir(current):
-                return None
+            entries = {unicodedata.normalize("NFC", e): e for e in os.listdir(current)}
         except OSError:
             return None
-        current = current / part
+        key = unicodedata.normalize("NFC", part)
+        if key not in entries:
+            return None
+        current = current / entries[key]
     return current
 
 
@@ -619,6 +655,7 @@ Update the top-of-file import line to `import yaml` plus the new stdlib imports 
 from __future__ import annotations
 
 import os
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -631,7 +668,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 33 passed
+Expected: PASS — 34 passed
 
 - [ ] **Step 5: Commit**
 
@@ -666,6 +703,7 @@ Create `~/Developer/the-lodge/tests/reference_check/test_resolve_static.py`:
 
 ```python
 import json
+import os
 
 import pytest
 
@@ -693,7 +731,7 @@ def test_parse_bin_spec_rejects_other_comparators():
         parse_bin_spec("agent-browser>0.33.0")
 
 
-def test_version_tuple_extracts_first_three_integers():
+def test_version_tuple_extracts_dotted_version():
     assert version_tuple("agent-browser 0.33.0") == (0, 33, 0)
 
 
@@ -758,6 +796,55 @@ def test_resolve_token_present_and_absent(tmp_path):
     got = resolve_token("--show-accent-deep", tokens)
     assert got.ok is False
     assert got.detail == "not declared in tokens.json"
+
+
+# --- the same guards the agent/skill resolvers carry apply here ---
+
+def test_version_tuple_ignores_a_date(tmp_path):
+    """"built on 2024-01-15" must not parse as version 2024.1.15.
+
+    Taking "the first three integers" lets a date in a --version banner clear
+    every floor, silently passing a binary far too old.
+    """
+    assert version_tuple("mytool 1.2.3 (built on 2024-01-15)") == (1, 2, 3)
+    assert version_tuple("built on 2024-01-15") == ()
+
+
+def test_resolve_path_rejects_absolute(tmp_path):
+    """pathlib DISCARDS base when rel is absolute — /etc/hosts must not pass."""
+    (tmp_path / ".git").mkdir()
+    got = resolve_path("/etc/hosts", tmp_path)
+    assert got.ok is False
+    assert got.detail == "path escapes the repository"
+
+
+def test_resolve_path_rejects_traversal(tmp_path):
+    (tmp_path / ".git").mkdir()
+    got = resolve_path("../../../../../../etc/hosts", tmp_path)
+    assert got.ok is False
+    assert got.detail == "path escapes the repository"
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses read permissions")
+def test_resolve_path_rejects_unreadable(tmp_path):
+    (tmp_path / ".git").mkdir()
+    locked = tmp_path / "locked.md"
+    locked.write_text("x")
+    locked.chmod(0o000)
+    try:
+        got = resolve_path("locked.md", tmp_path)
+        assert got.ok is False
+        assert got.detail == "path exists but is not readable"
+    finally:
+        locked.chmod(0o644)
+
+
+def test_load_token_names_non_mapping_json_returns_empty(tmp_path):
+    """Valid JSON that is not an object must not crash the run."""
+    tokens = tmp_path / "tokens.json"
+    for shape in ('["a"]', "42", "null", '"str"', "true"):
+        tokens.write_text(shape)
+        assert load_token_names(tokens) == set()
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -783,8 +870,22 @@ def parse_bin_spec(spec: str) -> tuple[str, str | None]:
     return match.group(1), match.group(2)
 
 
+VERSION_TOKEN = re.compile(r"(\d+(?:\.\d+){1,3})\b")
+
+
 def version_tuple(text: str) -> tuple[int, ...]:
-    return tuple(int(part) for part in re.findall(r"\d+", text)[:3])
+    """The first dotted version-like token, as integers.
+
+    NOT "the first three integers found". A `--version` banner containing a
+    date — "built on 2024-01-15" — would then parse as version 2024.1.15 and
+    clear every floor, silently passing a binary far too old. Requiring at
+    least one dot excludes bare years and hyphenated dates.
+
+    No leading \\b: `v` and `2` are both word characters, so anchoring the
+    front would fail on the very common "v2.1" spelling.
+    """
+    match = VERSION_TOKEN.search(text)
+    return tuple(int(p) for p in match.group(1).split(".")) if match else ()
 
 
 def resolve_bin(spec: str) -> Result:
@@ -816,16 +917,33 @@ def repo_root(start: Path) -> Path:
 
 
 def resolve_path(rel: str, base: Path) -> Result:
-    target = repo_root(base) / rel
-    if target.exists():
-        return Result("paths", rel, True, str(target))
-    return Result("paths", rel, False, "no such path")
+    """Resolve a repo-relative path, confined to the repo and readable.
+
+    Two failures the agent/skill resolvers already guard against apply here
+    too. `pathlib` silently DISCARDS `base` when `rel` is absolute, so
+    "/etc/hosts" resolved outside the repo and reported found; and `.exists()`
+    is True for a file nothing can read, which is a silent false pass.
+    """
+    root = repo_root(base).resolve()
+    try:
+        target = (root / rel).resolve()
+    except OSError:
+        return Result("paths", rel, False, "no such path")
+    if not target.is_relative_to(root):
+        return Result("paths", rel, False, "path escapes the repository")
+    if not target.exists():
+        return Result("paths", rel, False, "no such path")
+    if not os.access(target, os.R_OK):
+        return Result("paths", rel, False, "path exists but is not readable")
+    return Result("paths", rel, True, str(target))
 
 
 def load_token_names(tokens_json: Path) -> set[str]:
     try:
         data = json.loads(Path(tokens_json).read_text())
     except (OSError, json.JSONDecodeError):
+        return set()
+    if not isinstance(data, dict):
         return set()
     names: set[str] = set()
     for tier in data.values():
@@ -846,7 +964,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 47 passed
+Expected: PASS — 59 passed
 
 - [ ] **Step 5: Commit**
 
@@ -996,7 +1114,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 53 passed
+Expected: PASS — 59 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1242,7 +1360,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 64 passed
+Expected: PASS — 70 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1512,6 +1630,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 33 → 47 → 53 → 64 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (64 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 53 → 59 → 70 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (70 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
