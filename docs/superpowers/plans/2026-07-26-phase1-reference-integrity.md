@@ -936,6 +936,23 @@ def test_load_token_names_reads_through_a_bom(tmp_path):
     assert resolve_token("--wc-green", tokens).ok is True
 
 
+def test_resolve_token_distinguishes_cannot_check_from_absent(tmp_path):
+    """A missing or malformed tokens file must not read as "token absent"."""
+    good = tmp_path / "good.json"
+    good.write_text(json.dumps({"brand": {"--wc-green": "#10A544"}}))
+    assert resolve_token("--nope", good).detail == "not declared in tokens.json"
+
+    assert resolve_token("--wc-green", tmp_path / "gone.json").detail == "tokens file missing"
+
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json")
+    assert resolve_token("--wc-green", bad).detail == "tokens file malformed"
+
+    listy = tmp_path / "listy.json"
+    listy.write_text("[1,2,3]")
+    assert resolve_token("--wc-green", listy).detail == "tokens file malformed"
+
+
 def test_load_token_names_non_mapping_json_returns_empty(tmp_path):
     """Valid JSON that is not an object must not crash the run."""
     tokens = tmp_path / "tokens.json"
@@ -1013,7 +1030,7 @@ def resolve_bin(spec: str) -> Result:
         proc = subprocess.run(
             [name, "--version"], capture_output=True, text=True, timeout=10
         )
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired, UnicodeDecodeError):
         return Result("bins", spec, False, "could not read --version")
     if getattr(proc, "returncode", 0) != 0:
         # An ERROR must never clear a version floor. A binary exiting non-zero
@@ -1089,7 +1106,31 @@ def load_token_names(tokens_json: Path) -> set[str]:
     return names
 
 
+def token_source_status(tokens_json: Path) -> str:
+    """Classify the token source: "ok" | "missing" | "unreadable" | "malformed"."""
+    path = Path(tokens_json)
+    if not path.exists():
+        return "missing"
+    if not os.access(path, os.R_OK):
+        return "unreadable"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return "malformed"
+    return "ok" if isinstance(data, dict) else "malformed"
+
+
 def resolve_token(name: str, tokens_json: Path) -> Result:
+    """Resolve a token, distinguishing "could not check" from "checked, absent".
+
+    Reporting "not declared in tokens.json" when the file is missing, unreadable
+    or malformed states a verified absence that never happened — the plan's
+    constraint is that absence of a check is stated, never implied. A missing
+    file and an absent token produced the identical line before this.
+    """
+    status = token_source_status(tokens_json)
+    if status != "ok":
+        return Result("tokens", name, False, f"tokens file {status}")
     if name in load_token_names(tokens_json):
         return Result("tokens", name, True, str(tokens_json))
     return Result("tokens", name, False, "not declared in tokens.json")
@@ -1101,7 +1142,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 60 passed
+Expected: PASS — 61 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1221,6 +1262,20 @@ def test_resolve_selector_without_urls_is_not_ok():
     got = resolve_selector(".x", [], runner=lambda *a, **k: FakeProc("0"))
     assert got.ok is False
     assert got.detail == "no urls declared to resolve selector against"
+
+
+def test_resolve_selector_survives_undecodable_output():
+    """Non-UTF-8 subprocess output must report, not crash the run.
+
+    text=True decodes strict, so a UnicodeDecodeError raises out of the
+    resolver, through check_file, and abandons every remaining file.
+    """
+    def undecodable(cmd, **kwargs):
+        raise UnicodeDecodeError("utf-8", b"\xff", 0, 1, "invalid start byte")
+
+    got = resolve_selector(".x", ["https://example.test/"], runner=undecodable)
+    assert got.ok is False
+    assert got.detail == "agent-browser unavailable"
 
 
 def test_resolve_selector_missing_binary_returns_result(tmp_path):
@@ -1373,7 +1428,13 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
                 text=True,
                 timeout=60,
             )
-        except (OSError, subprocess.SubprocessError):
+        except (OSError, subprocess.SubprocessError, UnicodeDecodeError):
+            # UnicodeDecodeError belongs here explicitly: text=True decodes
+            # strict, so non-UTF-8 output from the browser raises OUT of the
+            # resolver, through check_file, and abandons every remaining file.
+            # resolve_bin survives the same raise only by accident — it
+            # subclasses ValueError, so the bad-spec handler swallows and
+            # mislabels it. Accident is not a guard.
             return Result("selectors", selector, False, "agent-browser unavailable")
         if getattr(proc, "returncode", 0) != 0:
             unusable += 1
@@ -1398,7 +1459,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 72 passed
+Expected: PASS — 74 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1706,7 +1767,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 86 passed
+Expected: PASS — 88 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1981,6 +2042,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 60 → 72 → 86 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (86 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 61 → 74 → 88 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (88 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
