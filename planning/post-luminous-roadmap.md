@@ -47,10 +47,36 @@ Dependency-ordered — earlier items unblock later ones:
 | # | Issue | Work | Why this order |
 |---|---|---|---|
 | 1 | [#35](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/35) | Fix highlight-zone double-render: `home.hbs` `{{#get}}` feed filter excludes `newsletter`/`luminous` but **not** `island-of-knowledge`, so IoK episodes appear twice | Foundational — corrects the feed math everything else builds on |
-| 2 | [#24](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/24) | Load More Episodes (client-side Content API). In-progress branch `feature/load-more-episodes` adds `load-more.js`, edits `home.hbs` + `screen.css` | The enabler mechanism for #23 and #39 |
+| 2 | [#24](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/24) | Load More Episodes (client-side Content API). Prior art is **one cherry-pickable commit**, not a mergeable branch — see the note below | The enabler mechanism for #23 and #39 |
 | 3 | [#22](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/22) | Content density: split newsletter highlight into latest-newsletter + a 2nd featured box lower down; extend to ~6 episodes | Builds on corrected feed + load-more |
 | 4 | [#23](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/23) | Archive-page experiment: 2-wide tag archives + infinite scroll; check perf | Reuses #24's load-more |
 | 5 | [#39](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/39) | Consistent item count between highlight zones | Was blocked on Luminous content migration — **unblocks automatically post-deploy** |
+
+### #24 prior art — take the commit, not the branch
+
+`feature/load-more-episodes` (last touched **2026-02-06**) is **not** a merge candidate. It carries
+~24,000 files including a committed `node_modules/`, plus unrelated cargo: Slack deploy
+notifications, author-bio subgrid layout, "bigger non audio page images", and a transcript
+max-height fix that already landed separately as #9. Merging the branch would drag all of that in.
+
+The actual feature is a single self-contained commit — **`9e2442e0`**, 208 lines across three
+source files:
+
+| File | Change |
+|---|---|
+| `assets/js/load-more.js` | +175 (new — client-side Content API pagination) |
+| `assets/css/screen.css` | +24 |
+| `home.hbs` | +10 |
+
+Cherry-pick that one commit; ignore the branch. (`e60ae668`, "show 5 episodes so the newsletter
+card doesn't displace the oldest episode", is arguably a companion — but it overlaps #35's feed
+math and #22's density work, so decide it there rather than dragging it along.)
+
+**It predates the multi-brand refactor**, so it will not apply cleanly and must not be pasted in
+as-is. It was written before Sprints 1–2 introduced `--show-accent` tokenization and moved brand
+context onto a body class. Its `screen.css` and `home.hbs` edits need re-basing against those, and
+the result has to clear the §A "WC is a visual no-op" invariant plus a Luminous render check —
+`home.hbs` is a cross-brand template, so `wc-theme-qa` applies before merge.
 
 ## Sprint 5 — Component wiring & membership surfaces
 
