@@ -42,10 +42,6 @@
         },
         "card_assets": true,
         "custom": {
-            "background_color": {
-                "type": "color",
-                "default": "#000000"
-            },
             "email_signup_text": {
                 "type": "text",
                 "default": "Subscribe to make sure you never miss an episode."
@@ -86,6 +82,12 @@
                 "default": "",
                 "group": "homepage"
             },
+            "luminous_hero_tagline": {
+                "type": "text",
+                "default": "Conversations from the University of Wisconsin–Madison Center for Psychedelic Research and Education",
+                "description": "Luminous hero tagline / sponsor credit. Renders as raw HTML — not escaped or filtered.",
+                "group": "homepage"
+            },
             "instagram_link": {
                 "type": "text",
                 "default": ""
@@ -118,6 +120,12 @@
                 "type": "text",
                 "default": "",
                 "description": "Contact email address (just the email, no mailto:)"
+            },
+            "hero_tagline": {
+                "type": "text",
+                "default": "From the creators of <em>To The Best Of Our Knowledge</em>",
+                "description": "Homepage hero tagline. Renders as raw HTML — not escaped or filtered.",
+                "group": "homepage"
             },
             "hero_title_image": {
                 "type": "image",
