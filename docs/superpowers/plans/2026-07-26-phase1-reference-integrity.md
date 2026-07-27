@@ -923,6 +923,19 @@ def test_resolve_path_rejects_unreadable(tmp_path):
         locked.chmod(0o644)
 
 
+def test_load_token_names_reads_through_a_bom(tmp_path):
+    """A BOM-prefixed tokens.json must still yield its tokens.
+
+    Plain read_text() swallows the BOM, json.loads fails, and every declared
+    token then reports "not declared in tokens.json" — a false negative whose
+    stated reason is wrong. Same defect as check_file's, one site over.
+    """
+    tokens = tmp_path / "tokens.json"
+    tokens.write_bytes(b'\xef\xbb\xbf{"brand": {"--wc-green": "#10A544"}}')
+    assert load_token_names(tokens) == {"--wc-green"}
+    assert resolve_token("--wc-green", tokens).ok is True
+
+
 def test_load_token_names_non_mapping_json_returns_empty(tmp_path):
     """Valid JSON that is not an object must not crash the run."""
     tokens = tmp_path / "tokens.json"
@@ -1059,7 +1072,12 @@ def resolve_path(rel: str, base: Path) -> Result:
 
 def load_token_names(tokens_json: Path) -> set[str]:
     try:
-        data = json.loads(Path(tokens_json).read_text())
+        # utf-8-sig for the same reason check_file uses it: a plain read_text()
+        # swallows a leading BOM, json.loads then fails, and this returns an
+        # empty set — so every declared token reports "not declared in
+        # tokens.json". Sixth site of that defect; found by checking the
+        # sibling rather than trusting the audit that had already exempted it.
+        data = json.loads(Path(tokens_json).read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return set()
     if not isinstance(data, dict):
@@ -1083,7 +1101,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 59 passed
+Expected: PASS — 60 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1380,7 +1398,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 71 passed
+Expected: PASS — 72 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1688,7 +1706,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 85 passed
+Expected: PASS — 86 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1963,6 +1981,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 59 → 71 → 85 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (85 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 60 → 72 → 86 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (86 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
