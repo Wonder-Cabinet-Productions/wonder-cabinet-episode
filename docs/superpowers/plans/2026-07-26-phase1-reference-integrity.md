@@ -964,7 +964,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 59 passed
+Expected: PASS — 53 passed
 
 - [ ] **Step 5: Commit**
 
