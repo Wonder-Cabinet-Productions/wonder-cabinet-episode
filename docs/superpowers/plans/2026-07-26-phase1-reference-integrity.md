@@ -1073,6 +1073,27 @@ def test_resolve_url_404_is_not_ok():
     assert got.detail == "404"
 
 
+def test_resolve_url_non_integer_status_does_not_raise():
+    """A response whose .status is None must report, not crash.
+
+    A file:// URL produces exactly this: the attribute exists but is None, so
+    getattr's default never fires and `200 <= None` raises. The guard has to be
+    a type check, and it has to live inside the try's protection.
+    """
+    class NoneStatus:
+        status = None
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    got = resolve_url("file:///etc/hosts", opener=lambda *a, **k: NoneStatus())
+    assert got.ok is False
+    assert "no usable status" in got.detail
+
+
 def test_resolve_url_network_error_is_not_ok():
     def boom(*a, **k):
         raise urllib.error.URLError("unreachable")
@@ -1190,11 +1211,22 @@ Add `import urllib.error` and `import urllib.request` to the import block, then 
 
 ```python
 def resolve_url(url: str, opener=urllib.request.urlopen) -> Result:
+    """Resolve a URL by opening it and inspecting the response status.
+
+    `.status` is not reliably an int. A `file://` URL yields a response whose
+    `status` attribute EXISTS but is None, so `getattr(response, "status", 0)`
+    returns None rather than the default — and comparing None against an int
+    raises. The comparison must therefore be type-guarded, and it must sit
+    inside the guard: an assumption evaluated outside the try is not protected
+    by it.
+    """
     try:
         with opener(url, timeout=15) as response:
-            status = getattr(response, "status", 0)
+            status = getattr(response, "status", None)
     except Exception as exc:  # URLError, HTTPError, socket timeouts
         return Result("urls", url, False, str(exc))
+    if not isinstance(status, int):
+        return Result("urls", url, False, f"no usable status ({status!r})")
     ok = 200 <= status < 400
     return Result("urls", url, ok, str(status))
 
@@ -1253,7 +1285,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 66 passed
+Expected: PASS — 67 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1499,7 +1531,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 77 passed
+Expected: PASS — 78 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1774,6 +1806,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 56 → 66 → 77 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (77 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 56 → 67 → 78 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (78 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
