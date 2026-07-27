@@ -1679,8 +1679,13 @@ The four in `~/.claude/ARCHIVE/old agents/` are `adhd-friendly-ui-designer`, `ag
 `adhd-friendly-ui-designer` is referenced by the Luminous umbrella spec §2 as the design/UX and a11y lens, so **restore it**:
 
 ```bash
-cp "$HOME/.claude/ARCHIVE/old agents/adhd-friendly-ui-designer.md" ~/.claude/agents/
+mv "$HOME/.claude/ARCHIVE/old agents/adhd-friendly-ui-designer.md" ~/.claude/agents/
 ```
+
+**`mv`, not `cp`.** A copy leaves the file in both places, and a shadow copy is
+exactly the ambiguity §5.1 sets out to end — "each agent gets exactly one home,
+no shadow copies". An earlier draft of this step said `cp` and contradicted its
+own section; the final verification caught it.
 
 `agent-registrar` is superseded by `reference-check` for the rot-detection half, and its `agent-registrar-scan.sh` has never run (no log, no reports, not scheduled). **Delete it and the dead script.** For `code-troubleshooter` and `obsidian-extension-developer`, ask the user before deleting — they are outside this project's scope and this plan should not silently discard them.
 
