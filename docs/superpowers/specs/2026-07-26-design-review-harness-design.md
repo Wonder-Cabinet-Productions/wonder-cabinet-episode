@@ -1,3 +1,15 @@
+---
+requires:
+  agents: [brand-guardian, spectral-engineer]
+  bins: ["agent-browser>=0.33.0"]
+  paths:
+    - docs/luminous/cross-brand-qa-checklist.md
+    - docs/multi-brand-design-system.md
+    - docs/superpowers/specs/2026-07-25-wc-theme-qa-harness-design.md
+    - docs/superpowers/specs/2026-06-08-luminous-branding-workplan-design.md
+  urls: ["https://wondercabinet.riechers.co/"]
+---
+
 # Design Review & QA Harness — Design
 
 **Date**: 2026-07-26
