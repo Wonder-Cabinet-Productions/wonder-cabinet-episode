@@ -18,14 +18,14 @@ verification, and the numbers are unambiguous enough to change how Phase 2 is bu
 
 | | |
 |---|---|
-| Real defects found | **19** |
+| Real defects found | **21** |
 | Defects in an *implementation* | **0** |
-| Defects in the *plan* | **19** |
-| Found by **running** code | **19** |
+| Defects in the *plan* | **21** |
+| Found by **running** code | **21** |
 | Found by **reading** a diff | **0** |
 | Implementer agents dispatched | 12 — every one transcribed faithfully |
-| Review agents dispatched | 13 — 7 verdicts first try, 2 after a follow-up, **5 silent** |
-| Final test count | 83 |
+| Review agents dispatched | 14 — 7 verdicts first try, 3 after a follow-up, **4 silent** |
+| Final test count | 85 |
 
 Two of the five silent reviewers were sitting on real defects. **A silent reviewer is
 indistinguishable from an approving one unless you count them.**
@@ -68,6 +68,37 @@ task's diff **cannot** see it, and the author is exactly the person least likely
 **The fix is a required step, not a good habit:** when a fix lands, build the guard × component
 matrix and check every cell. That check found the last three Criticals.
 
+## 3a. The audit exempted the gap it was auditing for
+
+The fifth instance is the one worth dwelling on, because it is a failure of the
+*checking tool*, not of attention.
+
+After the fourth recurrence I built a cross-resolver matrix — guard × resolver, every cell — and
+ran it. It came back clean, and on that authority I told the user the branch was merge-ready. It
+was not. `resolve_bin` was still case-insensitive: `shutil.which` is case-insensitive on this
+filesystem and echoes the requested spelling, so `which("GIT")` returns a path that does not exist,
+resolving on macOS and dangling on Linux CI.
+
+The matrix could not see it because **I had hardcoded the exemption myself**:
+
+```python
+("resolve_bin", "case-exact"): "PATH lookup",   # ← wrong, and written by the author
+```
+
+I built a verifier for "same shape, different sibling" and hand-exempted the sibling that had the
+shape. Every exemption in that table was a plausible-sounding assumption I wrote while holding the
+belief the audit was meant to test.
+
+**A check's assumptions need auditing by someone who did not write them.** The fixture suite catches
+a check that is *wrong*. Nothing yet catches a check that is *scoped* wrong — an exemption that
+reads as reasonable and silently removes a whole class from coverage. For the theme harness that is
+the identical risk to a check written for one brand context quietly not covering the other, which
+is exactly what produced the Sprint 2 false pass.
+
+I also adjudicated merge-readiness while a review was outstanding, having spent the whole session
+insisting a silent reviewer is not an approving one. The review then arrived with two findings, one
+of them the worst defect in the build.
+
 ## 4. Twice, a fix was wrong in a way only execution revealed
 
 Both on the same six-line function.
@@ -77,6 +108,20 @@ looked right and was **worse than no guard at all**: in `2024.01.15` the regex s
 the dot and matches `01.15`, which compares *greater* than a `1.0.0` floor. An absurd `2024.x.x`
 became a plausible `1.15` that silently clears realistic floors, and a reviewer reading that diff
 would see a date guard and reasonably conclude it worked. Only `(?<![\d.])` closes it.
+
+## 3b. The worst defect: a BOM erased every declaration
+
+`check_file` read with `read_text()`. That **swallows a UTF-8 BOM without raising**, so the
+unreadable-input guard never fired. `lines[0]` became `"\ufeff---"`, the frontmatter classed as
+`"absent"`, and every declared reference silently disappeared:
+
+```
+BOM file declaring a nonexistent agent  →  PASS 0 reference(s) resolved   exit 0
+identical file without the BOM          →  FAIL 1 unresolved reference(s) exit 1
+```
+
+A tool built to prevent silent false passes, producing one, on exit 0, in its own input path. One
+line: `encoding="utf-8-sig"`.
 
 ## 5. What to carry into Phase 2
 
@@ -98,7 +143,9 @@ would see a date guard and reasonably conclude it worked. Only `(?<![\d.])` clos
    manufactured by the process built to fix it.
 6. **Count reviews dispatched versus verdicts returned.** Make "no verdict received" an explicit
    failure state.
-7. **The harness must check itself.** `reference-check`'s own deployment is not covered by
+7. **Have someone else audit the audit's exemptions.** Every "not applicable" in a coverage matrix
+   is an assumption. The author is the worst person to validate them — see §3a.
+8. **The harness must check itself.** `reference-check`'s own deployment is not covered by
    `reference-check` — see DF-007 below. Phase 2's gate should declare its own dependencies and
    verify them on every run, or it is exempt from the discipline it enforces.
 
