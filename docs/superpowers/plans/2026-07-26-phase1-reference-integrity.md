@@ -555,7 +555,7 @@ Add to `~/Developer/the-lodge/scripts/reference_check.py`, after the imports:
 
 ```python
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 @dataclass
@@ -657,7 +657,7 @@ from __future__ import annotations
 import os
 import unicodedata
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import yaml
 ```
@@ -848,6 +848,40 @@ def test_resolve_path_rejects_empty_reference(tmp_path):
         assert got.detail == "invalid path reference"
 
 
+def test_resolve_path_is_case_sensitive(tmp_path):
+    """A mis-cased path must not resolve, and detail must not echo the request.
+
+    This filesystem is case-insensitive; git and Linux CI are not. A declared
+    path with the wrong case passes here and dangles everywhere else, with the
+    report printing the requested spelling rather than what exists.
+    """
+    (tmp_path / ".git").mkdir()
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "note.md").write_text("x")
+    assert resolve_path("docs/note.md", tmp_path).ok is True
+    assert resolve_path("DOCS/note.md", tmp_path).ok is False
+    assert resolve_path("docs/NOTE.md", tmp_path).ok is False
+
+
+def test_resolve_bin_rejects_a_failed_version_call(tmp_path):
+    """A --version that EXITS NON-ZERO must not clear a floor.
+
+    A binary printing "usage: fakebin v9.9.9" on stderr while exiting 1 would
+    otherwise satisfy >=2.0.0 — a version floor cleared by an error message.
+    """
+    import stat
+
+    fake = tmp_path / "fakebin"
+    fake.write_text("#!/bin/sh\necho 'usage: fakebin v9.9.9' >&2\nexit 1\n")
+    fake.chmod(fake.stat().st_mode | stat.S_IEXEC)
+    import os as _os
+
+    _os.environ["PATH"] = f"{tmp_path}:{_os.environ['PATH']}"
+    got = resolve_bin("fakebin>=2.0.0")
+    assert got.ok is False
+    assert got.detail == "--version exited non-zero"
+
+
 def test_resolve_path_rejects_absolute(tmp_path):
     """pathlib DISCARDS base when rel is absolute — /etc/hosts must not pass."""
     (tmp_path / ".git").mkdir()
@@ -947,6 +981,12 @@ def resolve_bin(spec: str) -> Result:
         )
     except (OSError, subprocess.TimeoutExpired):
         return Result("bins", spec, False, "could not read --version")
+    if getattr(proc, "returncode", 0) != 0:
+        # An ERROR must never clear a version floor. A binary exiting non-zero
+        # with "usage: fakebin v9.9.9" on stderr would otherwise satisfy
+        # >=2.0.0 — the floor cleared by a failure message. Same guard
+        # resolve_selector carries; it belongs on every subprocess call.
+        return Result("bins", spec, False, "--version exited non-zero")
     found = version_tuple(proc.stdout + proc.stderr)
     shown = ".".join(str(part) for part in found) or "unknown"
     wanted = version_tuple(floor)
@@ -984,9 +1024,16 @@ def resolve_path(rel: str, base: Path) -> Result:
         return Result("paths", rel, False, "path escapes the repository")
     if not target.exists():
         return Result("paths", rel, False, "no such path")
-    if not os.access(target, os.R_OK):
+    # Case-exact, for the same reason agents and skills are: this filesystem is
+    # case-insensitive, but git and Linux CI are not. A mis-cased declared path
+    # resolves here and dangles everywhere else — and `detail` would echo the
+    # REQUESTED spelling, concealing it. Walk the components against listdir.
+    exact = _exact_path(root, *PurePosixPath(rel).parts)
+    if exact is None:
+        return Result("paths", rel, False, "no such path")
+    if not os.access(exact, os.R_OK):
         return Result("paths", rel, False, "path exists but is not readable")
-    return Result("paths", rel, True, str(target))
+    return Result("paths", rel, True, str(exact))
 
 
 def load_token_names(tokens_json: Path) -> set[str]:
@@ -1015,7 +1062,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 56 passed
+Expected: PASS — 58 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1188,6 +1235,25 @@ def test_resolve_selector_states_an_unchecked_url():
     assert got.detail == "no usable count from 1 of 2 url(s)"
 
 
+def test_resolve_selector_requires_the_page_to_load():
+    """If `open` fails, any count that follows describes the WRONG page.
+
+    Guarding only the count command leaves the open one line above it
+    unchecked, so a page that never loaded still yields a match from whatever
+    was previously in the browser.
+    """
+    def open_fails(cmd, **kwargs):
+        if "open" in cmd:
+            proc = FakeProc("")
+            proc.returncode = 1
+            return proc
+        return FakeProc("3")
+
+    got = resolve_selector(".x", ["https://never-loaded.example/"], runner=open_fails)
+    assert got.ok is False
+    assert got.detail == "no usable count from 1 of 1 url(s)"
+
+
 def test_resolve_selector_nonzero_exit_is_not_a_match():
     def nonzero(cmd, **kwargs):
         proc = FakeProc("7")
@@ -1253,7 +1319,15 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
     unusable = 0
     for url in urls:
         try:
-            runner(["agent-browser", "open", url], capture_output=True, text=True, timeout=60)
+            opened = runner(
+                ["agent-browser", "open", url], capture_output=True, text=True, timeout=60
+            )
+            if getattr(opened, "returncode", 0) != 0:
+                # If the page never loaded, any count that follows describes
+                # whatever was previously loaded. Checking only the count
+                # command leaves this one line above it unguarded.
+                unusable += 1
+                continue
             proc = runner(
                 ["agent-browser", "get", "count", selector],
                 capture_output=True,
@@ -1285,7 +1359,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 67 passed
+Expected: PASS — 70 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1374,6 +1448,30 @@ def test_main_exit_one_when_reference_dangles(fake_home, tmp_path, capsys):
     assert "ghost-agent" in capsys.readouterr().out
 
 
+def test_check_file_reports_an_unreadable_input(fake_home, tmp_path):
+    """Non-UTF-8 input must report, not raise.
+
+    _readable_file guards every REFERENCED file; the file under check was
+    never guarded, so an unreadable input raised — exiting 1 indistinguishably
+    from "unresolved references" and abandoning the rest of a multi-file run.
+    """
+    (tmp_path / ".git").mkdir()
+    doc = tmp_path / "bad.md"
+    doc.write_bytes(b"\xff\xfe not utf-8")
+    results = check_file(doc, live=False, tokens_json=None)
+    assert [r.kind for r in results] == ["file"]
+    assert results[0].ok is False
+    assert results[0].detail.startswith("unreadable:")
+
+
+def test_format_report_does_not_count_skipped_as_resolved(fake_home, tmp_path):
+    """The summary line is what CI reads; it must not claim skipped as passed."""
+    doc = write_doc(tmp_path, '---\nrequires:\n  urls: ["https://e.test/"]\n---\n')
+    text = format_report(doc, check_file(doc, live=False, tokens_json=None), live=False)
+    assert "PASS 0 resolved, 1 SKIPPED" in text
+    assert "PASS 1 reference(s) resolved" not in text
+
+
 def test_main_exit_two_on_missing_file(capsys):
     assert main(["/nonexistent/file.md"]) == 2
 
@@ -1426,22 +1524,29 @@ Expected: FAIL — `ImportError: cannot import name 'check_file'`
 Add `import argparse` and `import sys` to the import block, then append:
 
 ```python
-STATIC_CLASSES = ("agents", "skills", "bins", "paths", "tokens")
 LIVE_CLASSES = ("urls", "selectors")
+SKIPPED_DETAIL = "SKIPPED (no --live)"
 
 
 FRONTMATTER_DETAIL = {
     "unparseable": "frontmatter present but could not be parsed — declared "
                    "references, if any, were not read",
-    "ambiguous": "frontmatter parse is ambiguous (a bare `---` line inside a "
-                 "block scalar); a different reading finds a requires: block "
-                 "this one cannot see",
+    "ambiguous": "frontmatter parse is ambiguous (a bare `---` line inside an "
+                 "indented continuation); a different reading finds a requires: "
+                 "block this one cannot see",
 }
 
 
 def check_file(path: Path, live: bool, tokens_json: Path | None) -> list[Result]:
     path = Path(path)
-    text = path.read_text()
+    try:
+        text = path.read_text()
+    except (OSError, UnicodeDecodeError) as exc:
+        # _readable_file guards every REFERENCED file; the file under check was
+        # never guarded. An unreadable or non-UTF-8 input raised, which exits 1
+        # indistinguishably from "unresolved references" and silently abandoned
+        # every remaining file in a multi-file run.
+        return [Result("file", str(path), False, f"unreadable: {exc}")]
     results: list[Result] = []
 
     status = frontmatter_status(text)
@@ -1472,7 +1577,7 @@ def check_file(path: Path, live: bool, tokens_json: Path | None) -> list[Result]
     for kind in LIVE_CLASSES:
         for ref in requires.get(kind, []):
             if not live:
-                results.append(Result(kind, ref, True, "SKIPPED (no --live)"))
+                results.append(Result(kind, ref, True, SKIPPED_DETAIL))
             elif kind == "urls":
                 results.append(resolve_url(ref))
             else:
@@ -1483,15 +1588,23 @@ def check_file(path: Path, live: bool, tokens_json: Path | None) -> list[Result]
 def format_report(path: Path, results: list[Result], live: bool) -> str:
     lines = [f"reference-check: {path}"]
     for result in results:
-        mark = "OK  " if result.ok else "FAIL"
+        mark = "SKIP" if result.detail == SKIPPED_DETAIL else ("OK  " if result.ok else "FAIL")
         lines.append(f"  {result.kind:<10} {result.ref:<34} {mark}  {result.detail}")
     failures = [r for r in results if not r.ok]
+    skipped = [r for r in results if r.detail == SKIPPED_DETAIL]
     if not live:
         lines.append("  note: urls and selectors were not resolved (no --live)")
-    lines.append(
-        f"FAIL {len(failures)} unresolved reference(s)" if failures
-        else f"PASS {len(results)} reference(s) resolved"
-    )
+    if failures:
+        lines.append(f"FAIL {len(failures)} unresolved reference(s)")
+    elif skipped:
+        # The summary is the one line CI reads. Counting skipped checks as
+        # resolved asserts a verification that never ran — the plan's own
+        # constraint is that absence of a check is STATED, never implied.
+        lines.append(
+            f"PASS {len(results) - len(skipped)} resolved, {len(skipped)} SKIPPED"
+        )
+    else:
+        lines.append(f"PASS {len(results)} reference(s) resolved")
     return "\n".join(lines)
 
 
@@ -1531,7 +1644,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 78 passed
+Expected: PASS — 83 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1806,6 +1919,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 56 → 67 → 78 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (78 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 58 → 70 → 83 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (83 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
