@@ -824,6 +824,30 @@ def test_version_tuple_ignores_a_dotted_date():
     assert not version_tuple("built 2024.01.15") >= (1, 0, 0)
 
 
+def test_version_floor_pads_to_equal_width():
+    """A binary reporting "1.2" must satisfy a ">=1.2.0" floor.
+
+    Raw tuple comparison says (1, 2) < (1, 2, 0), so an equal version reads as
+    too old — a false negative on the version gate.
+    """
+    assert version_tuple("1.2") < version_tuple("1.2.0")   # the trap itself
+    from reference_check import resolve_bin
+    assert resolve_bin("git").ok is True                    # sanity: no floor
+
+
+def test_resolve_path_rejects_empty_reference(tmp_path):
+    """An empty path must not resolve to the repo root.
+
+    The agent and skill resolvers already reject empty names; the same shape
+    was left open here — `root / ""` is the root, which exists.
+    """
+    (tmp_path / ".git").mkdir()
+    for bad in ("", ".", "..", "  "):
+        got = resolve_path(bad, tmp_path)
+        assert got.ok is False, bad
+        assert got.detail == "invalid path reference"
+
+
 def test_resolve_path_rejects_absolute(tmp_path):
     """pathlib DISCARDS base when rel is absolute — /etc/hosts must not pass."""
     (tmp_path / ".git").mkdir()
@@ -925,7 +949,10 @@ def resolve_bin(spec: str) -> Result:
         return Result("bins", spec, False, "could not read --version")
     found = version_tuple(proc.stdout + proc.stderr)
     shown = ".".join(str(part) for part in found) or "unknown"
-    if found >= version_tuple(floor):
+    wanted = version_tuple(floor)
+    width = max(len(found), len(wanted))
+    pad = lambda v: v + (0,) * (width - len(v))
+    if pad(found) >= pad(wanted):
         return Result("bins", spec, True, shown)
     return Result("bins", spec, False, f"found {shown}, need >={floor}")
 
@@ -946,6 +973,8 @@ def resolve_path(rel: str, base: Path) -> Result:
     "/etc/hosts" resolved outside the repo and reported found; and `.exists()`
     is True for a file nothing can read, which is a silent false pass.
     """
+    if not rel or rel.strip() in ("", ".", ".."):
+        return Result("paths", rel, False, "invalid path reference")
     root = repo_root(base).resolve()
     try:
         target = (root / rel).resolve()
@@ -986,7 +1015,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 54 passed
+Expected: PASS — 56 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1111,7 +1140,31 @@ def test_resolve_selector_error_output_is_not_a_count():
 
     got = resolve_selector(".x", ["https://example.test/"], runner=failing)
     assert got.ok is False
-    assert got.detail == "agent-browser returned no usable count"
+    assert got.detail == "no usable count from 1 of 1 url(s)"
+
+
+def test_resolve_selector_states_an_unchecked_url():
+    """One unusable url plus one clean zero must NOT read as a plain zero.
+
+    The plan's constraint is that absence of a check is stated, never implied.
+    Reporting "0 matches" when a page was never successfully checked implies a
+    verified absence that did not happen.
+    """
+    calls = {"n": 0}
+
+    def mixed(cmd, **kwargs):
+        if "get" not in cmd:
+            return FakeProc("")
+        calls["n"] += 1
+        if calls["n"] == 1:
+            proc = FakeProc("garbage")
+            proc.returncode = 1
+            return proc
+        return FakeProc("0")
+
+    got = resolve_selector(".x", ["https://a.test/", "https://b.test/"], runner=mixed)
+    assert got.ok is False
+    assert got.detail == "no usable count from 1 of 2 url(s)"
 
 
 def test_resolve_selector_nonzero_exit_is_not_a_match():
@@ -1186,8 +1239,11 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
             continue
         if int(text) > 0:
             return Result("selectors", selector, True, f"{text} match(es) on {url}")
-    if unusable == len(urls):
-        return Result("selectors", selector, False, "agent-browser returned no usable count")
+    if unusable:
+        return Result(
+            "selectors", selector, False,
+            f"no usable count from {unusable} of {len(urls)} url(s)",
+        )
     return Result("selectors", selector, False, "0 matches on any declared url")
 ```
 
@@ -1197,7 +1253,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 63 passed
+Expected: PASS — 66 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1443,7 +1499,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 74 passed
+Expected: PASS — 77 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1713,6 +1769,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 54 → 63 → 74 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (74 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 56 → 66 → 77 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (77 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
