@@ -810,6 +810,20 @@ def test_version_tuple_ignores_a_date(tmp_path):
     assert version_tuple("built on 2024-01-15") == ()
 
 
+def test_version_tuple_ignores_a_dotted_date():
+    """A DOTTED date is the harder case, and the near-miss is instructive.
+
+    Excluding a preceding digit alone is not enough: in "2024.01.15" the scan
+    restarts after the dot and matches "01.15" — which compares GREATER than a
+    1.0.0 floor, making the guard worse than none. The preceding dot must be
+    excluded too.
+    """
+    assert version_tuple("built 2024.01.15") == ()
+    assert version_tuple("released 2024.1.5") == ()
+    assert version_tuple("mytool 1.2.3 (2024.01.15)") == (1, 2, 3)
+    assert not version_tuple("built 2024.01.15") >= (1, 0, 0)
+
+
 def test_resolve_path_rejects_absolute(tmp_path):
     """pathlib DISCARDS base when rel is absolute — /etc/hosts must not pass."""
     (tmp_path / ".git").mkdir()
@@ -870,7 +884,7 @@ def parse_bin_spec(spec: str) -> tuple[str, str | None]:
     return match.group(1), match.group(2)
 
 
-VERSION_TOKEN = re.compile(r"(\d+(?:\.\d+){1,3})\b")
+VERSION_TOKEN = re.compile(r"(?<![\d.])(\d{1,3}(?:\.\d+){1,3})\b")
 
 
 def version_tuple(text: str) -> tuple[int, ...]:
@@ -881,8 +895,16 @@ def version_tuple(text: str) -> tuple[int, ...]:
     clear every floor, silently passing a binary far too old. Requiring at
     least one dot excludes bare years and hyphenated dates.
 
-    No leading \\b: `v` and `2` are both word characters, so anchoring the
-    front would fail on the very common "v2.1" spelling.
+    The pattern is fussy for reasons each learned from a real miss:
+
+    * No leading ``\\b`` — `v` and `2` are both word characters, so anchoring
+      the front fails on the very common "v2.1" spelling.
+    * ``\\d{1,3}`` for the major — a four-digit leading component is a year,
+      not a major version, so "2024.01.15" is excluded.
+    * ``(?<![\\d.])`` — excluding a preceding DIGIT alone is not enough. In
+      "2024.01.15" the scan simply restarts after the dot and matches "01.15",
+      which compares GREATER than a 1.0.0 floor. The dot must be excluded too,
+      or the guard is worse than none.
     """
     match = VERSION_TOKEN.search(text)
     return tuple(int(p) for p in match.group(1).split(".")) if match else ()
@@ -964,7 +986,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 53 passed
+Expected: PASS — 54 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1175,7 +1197,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 62 passed
+Expected: PASS — 63 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1421,7 +1443,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 73 passed
+Expected: PASS — 74 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1691,6 +1713,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 53 → 62 → 73 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (73 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 34 → 54 → 63 → 74 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (74 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
