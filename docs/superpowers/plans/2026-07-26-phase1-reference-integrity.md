@@ -474,6 +474,32 @@ def test_resolvers_reject_empty_and_dot_names(fake_home, tmp_path):
         assert resolve_agent(bad, proj).ok is False
 
 
+def test_resolve_agent_is_case_sensitive(fake_home, tmp_path):
+    """A wrong-case reference must NOT resolve.
+
+    macOS and Windows filesystems are case-insensitive, so `THE-DRONE.md`
+    opens `the-drone.md`. Agent names are matched case-sensitively where they
+    are used, so reporting this as resolved is a false pass — and the detail
+    would name the requested path, hiding the mismatch.
+    """
+    proj = tmp_path / "proj"
+    agents = proj / ".claude" / "agents"
+    agents.mkdir(parents=True)
+    (agents / "the-drone.md").write_text("x")
+    assert resolve_agent("the-drone", proj).ok is True
+    assert resolve_agent("THE-DRONE", proj).ok is False
+    assert resolve_agent("The-Drone", proj).ok is False
+
+
+def test_resolve_skill_is_case_sensitive(fake_home, tmp_path):
+    proj = tmp_path / "proj"
+    skills = proj / ".claude" / "skills" / "browser-tooling"
+    skills.mkdir(parents=True)
+    (skills / "SKILL.md").write_text("x")
+    assert resolve_skill("browser-tooling", proj).ok is True
+    assert resolve_skill("Browser-Tooling", proj).ok is False
+
+
 @pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses read permissions")
 def test_resolve_agent_unreadable_file_is_not_ok(fake_home, tmp_path):
     """is_file() is True for a chmod-000 file; resolving it would be a false pass."""
@@ -545,12 +571,34 @@ def _readable_file(path: Path) -> bool:
     return path.is_file() and os.access(path, os.R_OK)
 
 
+def _exact_path(directory: Path, *parts: str) -> Path | None:
+    """Join `parts` under `directory`, requiring each to match on disk exactly.
+
+    macOS and Windows filesystems are case-insensitive, so `THE-DRONE.md`
+    happily opens `the-drone.md`. But agent and skill names are matched
+    case-sensitively where they are actually used, so a wrong-case reference
+    would resolve here and then fail to dispatch — and because the resolver
+    reports the *requested* path, the report would conceal the mismatch.
+    Checking each component against `os.listdir` makes resolution as
+    case-sensitive as the thing it is predicting.
+    """
+    current = directory
+    for part in parts:
+        try:
+            if part not in os.listdir(current):
+                return None
+        except OSError:
+            return None
+        current = current / part
+    return current
+
+
 def resolve_agent(name: str, cwd: Path) -> Result:
     if not _valid_ref_name(name):
         return Result("agents", name, False, "invalid reference name")
     for directory in agent_dirs(cwd):
-        candidate = directory / f"{name}.md"
-        if _readable_file(candidate):
+        candidate = _exact_path(directory, f"{name}.md")
+        if candidate is not None and _readable_file(candidate):
             return Result("agents", name, True, str(candidate))
     return Result("agents", name, False, "not found in any agent directory")
 
@@ -559,8 +607,8 @@ def resolve_skill(name: str, cwd: Path) -> Result:
     if not _valid_ref_name(name):
         return Result("skills", name, False, "invalid reference name")
     for directory in skill_dirs(cwd):
-        candidate = directory / name / "SKILL.md"
-        if _readable_file(candidate):
+        candidate = _exact_path(directory, name, "SKILL.md")
+        if candidate is not None and _readable_file(candidate):
             return Result("skills", name, True, str(candidate))
     return Result("skills", name, False, "not found in any skill directory")
 ```
@@ -583,7 +631,7 @@ import yaml
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 31 passed
+Expected: PASS — 33 passed
 
 - [ ] **Step 5: Commit**
 
@@ -798,7 +846,7 @@ def resolve_token(name: str, tokens_json: Path) -> Result:
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 45 passed
+Expected: PASS — 47 passed
 
 - [ ] **Step 5: Commit**
 
@@ -948,7 +996,7 @@ def resolve_selector(selector: str, urls: list[str], runner=subprocess.run) -> R
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 51 passed
+Expected: PASS — 53 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1194,7 +1242,7 @@ if __name__ == "__main__":
 cd ~/Developer/the-lodge && pytest tests/reference_check/ -v
 ```
 
-Expected: PASS — 62 passed
+Expected: PASS — 64 passed
 
 - [ ] **Step 5: Commit**
 
@@ -1464,6 +1512,6 @@ will rot, and correcting one only resets its clock."
 
 **Placeholder scan:** No TBD/TODO. Every code step carries runnable code. Task 8 Step 3 defers two out-of-scope agents to the user by design rather than leaving a blank — that is a decision, not a placeholder.
 
-**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 31 → 45 → 51 → 62 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (62 passed).
+**Type consistency:** `Result(kind, ref, ok, detail)` is defined in Task 2 and used with that exact signature in Tasks 3, 4, 5. `repo_root` is defined in Task 3 and consumed by `resolve_path` in the same task. `check_file(path, live, tokens_json)` in Task 5 calls `resolve_agent(name, base)`, `resolve_skill(name, base)`, `resolve_bin(spec)`, `resolve_path(rel, base)`, `resolve_token(name, tokens_json)`, `resolve_url(ref)`, `resolve_selector(ref, urls)` — all matching their Task 2–4 definitions. Test counts accumulate 21 → 33 → 47 → 53 → 64 — verified end-to-end by assembling the module from this plan's own code blocks and running all five test files against it (64 passed).
 
 **Known gap, deliberate:** `<theme>` appears as a placeholder path in Tasks 7 and 8 because the theme repo is currently checked out in a worktree whose path is session-specific. Substitute the current working directory at execution time.
