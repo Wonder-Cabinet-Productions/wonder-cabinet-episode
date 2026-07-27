@@ -2292,6 +2292,26 @@ body.brand-luminous .wc-hero-zone::before {
     width: 100%;
 }
 
+/* Luminous hero tagline: the sponsor credit, formerly baked into wordmark.svg.
+   A ~99-character institutional name rather than WC's short quip, so it takes a
+   smaller size and its own measure. Roman, not italic — WC's italic marks a show
+   title and there is none here. Sits on the near-black brand band — actual contrast
+   unverified (the band's cream/violet wavy overlay at 0.9 opacity means the real
+   backdrop isn't flat black; see handoff item 7). */
+.wc-hero-tagline--luminous {
+    font-style: normal;
+    font-size: 1.8rem;
+    line-height: 1.45;
+    max-width: 44ch;
+    margin-top: var(--wc-spacing-sm);
+}
+
+@media (max-width: 767px) {
+    .wc-hero-tagline--luminous {
+        font-size: 1.5rem;
+    }
+}
+
 /* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
    footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
    is untouched; all scoped to body.brand-luminous. */

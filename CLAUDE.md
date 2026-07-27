@@ -74,8 +74,30 @@ If changes don't appear: `mutagen sync list` (expect `wc-theme … Watching for 
 # Reference only — `dev` runs as a service on ghost01, NOT here. gscan also gates PRs in CI.
 npm run dev      # Gulp watch with livereload (= ghost-theme-watch.service on the CT)
 npm run zip      # Build and create distribution archive
-npm run test     # Run GScan theme validation
+npm run test     # Run GScan theme validation — see the trap below before trusting it
 ```
+
+### ⚠️ Running gscan on the Mac — read this before trusting a result
+
+`npm run test` maps to bare `gscan .`, which **fails on the Mac** (`gscan: command not found`)
+because `node_modules/` isn't synced here. The obvious workaround is worse than the failure:
+
+```bash
+npx --no-install gscan .    # ❌ silently resolves a stale cached gscan 3.3.1
+npx --yes gscan@5.2.4 .     # ✅ the version CI installs, matches devDependencies
+```
+
+`--no-install` doesn't error when the package is missing locally — it falls back to whatever
+npx has cached, which here is **3.3.1, not the `^5.2.4` in `devDependencies`**. The two
+versions disagree in both directions: 3.3.1 reports ~5 phantom errors (8 templates "invalid
+Handlebars", missing `.kg-*` classes) that 5.2.4 does not, and it never applies newer rules —
+including the **20-custom-setting cap** (`GS010-PJ-CUST-THEME-TOTAL-SETTINGS`), which is a
+hard Ghost limit that blocks CI and theme upload.
+
+Always check `npx --no-install gscan --version` before believing a local gscan run, or just
+use the pinned form above.
+
+**Custom settings are at 20/20 — the cap.** Adding one now requires retiring one first.
 
 ## Brand Implementation
 
@@ -182,7 +204,6 @@ Defined in `package.json` under `config.custom`:
 
 | Setting | Type | Purpose |
 |---------|------|---------|
-| `background_color` | color | Page background (default: #000000) |
 | `email_signup_text` | text | CTA section heading |
 | `apple_podcasts_link` | text | Apple Podcasts URL |
 | `spotify_link` | text | Spotify URL |
