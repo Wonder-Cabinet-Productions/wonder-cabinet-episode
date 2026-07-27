@@ -17,6 +17,22 @@
         <h1 class="wc-tag-hero-title">{{name}}</h1>
         {{#if description}}
             <p class="wc-tag-hero-description">{{description}}</p>
+        {{else}}
+            {{!-- Show tags — a tag that fronts its own podcast feed — fall back to the
+                 network blurb so a show page is never description-less. Ordinary tags stay
+                 silent on purpose: printing the network's podcast blurb under, say,
+                 "Island of Knowledge" would read as a mistake, not a fallback.
+
+                 routes.yaml's `collections:` is the source of truth for what counts as a
+                 show; keep this list in step when one is added.
+
+                 Currently unreachable, deliberately kept: routes.yaml claims both show tags
+                 for collections, so /tag/wonder-cabinet/ and /tag/luminous/ 301 to / and
+                 /luminous/ and never render this template. This is insurance for a show
+                 that has no collection, or for the routing changing. --}}
+            {{#has slug="wonder-cabinet, luminous"}}
+                <p class="wc-tag-hero-description">{{@site.description}}</p>
+            {{/has}}
         {{/if}}
     </div>
 </section>
