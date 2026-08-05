@@ -54,7 +54,7 @@ Dependency-ordered — earlier items unblock later ones:
 
 ### #24 prior art — take the commit, not the branch
 
-`feature/load-more-episodes` (last touched **2026-02-06**) is **not** a merge candidate. It carries
+`feature/load-more-episodes` (last touched **2026-03-15**) is **not** a merge candidate. It carries
 ~24,000 files including a committed `node_modules/`, plus unrelated cargo: Slack deploy
 notifications, author-bio subgrid layout, "bigger non audio page images", and a transcript
 max-height fix that already landed separately as #9. Merging the branch would drag all of that in.
