@@ -14,7 +14,11 @@
              Luminous a violet-cabinet variant (CSS-toggled by brand) so it shows on the
              dark nav and matches the violet scheme instead of clashing with green. --}}
         <a class="gh-head-logo wc-head-logo" href="/">
-            <img class="wc-head-logo-img wc-head-logo-img--default" src="{{@site.logo}}" alt="{{@site.title}}">
+            {{!-- Falls back to the bundled logo so clearing the Ghost site logo can never
+                 emit src="" on every page — an empty src resolves to the document URL and
+                 makes the browser re-request the page. The bundled file is a larger,
+                 unoptimised copy, so this is a working degraded state, not a match. --}}
+            <img class="wc-head-logo-img wc-head-logo-img--default" src="{{#if @site.logo}}{{@site.logo}}{{else}}{{asset "images/logo-primary-dark-bg-800w.webp"}}{{/if}}" alt="{{@site.title}}">
             <img class="wc-head-logo-img wc-head-logo-img--luminous" src="{{asset "images/logo-cabinet-violet-800.png"}}" alt="{{@site.title}}">
         </a>
 

@@ -100,10 +100,6 @@
                 "type": "text",
                 "default": ""
             },
-            "linkedin_link": {
-                "type": "text",
-                "default": ""
-            },
             "tiktok_link": {
                 "type": "text",
                 "default": ""
@@ -112,28 +108,11 @@
                 "type": "text",
                 "default": ""
             },
-            "mastodon_link": {
-                "type": "text",
-                "default": ""
-            },
-            "email_link": {
-                "type": "text",
-                "default": "",
-                "description": "Contact email address (just the email, no mailto:)"
-            },
             "hero_tagline": {
                 "type": "text",
                 "default": "From the creators of <em>To The Best Of Our Knowledge</em>",
                 "description": "Homepage hero tagline. Renders as raw HTML — not escaped or filtered.",
                 "group": "homepage"
-            },
-            "hero_title_image": {
-                "type": "image",
-                "description": "Wonder Cabinet title graphic for homepage hero"
-            },
-            "galaxy_background_image": {
-                "type": "image",
-                "description": "Galaxy spiral background image for hero sections"
             }
         }
     },
