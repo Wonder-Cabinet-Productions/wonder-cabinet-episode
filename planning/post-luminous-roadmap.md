@@ -59,14 +59,15 @@ Dependency-ordered — earlier items unblock later ones:
 notifications, author-bio subgrid layout, "bigger non audio page images", and a transcript
 max-height fix that already landed separately as #9. Merging the branch would drag all of that in.
 
-The actual feature is a single self-contained commit — **`9e2442e0`**, 208 lines across three
-source files:
+The actual feature is a single self-contained commit — **`9e2442e0`**, 206 insertions across three
+source files (208 for the whole commit, once the two regenerated `assets/built/` artifacts are
+counted):
 
 | File | Change |
 |---|---|
 | `assets/js/load-more.js` | +175 (new — client-side Content API pagination) |
 | `assets/css/screen.css` | +24 |
-| `home.hbs` | +10 |
+| `home.hbs` | +7 / −3 |
 
 Cherry-pick that one commit; ignore the branch. (`e60ae668`, "show 5 episodes so the newsletter
 card doesn't displace the oldest episode", is arguably a companion — but it overlaps #35's feed
