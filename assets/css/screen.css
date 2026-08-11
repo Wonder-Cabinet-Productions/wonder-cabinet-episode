@@ -560,6 +560,13 @@ body.brand-luminous .wc-head-subscribe {
     margin-bottom: var(--wc-spacing-md);
 }
 
+/* Hero tagline — shared by both brands, no per-brand exception. WC fills it with a
+   short show quip, Luminous with a ~99-character institutional sponsor credit; both
+   take the same italic EB Garamond treatment.
+   Contrast caveat (inherited from the retired Luminous rule): on Luminous this sits
+   on the near-black brand band, whose cream/violet wavy overlay at 0.9 opacity means
+   the real backdrop isn't flat black — actual contrast still unverified. See
+   docs/luminous/sponsor-rename-handoff.md item 7. */
 .wc-hero-tagline {
     font-family: var(--font-body);
     font-size: 2.3rem; /* Figma: 23px */
@@ -2292,25 +2299,9 @@ body.brand-luminous .wc-hero-zone::before {
     width: 100%;
 }
 
-/* Luminous hero tagline: the sponsor credit, formerly baked into wordmark.svg.
-   A ~99-character institutional name rather than WC's short quip, so it takes a
-   smaller size and its own measure. Roman, not italic — WC's italic marks a show
-   title and there is none here. Sits on the near-black brand band — actual contrast
-   unverified (the band's cream/violet wavy overlay at 0.9 opacity means the real
-   backdrop isn't flat black; see handoff item 7). */
-.wc-hero-tagline--luminous {
-    font-style: normal;
-    font-size: 1.8rem;
-    line-height: 1.45;
-    max-width: 44ch;
-    margin-top: var(--wc-spacing-sm);
-}
-
-@media (max-width: 767px) {
-    .wc-hero-tagline--luminous {
-        font-size: 1.5rem;
-    }
-}
+/* Luminous hero tagline: no per-brand rule. The sponsor credit (formerly baked into
+   wordmark.svg) uses the shared .wc-hero-tagline treatment — see that rule for the
+   type, and for the contrast caveat that now applies to both brands. */
 
 /* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
    footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
