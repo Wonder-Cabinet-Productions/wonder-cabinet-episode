@@ -562,11 +562,14 @@ body.brand-luminous .wc-head-subscribe {
 
 /* Hero tagline — shared by both brands, no per-brand exception. WC fills it with a
    short show quip, Luminous with a ~99-character institutional sponsor credit; both
-   take the same italic EB Garamond treatment.
-   Contrast caveat (inherited from the retired Luminous rule): on Luminous this sits
-   on the near-black brand band, whose cream/violet wavy overlay at 0.9 opacity means
-   the real backdrop isn't flat black — actual contrast still unverified. See
-   docs/luminous/sponsor-rename-handoff.md item 7. */
+   take the same italic EB Garamond treatment. Measure comes from .wc-hero-content's
+   max-width: 700px, not from a per-brand `ch` value.
+   Contrast: MEASURED, passes AA. axe reports this element as "incomplete" on both
+   brands because the backdrop is a ::before pseudo-element it can't resolve. Sampled
+   directly instead — worst case 14.5:1 against #FFFAEB over the Luminous wavy overlay,
+   well clear of the 4.5:1 small-text bar (23px is under the 24px large-text cutoff).
+   Re-measure only if the wavy asset or its 0.9 opacity changes.
+   See docs/luminous/sponsor-rename-handoff.md item 7. */
 .wc-hero-tagline {
     font-family: var(--font-body);
     font-size: 2.3rem; /* Figma: 23px */
