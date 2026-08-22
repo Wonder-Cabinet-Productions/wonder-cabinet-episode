@@ -213,3 +213,23 @@ Most responsive styles use `@media (max-width: 767px)`.
 ## Parent Workspace Context
 
 This theme lives within a larger Ghost development environment at `ghost-dev/`. When committing changes to this theme, ensure you're in this directory (not the parent repo).
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `Wonder-Cabinet-Productions/wonder-cabinet-episode`, via the `gh` CLI — companion repos in the site stack keep their own issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`), applied *alongside* this repo's existing area and `S1`–`S4` severity labels. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — a root `CONTEXT.md` plus `docs/adr/`, both created lazily by `/domain-modeling`. See `docs/agents/domain.md`.
+
+### Long-range planning
+
+The site-stack effort is charted as a `/mattpocock-skills:wayfinder` map on this repo's tracker (label `wayfinder:map`). Background evidence: `../../../planning/2026-08-12-wayfinder-charting-brief.md` in the metarepo.
+
+Note: `AGENTS.md` in this repo is a **separate, diverged file**, not a symlink to `CLAUDE.md` as it is in the metarepo. Changes here do not propagate there.
