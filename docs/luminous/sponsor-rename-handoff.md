@@ -98,10 +98,24 @@ this list there; it isn't safe to sign off on the rename without it.
    tagline into a custom setting) and any visible delta there is a regression.
 5. Confirm the en dash in "Wisconsin–Madison" survives rendering (not mangled into an HTML
    entity or collapsed to a plain hyphen).
-6. Tune `.wc-hero-tagline--luminous`'s `max-width` (currently `44ch`) and `font-size`
+6. ~~Tune `.wc-hero-tagline--luminous`'s `max-width` (currently `44ch`) and `font-size`
    (currently `1.8rem`) against the real render — both were chosen without being able to see
-   the page, and the wrap point is unverified.
-7. Check tagline legibility where the cream wavy background pattern runs bright behind it.
+   the page, and the wrap point is unverified.~~
+   **RESOLVED (PR #86).** The rule was retired rather than tuned: the slot now inherits the
+   shared `.wc-hero-tagline` treatment (italic, 2.3rem/1.8rem). The `44ch` measure was not
+   replaced — `.wc-hero-content`'s `max-width: 700px` already clamps the line. Verified live:
+   wraps to 2 lines at both 1440px and 390px.
+7. ~~Check tagline legibility where the cream wavy background pattern runs bright behind it.~~
+   **RESOLVED (PR #86) — measured, passes AA with ~3× margin.** axe-core cannot decide this
+   (it reports the tagline as *incomplete*: "background color could not be determined due to a
+   pseudo element"), so it was measured directly instead: `bg-wavy.svg` composited at opacity
+   0.9 over body black, all 51,800 px in the tagline's bounding box sampled against `#FFFAEB`.
+   **Worst case 14.5:1, mean 20.0:1** (worst backdrop pixel `rgb(39,38,35)`). At 23px the text
+   is below the 24px large-text threshold, so the 4.5:1 small-text bar applies — it clears
+   comfortably. PR #86's size increase widens the margin rather than narrowing it.
+   Caveat: the measurement stretches the SVG to the zone box rather than replicating exact
+   `background-size`/`position`, so treat the numbers as approximate; the 3× margin makes the
+   conclusion robust to that error. Re-measure if the wavy asset or its opacity changes.
 8. Empty-field check: clear each tagline custom setting in Ghost Admin, confirm the slot
    collapses cleanly with no empty `<p>` or leftover gap, then restore the value.
 9. Run the `wc-theme-qa` cross-brand harness, including the §A "WC is a visual no-op"

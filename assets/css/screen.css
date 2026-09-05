@@ -560,6 +560,16 @@ body.brand-luminous .wc-head-subscribe {
     margin-bottom: var(--wc-spacing-md);
 }
 
+/* Hero tagline — shared by both brands, no per-brand exception. WC fills it with a
+   short show quip, Luminous with a ~99-character institutional sponsor credit; both
+   take the same italic EB Garamond treatment. Measure comes from .wc-hero-content's
+   max-width: 700px, not from a per-brand `ch` value.
+   Contrast: MEASURED, passes AA. axe reports this element as "incomplete" on both
+   brands because the backdrop is a ::before pseudo-element it can't resolve. Sampled
+   directly instead — worst case 14.5:1 against #FFFAEB over the Luminous wavy overlay,
+   well clear of the 4.5:1 small-text bar (23px is under the 24px large-text cutoff).
+   Re-measure only if the wavy asset or its 0.9 opacity changes.
+   See docs/luminous/sponsor-rename-handoff.md item 7. */
 .wc-hero-tagline {
     font-family: var(--font-body);
     font-size: 2.3rem; /* Figma: 23px */
@@ -2292,25 +2302,9 @@ body.brand-luminous .wc-hero-zone::before {
     width: 100%;
 }
 
-/* Luminous hero tagline: the sponsor credit, formerly baked into wordmark.svg.
-   A ~99-character institutional name rather than WC's short quip, so it takes a
-   smaller size and its own measure. Roman, not italic — WC's italic marks a show
-   title and there is none here. Sits on the near-black brand band — actual contrast
-   unverified (the band's cream/violet wavy overlay at 0.9 opacity means the real
-   backdrop isn't flat black; see handoff item 7). */
-.wc-hero-tagline--luminous {
-    font-style: normal;
-    font-size: 1.8rem;
-    line-height: 1.45;
-    max-width: 44ch;
-    margin-top: var(--wc-spacing-sm);
-}
-
-@media (max-width: 767px) {
-    .wc-hero-tagline--luminous {
-        font-size: 1.5rem;
-    }
-}
+/* Luminous hero tagline: no per-brand rule. The sponsor credit (formerly baked into
+   wordmark.svg) uses the shared .wc-hero-tagline treatment — see that rule for the
+   type, and for the contrast caveat that now applies to both brands. */
 
 /* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
    footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
