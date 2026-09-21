@@ -94,7 +94,7 @@ Each brand declares its raw palette. Components never read these directly (excep
 
 **Token semantics — the distinction that bit the original draft.** Two different "text" needs exist and must not be conflated:
 - **text-on-cream**: the accent rendered *as readable text* on the cream background (links, headings). This is what `--show-accent-text` resolves to. For WC that's `--wc-green-text`; for Luminous `--luminous-accent-text-on-cream`. Must pass WCAG AA (4.5:1).
-- **text-on-accent**: the text color placed *on top of* an accent-colored fill (a badge, a button). This is `--{brand}-accent-text`, consumed directly by the `.wc-highlight--{variant}` blocks. Contrast is measured against the accent, not cream.
+- **text-on-accent**: the text color placed *on top of* an accent-colored fill (a badge, a button). Components read the brand-neutral `--show-on-accent` (§4), which resolves to black under both brands — 6.49:1 on WC green, 5.25:1 on Luminous violet. The raw `--{brand}-accent-text` tokens still exist and are read **directly** by the `.wc-highlight--{variant}` cross-brand islands, which render one brand's card inside another brand's page and so must not follow the *page's* accent. Contrast is measured against the accent, not cream.
 
 **Sanctioned exception — black on WC green for CTAs (recorded 2026-09-21, #81).** The Art & Sons
 wireframes (`design-assets/site-design/mockups/WonderCabinetWebsite-010725-pages/`, pages 1-2) draw the
