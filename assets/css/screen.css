@@ -2342,11 +2342,18 @@ body.brand-luminous .wc-bracket-btn {
    an invented second weight (#108). The geometry below is the file's own — round cream
    dots, ⌀9.86px on a 30.77px period — so it cannot drift again without editing the asset.
 
-   background-size is the SVG's intrinsic artboard (1200×152), pinned in px so the dots
-   stay a FIXED size at every breakpoint instead of scaling with the container. Scaling
-   would shrink them to ~3px on a phone, where the dotted motif stops reading at all.
-   The rule's box is max-width 810px, narrower than the artboard, so the artwork simply
-   centre-crops — no tiling, hence no-repeat.
+   background-size pins the artwork in px so the dots stay a FIXED size at every
+   breakpoint instead of scaling with the container. Scaling would shrink them to ~3px on
+   a phone, where the dotted motif stops reading at all. The box is max-width 810px,
+   narrower than the artwork, so it simply centre-crops — no tiling, hence no-repeat.
+
+   1170px, not the intrinsic 1200px, is deliberate: at 1200px the crop lands mid-dot and
+   shears one in half (−5.44px at an 810px box). 1170px = ×0.975 puts exactly 27 periods
+   across 810px, so both crop edges share phase and land in gaps — +4.66px clearance.
+   The dots shrink 2.5% (⌀11.04 → 10.76 incl. round caps), which is imperceptible.
+   NOTE this tunes the 810px case only. The capsule:period ratio is fixed by the
+   designer's dasharray, so at arbitrary narrower widths a crop edge still clips ~69% of
+   the time at ANY scale; mobile would need a one-period tile asset instead. #108.
 
    ONE separator, deliberately: the Luminous pack and brand guide describe a single
    line-separator asset. The thick/thin split is a Wonder Cabinet concept (green rules at
@@ -2360,7 +2367,7 @@ body.brand-luminous .wc-rule--thick {
     background: none;
     border: none;
     background-image: url(../images/luminous/divider-dashed.svg);
-    background-size: 1200px 152px;
+    background-size: 1170px auto;   /* ×0.975 of the 1200×152 artboard — see note above */
     background-position: center;
     background-repeat: no-repeat;
 }
