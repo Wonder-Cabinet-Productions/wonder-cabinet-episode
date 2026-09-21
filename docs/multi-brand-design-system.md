@@ -88,13 +88,33 @@ Each brand declares its raw palette. Components never read these directly (excep
 
 | Brand | accent | text-on-cream (AA) | text-on-accent | dark |
 |---|---|---|---|---|
-| **WC** | `--wc-green` `#10A544` | `--wc-green-text` `#087834` (5.37:1) | black (hardcoded in badges) | `--wc-dark-green` `#043013` |
+| **WC** | `--wc-green` `#10A544` | `--wc-green-text` `#087834` (5.37:1) | `--show-on-accent` = `var(--wc-black)` (6.49:1 on green) | `--wc-dark-green` `#043013` |
 | **Luminous** | `--luminous-accent` `#9A59FF` | `--luminous-accent-text-on-cream` `#8B4DEB` (4.62:1) | `--luminous-accent-text` = `var(--wc-black)` (5.25:1 on violet) | `--luminous-accent-dark` `#1F0F33` |
 | **IoK** | `--iok-accent` `#b6d0d8` | *(none — accent-only, never used as page text)* | `--iok-accent-text` `#1a3a44` | *(none)* |
 
 **Token semantics — the distinction that bit the original draft.** Two different "text" needs exist and must not be conflated:
 - **text-on-cream**: the accent rendered *as readable text* on the cream background (links, headings). This is what `--show-accent-text` resolves to. For WC that's `--wc-green-text`; for Luminous `--luminous-accent-text-on-cream`. Must pass WCAG AA (4.5:1).
-- **text-on-accent**: the text color placed *on top of* an accent-colored fill (a badge, a button). This is `--{brand}-accent-text`, consumed directly by the `.wc-highlight--{variant}` blocks. Contrast is measured against the accent, not cream.
+- **text-on-accent**: the text color placed *on top of* an accent-colored fill (a badge, a button). Components read the brand-neutral `--show-on-accent` (§4), which resolves to black under both brands — 6.49:1 on WC green, 5.25:1 on Luminous violet. The raw `--{brand}-accent-text` tokens still exist and are read **directly** by the `.wc-highlight--{variant}` cross-brand islands, which render one brand's card inside another brand's page and so must not follow the *page's* accent. Contrast is measured against the accent, not cream.
+
+**Sanctioned exception — black on WC green for CTAs (recorded 2026-09-21, #81).** The Art & Sons
+wireframes (`design-assets/site-design/mockups/WonderCabinetWebsite-010725-pages/`, pages 1-2) draw the
+bottom-of-page Subscribe CTA and the featured-episode card with **cream/white text on the green fill**, and
+the brand book's "Logo on Green" variant (`docs/WonderCabinet-BrandGuide-010726.pdf` p.3) uses a white
+wordmark on the green swatch. The theme departs from that on CTA *text*, because no light text clears AA on
+`#10A544`:
+
+| Text on `#10A544` | Ratio | AA (4.5:1) |
+|---|---|---|
+| pure white `#FFFFFF` — the lightest color that exists | **3.24:1** | ✗ |
+| cream `#FFFAEB` | 3.10:1 | ✗ |
+| black `#000000` | **6.49:1** | ✓ |
+
+White is the ceiling, so this is forced by the palette rather than chosen by taste. Darkening `--wc-green` is
+not an option (it is the signature brand color, and `screen.css` warns it sits 0.10 above the 1.4.11 non-text
+floor on cream — see #51/#40/#29). Black therefore extends to CTA buttons the treatment the system already
+sanctioned for badges, rather than inventing a new one. Gated by `brand-guardian` on 2026-09-21: blessed with
+notes, on condition this exception is recorded here. Do not "restore" cream-on-green as a wireframe-fidelity
+fix — it reopens a WCAG 1.4.3 failure rated *serious*.
 
 **Accessibility note:** `--luminous-accent` `#9A59FF` is **3.84:1 on cream — it fails AA for normal text.** Never use raw `--luminous-accent` for body copy or small headings; use `--luminous-accent-text-on-cream` (`#8B4DEB`). Full violet is for badges, borders, and large (≥18pt bold) display only. (Derivation math: §4a.)
 
