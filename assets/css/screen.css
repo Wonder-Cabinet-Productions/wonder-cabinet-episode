@@ -30,6 +30,10 @@
     --show-accent-text: var(--wc-green-text);
     --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
+    --show-on-accent: var(--wc-black);       /* text/icons sitting ON --show-accent. Black clears AA on both
+                                                brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. Cream fails both
+                                                (3.10:1 / 3.83:1) — see #81. Not to be confused with
+                                                --show-accent-text, which is the accent used AS text on cream. */
 
     /* Typography */
     --font-heading: 'Jost', sans-serif;
@@ -63,6 +67,7 @@ body.brand-luminous {
     --show-accent-text: var(--luminous-accent-text-on-cream);
     --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
     --show-accent-dark: var(--luminous-accent-dark);
+    --show-on-accent: var(--luminous-accent-text);   /* black — 5.25:1 on #9A59FF */
 }
 
 body {
@@ -306,7 +311,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
     background-color: var(--show-accent);
     text-decoration: none;
     border: none;
@@ -316,12 +321,6 @@ body {
 
 .wc-head-subscribe:hover {
     opacity: 0.85;
-}
-
-/* Luminous: dark label on the violet accent for AA contrast (5.27:1 vs cream's 3.6:1).
-   Matches the brand book's documented "text ON violet = black" pairing. */
-body.brand-luminous .wc-head-subscribe {
-    color: var(--wc-black);
 }
 
 /* Wave divider - sits between navbar and hero on homepage */
@@ -884,7 +883,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     top: -1px;
     right: 20px;
     background-color: var(--show-accent);
-    color: var(--wc-black);
+    color: var(--show-on-accent);
     font-family: var(--font-heading);
     font-size: 1.1rem;
     font-weight: 700;
@@ -993,7 +992,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     min-height: 45px;
     padding: 0 20px;
     background-color: var(--show-accent);
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
@@ -1218,7 +1217,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     background-color: var(--wc-cream);
     font-family: var(--font-heading);
     font-size: 1.6rem;
-    color: rgba(0, 0, 0, 0.5);
+    color: #6b6862; /* 5.32:1 on cream (AA); was rgba(0,0,0,.5) = 3.93:1 */
 }
 
 .wc-cta-btn {
@@ -1229,7 +1228,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
 }
 
 @media (max-width: 767px) {
@@ -2027,7 +2026,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
 
 .kg-callout-card-accent {
     background-color: var(--show-accent);
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
 }
 
 .kg-callout-emoji {
@@ -2107,7 +2106,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
 
 .kg-btn-accent {
     background-color: var(--show-accent);
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
 }
 
 /* File Card */
@@ -2151,7 +2150,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
 
 .kg-file-card-icon {
     background-color: var(--show-accent);
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
     padding: var(--wc-spacing-sm);
     border-radius: var(--wc-radius);
 }
@@ -2329,7 +2328,7 @@ body.brand-luminous .wc-bracket-btn-corner {
 }
 body.brand-luminous .wc-bracket-btn {
     background: var(--show-accent);
-    color: var(--wc-black); /* black on #9A59FF ≈ 5.25:1 (AA) */
+    color: var(--show-on-accent); /* black on both accents: 6.49:1 WC / 5.25:1 Luminous */
     border-radius: 4px;
     padding: 14px 32px;
 }
@@ -3149,7 +3148,7 @@ body.brand-luminous .wc-head-logo-img--luminous {
     z-index: 9999;
     padding: var(--wc-spacing-sm) var(--wc-spacing-md);
     background-color: var(--show-accent);
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
@@ -3734,7 +3733,7 @@ body.brand-luminous .wc-head-logo-img--luminous {
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
     background-color: var(--show-accent);
     border: 2px solid var(--show-accent);
     cursor: pointer;
