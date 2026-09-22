@@ -38,15 +38,15 @@
                         </svg>
                     </button>
 
-                    {{!-- Service icons, routed per brand (#107). Luminous has its own show
-                         feeds; it has no dedicated pod.link, so that icon is simply absent
-                         there rather than pointing at Wonder Cabinet's. Social accounts are
-                         Wonder Cabinet Productions' and stay shared — see the footer. --}}
+                    {{!-- Service icons, routed per brand (#107). Each show has its own feeds;
+                         social accounts are Wonder Cabinet Productions' and stay shared — see
+                         the footer. --}}
                     {{#has tag="luminous"}}
                         {{> "components/service-icons"
                             apple=@custom.luminous_apple_podcasts_link
                             spotify=@custom.luminous_spotify_link
-                            youtube=@custom.luminous_youtube_music_link}}
+                            youtube=@custom.luminous_youtube_music_link
+                            podlink=@custom.luminous_pod_link}}
                     {{else}}
                         {{> "components/service-icons"
                             apple=@custom.apple_podcasts_link
