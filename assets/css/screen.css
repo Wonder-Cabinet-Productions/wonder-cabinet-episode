@@ -2334,24 +2334,42 @@ body.brand-luminous .wc-bracket-btn {
 }
 
 /* Luminous: the designer's LineSeparator deliverable — a fine DOTTED line in cream
-   (#FFFAEB) — replaces the solid green rule (§6 asymmetric). Rooted in
-   Luminous_BrandGuide.pdf + WebsiteGraphics/LuminousWeb_LineSeparator.svg (round
-   cream dots, stroke #fffaeb), and echoes the dotted underline baked into the
-   wordmark. NOT dashed, NOT violet — the earlier CSS approximation drifted from
-   spec. Rendered as a repeating radial-gradient so it scales full-width and crisp. */
-body.brand-luminous .wc-rule {
-    height: 6px;
+   (#FFFAEB) — replaces the solid green rule (§6 asymmetric). NOT dashed, NOT violet.
+
+   This is now the ACTUAL asset (divider-dashed.svg, byte-identical to the pack's
+   LuminousWeb_LineSeparator.svg) rather than a CSS approximation of it. Two rounds of
+   drift came from re-implementing it by hand: first colour/cap style, then dot size and
+   an invented second weight (#108). The geometry below is the file's own — round cream
+   dots, ⌀9.86px on a 30.77px period — so it cannot drift again without editing the asset.
+
+   background-size pins the artwork in px so the dots stay a FIXED size at every
+   breakpoint instead of scaling with the container. Scaling would shrink them to ~3px on
+   a phone, where the dotted motif stops reading at all. The box is max-width 810px,
+   narrower than the artwork, so it simply centre-crops — no tiling, hence no-repeat.
+
+   1170px, not the intrinsic 1200px, is deliberate: at 1200px the crop lands mid-dot and
+   shears one in half (−5.44px at an 810px box). 1170px = ×0.975 puts exactly 27 periods
+   across 810px, so both crop edges share phase and land in gaps — +4.66px clearance.
+   The dots shrink 2.5% (⌀11.04 → 10.76 incl. round caps), which is imperceptible.
+   NOTE this tunes the 810px case only. The capsule:period ratio is fixed by the
+   designer's dasharray, so at arbitrary narrower widths a crop edge still clips ~69% of
+   the time at ANY scale; mobile would need a one-period tile asset instead. #108.
+
+   ONE separator, deliberately: the Luminous pack and brand guide describe a single
+   line-separator asset. The thick/thin split is a Wonder Cabinet concept (green rules at
+   2px/3px, see .wc-rule--thick below) that was mirrored onto Luminous with no basis in
+   spec. Both classes therefore resolve to the same treatment here; the WC base rules are
+   untouched. Gated by brand-guardian 2026-09-21 (#108) — no brand exception needed, this
+   is a correction back toward the canonical asset. */
+body.brand-luminous .wc-rule,
+body.brand-luminous .wc-rule--thick {
+    height: 10px;
     background: none;
     border: none;
-    background-image: radial-gradient(circle, var(--wc-cream) 0 2px, transparent 2.4px);
-    background-size: 18px 6px;
+    background-image: url(../images/luminous/divider-dashed.svg);
+    background-size: 1170px auto;   /* ×0.975 of the 1200×152 artboard — see note above */
     background-position: center;
-    background-repeat: repeat-x;
-}
-body.brand-luminous .wc-rule--thick {
-    height: 9px;
-    background-image: radial-gradient(circle, var(--wc-cream) 0 3px, transparent 3.4px);
-    background-size: 24px 9px;
+    background-repeat: no-repeat;
 }
 
 /* Luminous nav logo: swap the WC green cabinet mark for a violet-cabinet variant
