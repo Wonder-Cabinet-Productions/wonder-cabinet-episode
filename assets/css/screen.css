@@ -1489,11 +1489,20 @@ body.home-template .wc-brand-band .wc-podcast-services {
     justify-content: center;
 }
 
-/* Hero text sits ON the accent fill, so it reads --show-on-accent (black) rather than
-   cream — cream is 3.10:1 on WC green / 3.83:1 on Luminous violet and fails 1.4.3 at
-   these sizes. Black gives 6.49:1 / 5.25:1. The opacity that used to recess the date was
-   dropped: over a saturated accent it tints black toward the fill rather than reading as
-   grey, and size/weight already carry the hierarchy. #105. */
+/* Hero text is CREAM on the bright accent. This is a KNOWN, DELIBERATE WCAG AA failure —
+   do not "fix" it back to black without talking to the owner first.
+
+   Measured: cream on #10A544 is 3.10:1, on #9A59FF 3.83:1. The 14px date and 15px dek are
+   held to 1.4.3's 4.5:1 floor and FAIL on both brands; the 32px/700 title clears the
+   large-text 3:1 exemption by 0.10. Episode pages therefore conform at WCAG Level A, not AA.
+
+   Black text (6.49:1 / 5.25:1) and a deepened fill (5.37:1 / 4.62:1) were both implemented,
+   rendered on live pages, and rejected by the owner on appearance — #10A544 is bright enough
+   that no legible text sits on it comfortably: white is 3.24:1, cream 3.10:1, black passes
+   but reads heavy and label-like. The brand green is fixed and not ours to change.
+
+   Decision recorded on #105. The one untried path that keeps this fill AND passes is moving
+   the date and dek off the card onto the black page background, where cream is 20:1. */
 .wc-audio-hero-date {
     font-family: var(--font-heading);
     font-size: 1.4rem; /* 14px — NOT WCAG large text (needs 24px, or 18.66px bold),
@@ -1503,7 +1512,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--show-on-accent);
+    color: var(--wc-cream);
     margin-bottom: 0.5rem;
 }
 
@@ -1513,7 +1522,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-weight: 700;
     line-height: 1.2;
     text-transform: uppercase;
-    color: var(--show-on-accent);
+    color: var(--wc-cream);
     margin: 0 0 0.75rem;
 }
 
@@ -1521,7 +1530,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-family: var(--font-heading);
     font-size: 1.5rem; /* Matches episode card excerpt */
     font-style: normal;
-    color: var(--show-on-accent);
+    color: var(--wc-cream);
     line-height: 1.5;
     margin: 0 0 1.5rem;
 }
