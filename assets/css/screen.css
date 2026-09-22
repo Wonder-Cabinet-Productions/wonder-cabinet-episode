@@ -2398,6 +2398,17 @@ body.brand-luminous .wc-rule--thick {
 body.brand-luminous .wc-head-logo-img--default {
     display: none;
 }
+/* ...but NOT on the Luminous landing page. There the nav mark sits directly above the
+   large eye icon and the cabinet's legs collide with the top of the eye, reading as one
+   merged shape. tag-template distinguishes the collection route (/luminous/ and its
+   paged pages, both of which render the eye hero) from post-template episode pages,
+   where the mark is wanted and there is nothing to collide with. The anchor keeps its
+   accessible name from aria-label in navbar.hbs, so hiding both marks does not leave a
+   nameless link. */
+body.brand-luminous.tag-template .wc-head-logo-img--luminous {
+    display: none;
+}
+
 body.brand-luminous .wc-head-logo-img--luminous {
     display: block;
     width: 68px;      /* explicit — the shrink-to-fit anchor + max-width:100% was clamping it to 0 */
