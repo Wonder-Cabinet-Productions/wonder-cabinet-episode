@@ -46,6 +46,12 @@
                 "type": "text",
                 "default": "Subscribe to make sure you never miss an episode."
             },
+            "episode_section_heading": {
+                "type": "text",
+                "default": "Latest Episodes",
+                "description": "Heading above the episode list on the homepage and the Luminous landing page",
+                "group": "homepage"
+            },
             "apple_podcasts_link": {
                 "type": "text",
                 "default": "https://podcasts.apple.com/",

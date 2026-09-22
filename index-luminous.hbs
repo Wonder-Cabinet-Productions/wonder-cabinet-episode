@@ -51,6 +51,13 @@
 
     {{!-- Episode list without Wonder Cabinet cabinet-frame styling --}}
     <section class="gh-archive gh-outer">
+        {{!-- Section header, matching home.hbs. Also gives this page its only h1 — it had
+             none before, starting straight at h3 (#102). --}}
+        <div class="gh-archive-inner gh-inner">
+            <header class="gh-archive-header">
+                <h1 class="gh-archive-title">{{#if @custom.episode_section_heading}}{{@custom.episode_section_heading}}{{else}}Latest Episodes{{/if}}</h1>
+            </header>
+        </div>
         <div class="gh-inner">
             {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
         </div>
