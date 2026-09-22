@@ -298,8 +298,37 @@
         // the underlying <audio> element is working fine. WaveSurfer
         // fires decode errors when it can't access audio data for
         // waveform rendering (CORS), but playback still works.
+        // Fallback source. Imported episodes carry BOTH the Ghost-hosted copy
+        // (data-audio-url) and the publisher's original (data-original-audio-url).
+        // If the Ghost copy is missing — e.g. the import wrote a URL for a different
+        // Ghost instance, which is the state every Luminous episode is in — the
+        // original still resolves and serves audio/mpeg with
+        // `access-control-allow-origin: *`, so playback AND waveform decoding both
+        // work from it. Try it once before declaring the episode unplayable. See #103.
+        // NB: the data attributes live on `.wc-audio-player`, which is NOT the same node as
+        // `playerContainer` (`<section id="wc-audio-player">`). findAudioUrl() has the same
+        // split — it only finds the URL via its second branch. Query the data element.
+        var audioDataEl = document.querySelector('.wc-audio-player[data-original-audio-url], [data-original-audio-url]');
+        var fallbackUrl = audioDataEl && audioDataEl.dataset.originalAudioUrl;
+        var fallbackTried = false;
+
         wavesurfer.on('error', function(error) {
             console.warn('Wonder Cabinet Audio Error:', error);
+            if (!mediaCanPlay && fallbackUrl && !fallbackTried && fallbackUrl !== audioUrl) {
+                // Primary source is unreachable — retry once with the original.
+                fallbackTried = true;
+                console.log('Wonder Cabinet: primary audio failed, retrying with the original source');
+                try {
+                    audio.src = fallbackUrl;
+                    audio.load();
+                    wavesurfer.load(fallbackUrl);
+                } catch (e) {
+                    console.warn('Wonder Cabinet: fallback source failed too', e);
+                    showPlayerError(waveformContainer, 'Unable to load audio');
+                    playerContainer.classList.add('wc-audio-player--error');
+                }
+                return;
+            }
             if (!mediaCanPlay) {
                 // Audio truly failed to load — show error state
                 showPlayerError(waveformContainer, 'Unable to load audio');
