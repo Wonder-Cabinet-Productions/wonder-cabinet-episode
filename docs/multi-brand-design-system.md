@@ -138,13 +138,17 @@ fix — it reopens a WCAG 1.4.3 failure rated *serious*.
 
 ## 4. Token indirection — the `--show-accent*` contract
 
-Three indirection tokens, defined in `:root`, defaulting to the WC host brand:
+Five indirection tokens, defined in `:root`, defaulting to the WC host brand:
 
 ```
---show-accent:      var(--wc-green);        /* active brand's accent      */
---show-accent-text: var(--wc-green-text);   /* active brand's text-on-cream */
---show-accent-dark: var(--wc-dark-green);   /* active brand's deep accent  */
+--show-accent:      var(--wc-green);        /* active brand's accent            */
+--show-accent-text: var(--wc-green-text);   /* active brand's text-on-cream     */
+--show-accent-fill: var(--wc-green-text);   /* accent as a FILL behind cream    */
+--show-on-accent:   var(--wc-black);        /* text/icons sitting ON the accent */
+--show-accent-dark: var(--wc-dark-green);   /* active brand's deep accent       */
 ```
+
+**`--show-accent-text` and `--show-accent-fill` carry the same value but opposite roles**, and the distinction matters when reading CSS: `-text` is the accent *rendered as text* on cream; `-fill` is that same deeper colour used as a *background*, with cream text on top. They are separate tokens so neither name lies about what it is for. `--show-accent-fill` exists because cream on the bright `--show-accent` fails AA (3.10:1 WC / 3.83:1 Luminous) while cream on the deeper value passes (5.37:1 / 4.62:1) — see #105.
 
 **Components read `--show-accent*`, never the raw `--wc-*` / `--{brand}-*` tokens** (the highlight-zone modifier blocks are the one sanctioned exception — they intentionally hard-bind a brand accent into a single card).
 
@@ -153,9 +157,11 @@ Three indirection tokens, defined in `:root`, defaulting to the WC host brand:
 /* applied when the page is in Luminous brand context */
 --show-accent:      var(--luminous-accent);                 /* #9A59FF */
 --show-accent-text: var(--luminous-accent-text-on-cream);   /* #8B4DEB */
+--show-accent-fill: var(--luminous-accent-text-on-cream);   /* #8B4DEB — cream on it: 4.62:1 */
+--show-on-accent:   var(--luminous-accent-text);            /* #000000 */
 --show-accent-dark: var(--luminous-accent-dark);            /* #1F0F33 */
 ```
-Because every shared component already reads `--show-accent*`, that ~3-line override is all it takes to flip an entire page's accent — *provided Sprint 1 routed the leaks* (§5 / Backlog #2).
+Because every shared component already reads `--show-accent*`, that short override is all it takes to flip an entire page's accent — *provided Sprint 1 routed the leaks* (§5 / Backlog #2).
 
 ### 4a. Luminous derived-token math (Sprint 1, a11y)
 

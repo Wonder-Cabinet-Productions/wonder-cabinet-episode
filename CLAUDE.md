@@ -113,7 +113,9 @@ Official brand colors per the style guide (`docs/WonderCabinet-BrandGuide-010726
 | **Headline Font** | Jost (Futura alternative) | `--font-heading` |
 | **Body Font** | EB Garamond (Garamond alternative) | `--font-body` |
 
-Note: `--wc-dark-green` (`#043013`) and `--wc-green-text` (`#087834`) are theme-derived values not in the official brand guide. They were created for accessibility (text contrast on cream) and dark UI elements. Use sparingly.
+Note: `--wc-dark-green` (`#043013`) and `--wc-green-text` (`#087834`) are theme-derived values not in the official brand guide. They were created for accessibility (text contrast on cream) and dark UI elements.
+
+`--wc-green-text` is no longer "use sparingly" — it is the theme's workhorse accessible green, consumed through `--show-accent-text` at 10 call sites (links, headings) and, since #105, through `--show-accent-fill` as the audio-player hero's background. `--wc-dark-green` remains sparing: at 14:1 on cream it is dark enough that large surfaces sink into the black page background (tested and rejected for the hero in #105).
 
 ## Architecture
 

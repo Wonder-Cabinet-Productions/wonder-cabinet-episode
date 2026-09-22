@@ -30,6 +30,12 @@
     --show-accent-text: var(--wc-green-text);
     --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
+    --show-accent-fill: var(--wc-green-text); /* the accent as a large BACKGROUND fill behind
+                                                cream text — deeper than --show-accent so cream
+                                                clears AA on it (5.37:1 WC / 4.62:1 Luminous).
+                                                Same value as --show-accent-text, different role:
+                                                that one is the accent used AS text on cream.
+                                                Used by the audio-player hero. #105. */
     --show-on-accent: var(--wc-black);       /* text/icons sitting ON --show-accent. Black clears AA on both
                                                 brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. Cream fails both
                                                 (3.10:1 / 3.83:1) — see #81. Not to be confused with
@@ -67,6 +73,7 @@ body.brand-luminous {
     --show-accent-text: var(--luminous-accent-text-on-cream);
     --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
     --show-accent-dark: var(--luminous-accent-dark);
+    --show-accent-fill: var(--luminous-accent-text-on-cream); /* #8B4DEB — cream 4.62:1 */
     --show-on-accent: var(--luminous-accent-text);   /* black — 5.25:1 on #9A59FF */
 }
 
@@ -1455,7 +1462,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
 .wc-audio-hero {
     position: relative;
     z-index: 1;
-    background: var(--show-accent);
+    background: var(--show-accent-fill); /* deeper than --show-accent so cream text clears AA (#105) */
     padding: 2rem 15px;
     border-radius: 16px;
     overflow: hidden;
@@ -1489,11 +1496,14 @@ body.home-template .wc-brand-band .wc-podcast-services {
     justify-content: center;
 }
 
-/* Hero text sits ON the accent fill, so it reads --show-on-accent (black) rather than
-   cream — cream is 3.10:1 on WC green / 3.83:1 on Luminous violet and fails 1.4.3 at
-   these sizes. Black gives 6.49:1 / 5.25:1. The opacity that used to recess the date was
-   dropped: over a saturated accent it tints black toward the fill rather than reading as
-   grey, and size/weight already carry the hierarchy. #105. */
+/* Hero text is cream on --show-accent-fill, a deeper fill than --show-accent: 5.37:1 on
+   WC, 4.62:1 on Luminous, both clearing 1.4.3's 4.5:1. The first pass at #105 kept the
+   bright accent and turned the text black (6.49 / 5.25) — also compliant, but black on
+   #10A544 reads heavy and label-like because that green is far more luminous than the
+   violet. Deepening the fill keeps cream text and one treatment across both brands.
+   Going deeper still (--show-accent-dark) measures 14-17:1 but sinks the card into the
+   black page and kills the "player card" identity — tested and rejected. The opacity that
+   used to recess the date stays dropped; size and weight carry the hierarchy. #105. */
 .wc-audio-hero-date {
     font-family: var(--font-heading);
     font-size: 1.4rem; /* 14px — NOT WCAG large text (needs 24px, or 18.66px bold),
@@ -1503,7 +1513,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--show-on-accent);
+    color: var(--wc-cream);
     margin-bottom: 0.5rem;
 }
 
@@ -1513,7 +1523,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-weight: 700;
     line-height: 1.2;
     text-transform: uppercase;
-    color: var(--show-on-accent);
+    color: var(--wc-cream);
     margin: 0 0 0.75rem;
 }
 
@@ -1521,7 +1531,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     font-family: var(--font-heading);
     font-size: 1.5rem; /* Matches episode card excerpt */
     font-style: normal;
-    color: var(--show-on-accent);
+    color: var(--wc-cream);
     line-height: 1.5;
     margin: 0 0 1.5rem;
 }
