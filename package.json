@@ -82,6 +82,12 @@
                 "default": "",
                 "group": "homepage"
             },
+            "luminous_pod_link": {
+                "type": "text",
+                "default": "",
+                "description": "pod.link URL for the Luminous show (additional podcast apps)",
+                "group": "homepage"
+            },
             "luminous_hero_tagline": {
                 "type": "text",
                 "default": "Conversations from the University of Wisconsin–Madison Center for Psychedelic Research and Education",
