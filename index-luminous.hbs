@@ -56,7 +56,13 @@
         </div>
     </section>
 
+    {{!-- Rule after episodes — matches home.hbs's treatment between list and pagination (#102) --}}
+    <hr class="wc-rule">
+
     {{> "components/pagination"}}
 
-    {{> "components/cta"}}
+    {{!-- Pass the Ghost Admin setting through, as home.hbs does. Without it this page fell
+         through to cta.hbs's hardcoded default, so copy edited in Admin never reached the
+         Luminous landing page (#102). --}}
+    {{> "components/cta" title=@custom.email_signup_text}}
 </main>
