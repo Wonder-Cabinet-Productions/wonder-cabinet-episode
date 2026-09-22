@@ -41,6 +41,30 @@ Session handoff notes for continuity between work sessions.
 
 ---
 
+## 2026-07-26 - Agent Consolidation (reference-check Task 8)
+
+**Agent**: Task 8 of the `reference-check` phase-1 plan (`.superpowers/sdd/2026-07-26-phase1-reference-integrity/`)
+**Summary**: Consolidated scattered Claude Code agent definitions to one home each in `~/.claude/agents/` (not version-controlled — recorded here for continuity). Full detail in `task-8-report.md` in that plan directory.
+
+### What was done (outside this repo, in `~/.claude/`)
+- `brand-guardian.md` and `spectral-engineer.md` moved from `~/Developer/wonder-cabinet/.claude/agents/` (metarepo copy) to `~/.claude/agents/` (user scope) — that metarepo `.claude/agents/` dir no longer exists
+- `adhd-friendly-ui-designer.md` restored from `~/.claude/ARCHIVE/old agents/` to `~/.claude/agents/` (referenced by the Luminous umbrella spec as the design/UX and a11y lens)
+- `agent-registrar.md` deleted from ARCHIVE (superseded by `reference-check`'s rot-detection); its never-run `scripts/agent-registrar-scan.sh` deleted from the lodge worktree and committed there
+- `code-troubleshooter.md` and `obsidian-extension-developer.md` left untouched in ARCHIVE per prior explicit user ruling — out of scope
+- `~/.claude/agents/.sync-manifest.json` deleted (stale, claimed 9 agents deployed when 5 were)
+- `the-lodge` `conventions/AGENT_REGISTRY.md` Tier-1 table replaced with a pointer to `ls ~/.claude/agents/` and `reference-check <file>` — committed at `feat/reference-check` `1b22fac`
+
+### Context for next session
+- If `brand-guardian`/`spectral-engineer` ever go missing from `~/.claude/agents/`, they are **recoverable from the wonder-cabinet metarepo's git history** — the durable source:
+  ```bash
+  git -C ~/Developer/wonder-cabinet show 22772d7:.claude/agents/brand-guardian.md
+  git -C ~/Developer/wonder-cabinet show 6ca7d25:.claude/agents/spectral-engineer.md
+  ```
+  (A scratch copy was also taken at `/private/tmp/claude-501/agents-backup-2026-07-27/`, but that is ephemeral — do not rely on it.)
+- `reference-check <file.md>` now exits 0 on this repo's `docs/superpowers/specs/2026-07-26-design-review-harness-design.md`, the rot probe, and the wc-theme-qa skill
+
+---
+
 ## 2026-01-30 - Image Serving Fix
 
 **Agent**: Development session
