@@ -1447,6 +1447,14 @@ body.home-template .wc-brand-band .wc-podcast-services {
     pointer-events: none;
 }
 
+/* Luminous episodes: the /luminous/ landing's wavy burst replaces the galaxy,
+   radiating from the player card the way the landing's radiates from the wordmark. */
+body.brand-luminous .wc-audio-hero-wrapper::before {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-size: min(1000px, 120vw) auto;
+    opacity: 0.9;
+}
+
 /* Green player card — elevated above galaxy.
    INTENTIONAL EXCEPTION: border-radius: 16px departs from --wc-radius: 0
    used elsewhere. The rounded card creates a "physical device" feel —
