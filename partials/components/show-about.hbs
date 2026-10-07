@@ -1,0 +1,35 @@
+{{!--
+    Show About — an optional "About" modal for a show landing page (#124).
+
+    Content source: a Ghost page with the slug `about-<tagSlug>`
+    (Ghost Admin → Pages), e.g. `about-luminous`, `about-wonder-cabinet`.
+    Its title is the button label and the modal heading; its body is the modal content.
+    No such page → nothing renders. That is what makes the modal optional per show.
+
+    Usage:
+        {{> "components/show-about" tagSlug="wonder-cabinet"}}
+        {{> "components/show-about" tagSlug="luminous"}}
+
+    The trigger is a real link to the page, so it still works without JS, in a new
+    tab, or in a browser without <dialog>. main.js upgrades it to open the dialog.
+    There is deliberately nothing show-specific in here: brand styling comes from the
+    --show-accent* tokens set by the body brand class.
+--}}
+{{#get "pages" filter="slug:about-{{tagSlug}}" limit="1"}}
+    {{#foreach pages}}
+        <div class="wc-show-about">
+            <a class="wc-show-about-trigger" href="{{url}}" data-wc-about-open="wc-about-{{slug}}" aria-haspopup="dialog">{{title}}</a>
+            <dialog class="wc-about-dialog" id="wc-about-{{slug}}" aria-labelledby="wc-about-{{slug}}-title">
+                <div class="wc-about-dialog-inner">
+                    <button type="button" class="wc-about-close" data-wc-about-close aria-label="Close">
+                        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                    </button>
+                    <h2 class="wc-about-title" id="wc-about-{{slug}}-title">{{title}}</h2>
+                    <div class="wc-about-content gh-content">
+                        {{content}}
+                    </div>
+                </div>
+            </dialog>
+        </div>
+    {{/foreach}}
+{{/get}}

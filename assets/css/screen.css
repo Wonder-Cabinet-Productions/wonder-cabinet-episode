@@ -3891,3 +3891,115 @@ body.brand-luminous .wc-head-logo-img--luminous {
         justify-content: center;
     }
 }
+
+/* ============================================
+   Show About Modal (#124)
+   Optional per-show "About" link on a show landing page that opens a <dialog>
+   (partials/components/show-about.hbs). Brand-agnostic: follows --show-accent*.
+   ============================================ */
+
+/* Trigger — sits under the show blurb in the black podcast-services band */
+.wc-show-about-trigger {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--wc-cream);
+    text-decoration: underline;
+    text-decoration-color: var(--show-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    transition: opacity 0.2s ease;
+}
+
+.wc-show-about-trigger:hover {
+    opacity: 0.8;
+}
+
+.wc-show-about-trigger:focus-visible {
+    outline: 2px solid var(--show-accent);
+    outline-offset: 4px;
+}
+
+/* Dialog — cream panel, black text, accent rule on top */
+.wc-about-dialog {
+    width: min(720px, calc(100vw - 2 * var(--wc-spacing-md)));
+    max-height: calc(100vh - 2 * var(--wc-spacing-lg));
+    padding: 0;
+    border: 0;
+    border-top: 6px solid var(--show-accent);
+    border-radius: var(--wc-radius);
+    background: var(--wc-cream);
+    color: var(--wc-black);
+}
+
+.wc-about-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+body:has(.wc-about-dialog[open]) {
+    overflow: hidden; /* no page scroll behind the modal */
+}
+
+.wc-about-dialog-inner {
+    position: relative;
+    padding: var(--wc-spacing-lg);
+}
+
+.wc-about-close {
+    position: absolute;
+    top: var(--wc-spacing-sm);
+    right: var(--wc-spacing-sm);
+    display: flex;
+    padding: var(--wc-spacing-xs);
+    background: none;
+    border: 0;
+    color: var(--wc-black);
+    cursor: pointer;
+}
+
+.wc-about-close:hover {
+    color: var(--show-accent-text);
+}
+
+.wc-about-close:focus-visible {
+    outline: 2px solid var(--show-accent-text);
+    outline-offset: 2px;
+}
+
+.wc-about-title {
+    margin: 0 var(--wc-spacing-lg) var(--wc-spacing-md) 0; /* clear the close button */
+    font-size: 3.2rem;
+    text-transform: uppercase;
+    color: var(--wc-black);
+}
+
+.wc-about-content {
+    font-family: var(--font-body);
+    font-size: 1.9rem;
+    line-height: 1.6;
+    color: var(--wc-black);
+}
+
+.wc-about-content a {
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
+}
+
+@media (max-width: 767px) {
+    .wc-show-about-trigger {
+        font-size: 1.3rem;
+    }
+
+    .wc-about-dialog-inner {
+        padding: var(--wc-spacing-md);
+    }
+
+    .wc-about-title {
+        font-size: 2.4rem;
+    }
+
+    .wc-about-content {
+        font-size: 1.7rem;
+    }
+}
