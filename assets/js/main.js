@@ -6,12 +6,10 @@
     header.style.setProperty('--services-height', `${services.offsetHeight}px`);
 })();
 
-(function () {
-    pagination(true);
-})();
-
 /* Show About modal (#124) — upgrades the partials/components/show-about.hbs link to a
-   <dialog>. Without JS or <dialog> support the link just navigates to the page. */
+   <dialog>. Without JS or <dialog> support the link just navigates to the page.
+   Kept above pagination(true): that call throws on a single-page list (no element for
+   its IntersectionObserver), and anything after it in this bundle never runs. */
 (function () {
     document.querySelectorAll('[data-wc-about-open]').forEach(function (trigger) {
         const dialog = document.getElementById(trigger.dataset.wcAboutOpen);
@@ -38,4 +36,8 @@
             trigger.focus();
         });
     });
+})();
+
+(function () {
+    pagination(true);
 })();
