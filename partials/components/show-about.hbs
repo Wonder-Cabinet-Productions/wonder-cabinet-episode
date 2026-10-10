@@ -1,9 +1,9 @@
 {{!--
     Show About — an optional "About" modal for a show landing page (#124).
 
-    Content source: a Ghost page with the slug `about-<tagSlug>`
-    (Ghost Admin → Pages), e.g. `about-luminous`, `about-wonder-cabinet`.
-    Its title is the button label and the modal heading; its body is the modal content.
+    Content source: a published Ghost page that uses the "Show About" template
+    (custom-show-about.hbs) AND carries the show's tag (e.g. `luminous`). The slug is
+    free. Its title is the button label and the modal heading; its body is the content.
     No such page → nothing renders. That is what makes the modal optional per show.
 
     Usage:
@@ -15,7 +15,7 @@
     There is deliberately nothing show-specific in here: brand styling comes from the
     --show-accent* tokens set by the body brand class.
 --}}
-{{#get "pages" filter="slug:about-{{tagSlug}}" limit="1"}}
+{{#get "pages" filter="custom_template:custom-show-about+tag:{{tagSlug}}" limit="1"}}
     {{#foreach pages}}
         <div class="wc-show-about">
             <a class="wc-show-about-trigger" href="{{url}}" data-wc-about-open="wc-about-{{slug}}" aria-haspopup="dialog">{{title}}</a>
