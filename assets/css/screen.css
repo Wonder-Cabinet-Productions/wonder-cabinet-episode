@@ -3917,12 +3917,21 @@ body.brand-luminous .wc-head-logo-img--luminous {
         column-gap: var(--wc-spacing-xl);
         row-gap: var(--wc-spacing-md);
     }
+
+    /* In the 2×2 About sits among the platforms; a lighter name keeps it from reading
+       as a fourth place to listen. */
+    .wc-podcast-services-links:has(> :nth-child(4):last-child) .wc-show-about-trigger .wc-podcast-service-name {
+        opacity: 0.8;
+    }
 }
 
 /* Dialog — cream panel, black text, accent rule on top */
 .wc-about-dialog {
+    --wc-about-pad: var(--wc-spacing-lg); /* panel side/bottom padding; the fade matches it */
     width: min(720px, calc(100vw - 2 * var(--wc-spacing-md)));
     max-height: calc(100vh - 2 * var(--wc-spacing-lg));
+    max-height: calc(100dvh - 2 * var(--wc-spacing-lg)); /* mobile toolbars */
+    overscroll-behavior: contain; /* scrolling past the end doesn't move the page */
     padding: 0;
     border: 0;
     border-top: 6px solid var(--show-accent);
@@ -3940,14 +3949,43 @@ body:has(.wc-about-dialog[open]) {
 }
 
 .wc-about-dialog-inner {
-    position: relative;
-    padding: var(--wc-spacing-lg);
+    padding: 0 var(--wc-about-pad) var(--wc-about-pad);
+}
+
+/* The <dialog> is the scroller; the header sticks to its top so the title and Close
+   never scroll away. */
+.wc-about-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--wc-spacing-sm);
+    padding: var(--wc-about-pad) 0 var(--wc-spacing-sm);
+    margin-bottom: var(--wc-spacing-sm);
+    background: var(--wc-cream);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* "More below" cue: a cream fade pinned to the bottom of the scroller. It hangs off the
+   <dialog> (the scroller), not the inner box: sticky can't leave its parent's content
+   box, so inside .wc-about-dialog-inner it would end up over the last line. Here, at the
+   end of the content it lies over the inner box's bottom padding, which it matches. */
+.wc-about-dialog::after {
+    content: "";
+    position: sticky;
+    bottom: 0;
+    display: block;
+    height: var(--wc-about-pad);
+    margin-top: calc(-1 * var(--wc-about-pad));
+    background: linear-gradient(to bottom, rgba(255, 250, 235, 0), var(--wc-cream));
+    pointer-events: none;
 }
 
 .wc-about-close {
-    position: absolute;
-    top: var(--wc-spacing-sm);
-    right: var(--wc-spacing-sm);
+    flex-shrink: 0;
+    margin: calc(-1 * var(--wc-spacing-xs)) calc(-1 * var(--wc-spacing-xs)) 0 0; /* optical: X aligns with the text edge */
     display: flex;
     padding: var(--wc-spacing-xs);
     background: none;
@@ -3966,10 +4004,14 @@ body:has(.wc-about-dialog[open]) {
 }
 
 .wc-about-title {
-    margin: 0 var(--wc-spacing-lg) var(--wc-spacing-md) 0; /* clear the close button */
+    margin: 0;
     font-size: 3.2rem;
     text-transform: uppercase;
     color: var(--wc-black);
+}
+
+.wc-about-title:focus {
+    outline: none; /* focused programmatically on open, not interactive */
 }
 
 .wc-about-content {
@@ -4009,8 +4051,8 @@ body:has(.wc-about-dialog[open]) {
 }
 
 @media (max-width: 767px) {
-    .wc-about-dialog-inner {
-        padding: var(--wc-spacing-md);
+    .wc-about-dialog {
+        --wc-about-pad: var(--wc-spacing-md);
     }
 
     .wc-about-title {
