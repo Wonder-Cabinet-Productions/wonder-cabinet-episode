@@ -10,7 +10,6 @@
 <section class="wc-podcast-services gh-outer">
     <div class="wc-podcast-services-inner gh-inner">
         {{> "components/show-blurb" tagSlug="wonder-cabinet"}}
-        {{> "components/show-about" tagSlug="wonder-cabinet"}}
         <div class="wc-podcast-services-links">
             {{#if @custom.apple_podcasts_link}}
                 <a href="{{@custom.apple_podcasts_link}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" aria-label="Listen on Apple Podcasts">
@@ -33,6 +32,7 @@
                     <span class="wc-podcast-service-name">YouTube Music</span>
                 </a>
             {{/if}}
+            {{> "components/show-about" tagSlug="wonder-cabinet"}}
         </div>
     </div>
 </section>

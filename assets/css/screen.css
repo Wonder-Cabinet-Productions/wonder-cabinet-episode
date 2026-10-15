@@ -3898,28 +3898,25 @@ body.brand-luminous .wc-head-logo-img--luminous {
    (partials/components/show-about.hbs). Brand-agnostic: follows --show-accent*.
    ============================================ */
 
-/* Trigger — sits under the show blurb in the black podcast-services band */
-.wc-show-about-trigger {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--wc-cream);
-    text-decoration: underline;
-    text-decoration-color: var(--show-accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 6px;
-    transition: opacity 0.2s ease;
+/* Trigger — a .wc-podcast-service peer at the end of the listen-links row; it takes
+   that component's look (and its mobile icon-only collapse) wholesale. The wrapper
+   steps out of the flex row so the link itself is the row item. */
+.wc-show-about {
+    display: contents;
 }
 
-.wc-show-about-trigger:hover {
-    opacity: 0.8;
-}
-
-.wc-show-about-trigger:focus-visible {
-    outline: 2px solid var(--show-accent);
-    outline-offset: 4px;
+/* Listen-links row: three items max. Four (three listen links + About) break into a
+   2×2 block instead of three-and-a-straggler. Desktop only — the mobile row is icons
+   alone, and four of those fit across. Counts children, so the display:contents
+   About wrapper counts as one. */
+@media (min-width: 768px) {
+    .wc-podcast-services-links:has(> :nth-child(4):last-child) {
+        display: grid;
+        grid-template-columns: repeat(2, max-content);
+        justify-content: center;
+        column-gap: var(--wc-spacing-xl);
+        row-gap: var(--wc-spacing-md);
+    }
 }
 
 /* Dialog — cream panel, black text, accent rule on top */
@@ -3986,11 +3983,32 @@ body:has(.wc-about-dialog[open]) {
     color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
 }
 
-@media (max-width: 767px) {
-    .wc-show-about-trigger {
-        font-size: 1.3rem;
-    }
+/* The dialog renders inside the dark podcast-services band, which flips the shared
+   theme's heading colour (--color-darker-gray) to light. Restore post-body headings. */
+.wc-about-content h2,
+.wc-about-content h3,
+.wc-about-content h4 {
+    font-family: var(--font-heading);
+    color: var(--wc-black);
+    margin-top: var(--wc-spacing-lg);
+}
 
+/* Button card — Ghost's cards.min.css (.kg-button-card a.kg-btn, 0,2,1) outranks the
+   theme's .kg-btn rule; this restores the brand button inside the modal only. */
+.wc-about-content .kg-button-card .kg-btn {
+    padding: 12px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: var(--wc-radius);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
+}
+
+@media (max-width: 767px) {
     .wc-about-dialog-inner {
         padding: var(--wc-spacing-md);
     }
