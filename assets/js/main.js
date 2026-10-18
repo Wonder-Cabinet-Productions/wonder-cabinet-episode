@@ -29,7 +29,7 @@
             dialog.showModal();
             dialog.scrollTop = 0; // a reopened dialog keeps its old scroll position
             // showModal() focuses the first focusable element (Close); start on the title.
-            title.focus();
+            if (title) title.focus();
         }
 
         // Every same-origin link to this dialog's page, compared by path.
