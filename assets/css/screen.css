@@ -3891,3 +3891,175 @@ body.brand-luminous .wc-head-logo-img--luminous {
         justify-content: center;
     }
 }
+
+/* ============================================
+   Show About Modal (#124)
+   Optional per-show "About" link on a show landing page that opens a <dialog>
+   (partials/components/show-about.hbs). Brand-agnostic: follows --show-accent*.
+   ============================================ */
+
+/* Trigger — a .wc-podcast-service peer at the end of the listen-links row; it takes
+   that component's look (and its mobile icon-only collapse) wholesale. The wrapper
+   steps out of the flex row so the link itself is the row item. */
+.wc-show-about {
+    display: contents;
+}
+
+/* Listen-links row: three items max. Four (three listen links + About) break into a
+   2×2 block instead of three-and-a-straggler. Desktop only — the mobile row is icons
+   alone, and four of those fit across. Counts children, so the display:contents
+   About wrapper counts as one. */
+@media (min-width: 768px) {
+    .wc-podcast-services-links:has(> :nth-child(4):last-child) {
+        display: grid;
+        grid-template-columns: repeat(2, max-content);
+        justify-content: center;
+        column-gap: var(--wc-spacing-xl);
+        row-gap: var(--wc-spacing-md);
+    }
+
+    /* In the 2×2 About sits among the platforms; a lighter name keeps it from reading
+       as a fourth place to listen. */
+    .wc-podcast-services-links:has(> :nth-child(4):last-child) .wc-show-about-trigger .wc-podcast-service-name {
+        opacity: 0.8;
+    }
+}
+
+/* Dialog — cream panel, black text, accent rule on top */
+.wc-about-dialog {
+    --wc-about-pad: var(--wc-spacing-lg); /* panel side/bottom padding; the fade matches it */
+    width: min(720px, calc(100vw - 2 * var(--wc-spacing-md)));
+    max-height: calc(100vh - 2 * var(--wc-spacing-lg));
+    max-height: calc(100dvh - 2 * var(--wc-spacing-lg)); /* mobile toolbars */
+    overscroll-behavior: contain; /* scrolling past the end doesn't move the page */
+    padding: 0;
+    border: 0;
+    border-top: 6px solid var(--show-accent);
+    border-radius: var(--wc-radius);
+    background: var(--wc-cream);
+    color: var(--wc-black);
+}
+
+.wc-about-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+body:has(.wc-about-dialog[open]) {
+    overflow: hidden; /* no page scroll behind the modal */
+}
+
+.wc-about-dialog-inner {
+    padding: 0 var(--wc-about-pad) var(--wc-about-pad);
+}
+
+/* The <dialog> is the scroller; the header sticks to its top so the title and Close
+   never scroll away. */
+.wc-about-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--wc-spacing-sm);
+    padding: var(--wc-about-pad) 0 var(--wc-spacing-sm);
+    margin-bottom: var(--wc-spacing-sm);
+    background: var(--wc-cream);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* "More below" cue: a cream fade pinned to the bottom of the scroller. It hangs off the
+   <dialog> (the scroller), not the inner box: sticky can't leave its parent's content
+   box, so inside .wc-about-dialog-inner it would end up over the last line. Here, at the
+   end of the content it lies over the inner box's bottom padding, which it matches. */
+.wc-about-dialog::after {
+    content: "";
+    position: sticky;
+    bottom: 0;
+    display: block;
+    height: var(--wc-about-pad);
+    margin-top: calc(-1 * var(--wc-about-pad));
+    background: linear-gradient(to bottom, rgba(255, 250, 235, 0), var(--wc-cream));
+    pointer-events: none;
+}
+
+.wc-about-close {
+    flex-shrink: 0;
+    margin: calc(-1 * var(--wc-spacing-xs)) calc(-1 * var(--wc-spacing-xs)) 0 0; /* optical: X aligns with the text edge */
+    display: flex;
+    padding: var(--wc-spacing-xs);
+    background: none;
+    border: 0;
+    color: var(--wc-black);
+    cursor: pointer;
+}
+
+.wc-about-close:hover {
+    color: var(--show-accent-text);
+}
+
+.wc-about-close:focus-visible {
+    outline: 2px solid var(--show-accent-text);
+    outline-offset: 2px;
+}
+
+.wc-about-title {
+    margin: 0;
+    font-size: 3.2rem;
+    text-transform: uppercase;
+    color: var(--wc-black);
+}
+
+.wc-about-title:focus {
+    outline: none; /* focused programmatically on open, not interactive */
+}
+
+.wc-about-content {
+    font-family: var(--font-body);
+    font-size: 1.9rem;
+    line-height: 1.6;
+    color: var(--wc-black);
+}
+
+.wc-about-content a {
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
+}
+
+/* The dialog renders inside the dark podcast-services band, which flips the shared
+   theme's heading colour (--color-darker-gray) to light. Restore post-body headings. */
+.wc-about-content h2,
+.wc-about-content h3,
+.wc-about-content h4 {
+    font-family: var(--font-heading);
+    color: var(--wc-black);
+    margin-top: var(--wc-spacing-lg);
+}
+
+/* Button card — Ghost's cards.min.css (.kg-button-card a.kg-btn, 0,2,1) outranks the
+   theme's .kg-btn rule; this restores the brand button inside the modal only. */
+.wc-about-content .kg-button-card .kg-btn {
+    padding: 12px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: var(--wc-radius);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
+}
+
+@media (max-width: 767px) {
+    .wc-about-dialog {
+        --wc-about-pad: var(--wc-spacing-md);
+    }
+
+    .wc-about-title {
+        font-size: 2.4rem;
+    }
+
+    .wc-about-content {
+        font-size: 1.7rem;
+    }
+}
