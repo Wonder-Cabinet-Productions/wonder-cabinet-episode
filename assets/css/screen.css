@@ -1455,6 +1455,26 @@ body.brand-luminous .wc-audio-hero-wrapper::before {
     opacity: 0.9;
 }
 
+/* ...and bleeds up behind the translucent nav, same as the landing's brand band.
+   Gated on .wc-has-audio so a no-audio post's fallback header never slides under
+   the nav. The wrapper adds the nav's height back as padding, and the burst shifts
+   down by half of it so its heart stays on the player card. */
+body.post-template.brand-luminous:has(.wc-has-audio) {
+    --wc-nav-h: 112px;
+}
+body.post-template.brand-luminous:has(.wc-has-audio) .wc-head {
+    background-color: transparent;
+    position: relative;
+    z-index: 10;
+    margin-bottom: calc(-1 * var(--wc-nav-h));
+}
+body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper {
+    padding-top: calc(120px + var(--wc-nav-h, 0px));
+}
+body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
+    background-position: center calc(50% + var(--wc-nav-h, 0px) / 2);
+}
+
 /* Green player card — elevated above galaxy.
    INTENTIONAL EXCEPTION: border-radius: 16px departs from --wc-radius: 0
    used elsewhere. The rounded card creates a "physical device" feel —
@@ -1657,6 +1677,13 @@ body.brand-luminous .wc-audio-hero-wrapper::before {
 
     .wc-audio-hero-wrapper::before {
         opacity: 0.35;
+    }
+
+    body.post-template.brand-luminous:has(.wc-has-audio) {
+        --wc-nav-h: 84px;
+    }
+    body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper {
+        padding-top: calc(var(--wc-spacing-xl) + var(--wc-nav-h, 0px));
     }
 
     .wc-audio-hero {
