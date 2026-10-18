@@ -10,7 +10,7 @@ Full-featured podcast audio player using WaveSurfer.js v7 for waveform visualiza
 | **Play/Pause** | Central play button with visual state toggle |
 | **Skip Controls** | Skip back 15s, skip forward 30s |
 | **Speed Control** | 7 speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 1.75x, 2x |
-| **Keyboard Shortcuts** | Space/K (play), J/L (skip), arrows (speed), M (mute), Home/0/End |
+| **Keyboard Shortcuts** | Space/K (play), J/L (skip), arrows (speed), M (mute), Home/0/End; active while focus is in the player |
 | **Screen Reader Support** | ARIA live region announces all player actions |
 | **Time Display** | MM:SS or HH:MM:SS (automatic for episodes > 60min) |
 | **Transcript Toggle** | Auto-detects "Transcript" headings, creates collapsible section |
@@ -84,13 +84,15 @@ The player is rendered in `partials/audio-player-hero.hbs`:
 | `Space` or `K` | Play/Pause |
 | `J` or `←` | Skip back 15 seconds |
 | `L` or `→` | Skip forward 30 seconds |
-| `↑` | Increase speed |
-| `↓` | Decrease speed |
+| `↑` | Increase speed (on the waveform: skip forward) |
+| `↓` | Decrease speed (on the waveform: skip back) |
 | `M` | Toggle mute |
 | `Home` or `0` | Jump to start |
 | `End` | Jump to end |
 
-Shortcuts are disabled when an input field is focused.
+Shortcuts work only while keyboard focus is inside the player (the waveform or one of its buttons), so they never take over page scrolling. On a focused button, Space and Enter press the button. Shortcuts ignore key combinations with Cmd, Ctrl or Alt.
+
+The waveform is a `role="slider"` whose `aria-valuenow` (percent) and `aria-valuetext` ("3:05 of 42:10") follow playback. In the error state it stops being a slider, so its Try Again button isn't nested inside one (#82).
 
 ## Audio URL Detection
 
