@@ -416,22 +416,30 @@
      */
     function initTimeDisplay(wavesurfer) {
         const timeDisplay = document.getElementById('wc-time-display');
+        const waveform = document.getElementById('wc-waveform');
 
         if (!timeDisplay) return;
 
         function updateTimeDisplay() {
-            var current = formatTime(wavesurfer.getCurrentTime());
-            var duration = formatTime(wavesurfer.getDuration());
+            var currentTime = wavesurfer.getCurrentTime();
+            var durationTime = wavesurfer.getDuration();
+            var current = formatTime(currentTime);
+            var duration = formatTime(durationTime);
             timeDisplay.textContent = current + ' / ' + duration;
+
+            // Keep the waveform slider's reported position in step with playback;
+            // without this, screen readers always hear 0 (#82).
+            if (waveform && waveform.getAttribute('role') === 'slider' && durationTime) {
+                waveform.setAttribute('aria-valuenow', String(Math.round(currentTime / durationTime * 100)));
+                waveform.setAttribute('aria-valuetext', current + ' of ' + duration);
+            }
         }
 
         // Update on playback
         wavesurfer.on('audioprocess', updateTimeDisplay);
 
         // Set duration when ready
-        wavesurfer.on('ready', function() {
-            timeDisplay.textContent = '0:00 / ' + formatTime(wavesurfer.getDuration());
-        });
+        wavesurfer.on('ready', updateTimeDisplay);
 
         // Update on seek
         wavesurfer.on('seeking', updateTimeDisplay);
@@ -578,6 +586,9 @@
      * Initialize keyboard shortcuts for audio control
      */
     function initKeyboardShortcuts(wavesurfer) {
+        var player = document.getElementById('wc-audio-player');
+        var waveform = document.getElementById('wc-waveform');
+
         document.addEventListener('keydown', function(e) {
             // Don't trigger if user is typing in an input
             if (isInputFocused()) return;
@@ -585,7 +596,27 @@
             // Don't trigger if player isn't loaded
             if (!wavesurfer || !wavesurferInstance) return;
 
-            switch (e.key) {
+            // Leave browser and OS shortcuts (Cmd+L, Ctrl+0, ...) alone.
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+            // Only while focus is inside the player. Page-wide, these keys took over
+            // Space, the arrows, Home and End, so keyboard users couldn't scroll the
+            // page or transcript, and Space on any focused button started the episode.
+            var active = document.activeElement;
+            if (!player || !active || !player.contains(active)) return;
+
+            // A focused button handles Space and Enter itself (Play, Skip, Speed...).
+            if ((e.key === ' ' || e.key === 'Enter') && active !== waveform) return;
+
+            var key = e.key;
+            // On the waveform slider, Up/Down move the position like any slider,
+            // instead of changing speed.
+            if (active === waveform) {
+                if (key === 'ArrowUp') key = 'ArrowRight';
+                else if (key === 'ArrowDown') key = 'ArrowLeft';
+            }
+
+            switch (key) {
                 case ' ':
                 case 'k':
                     // Space or K: Play/Pause
@@ -748,6 +779,15 @@
      * Show error state when audio fails to load
      */
     function showPlayerError(container, message) {
+        // The waveform container is marked up as a slider. Once it holds the error
+        // message and its Try Again button it isn't one, and a button inside a slider
+        // is a nested interactive control (#82). Drop the slider semantics first.
+        if (container.getAttribute('role') === 'slider') {
+            ['role', 'tabindex', 'aria-label', 'aria-valuemin', 'aria-valuemax',
+                'aria-valuenow', 'aria-valuetext'].forEach(function(attr) {
+                container.removeAttribute(attr);
+            });
+        }
         container.innerHTML =
             '<div class="wc-player-error">' +
                 '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
