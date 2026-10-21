@@ -3134,6 +3134,19 @@ body.brand-luminous .wc-head-logo-img--luminous {
     background: rgba(var(--show-accent-text-rgb), 0.12); /* accent-text @ 12% — follows active brand */
 }
 
+/* Luminous: no tint. Violet text clears AA on plain cream (4.62:1) but not on its own
+   8% tint (4.16:1) or the 12% hover tint (3.93:1). Hover marks the button with a full-
+   strength border instead. WC's green passes on both tints (4.81 / 4.52), so WC keeps them. */
+body.brand-luminous .wc-transcript-toggle,
+body.brand-luminous .wc-transcript-toggle:hover {
+    background: transparent;
+    transition: border-color 0.2s ease;
+}
+
+body.brand-luminous .wc-transcript-toggle:hover {
+    border-color: var(--show-accent-text);
+}
+
 .wc-transcript-toggle:focus-visible {
     outline: 2px solid var(--show-accent-text);
     outline-offset: 2px;
