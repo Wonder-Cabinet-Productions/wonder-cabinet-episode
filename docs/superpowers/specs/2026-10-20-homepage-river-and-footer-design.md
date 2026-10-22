@@ -67,7 +67,7 @@ Separately, the **footer nav** is squeezed between the legs of the cabinet illus
 
 ### 4.2 Series colour on cards
 - **Any branded tag on a post sets its colour.** If a post carries a tag that has a brand defined in the theme, the card uses that brand. Otherwise it's Wonder Cabinet green.
-  - **Precedence:** any non-WC brand beats `wonder-cabinet`. If a post has two non-WC brands, the first in the post's tag order wins *(builder's call; unlikely in practice)*.
+  - **Precedence:** any non-WC brand beats `wonder-cabinet`. If a post has two non-WC brands, a fixed order in the series list decides: `luminous`, then `island-of-knowledge` *(builder's call, revised in planning: Handlebars can't read tag order cheaply; unlikely in practice)*.
 - **Colours stay in the theme** as contrast-tested token pairs, never from Ghost's tag accent-colour field (the theme can't check contrast on an arbitrary colour).
 - **One brand definition, shared with #125.** The set of "branded series" and their tokens should be the same definition #125 introduces for tag pages, not a second list. Coordinate with that session before building.
 - A tag with no brand block renders green, and gets no slot (§4.3). **Adding a series is two small edits in one sprint:** its brand block (CSS tokens, for colour) and its slug in the series list (a single Handlebars partial, for slots). Handlebars can't read CSS, and custom settings are at Ghost's 20/20 cap, so the list can't live in Admin *(designer's call)*.
@@ -83,7 +83,8 @@ Separately, the **footer nav** is squeezed between the legs of the cabinet illus
   - Newsletters never enter the river, so the newest featured newsletter always takes the newsletter slot.
   - Visible consequence (accepted): featuring a recent episode sometimes changes nothing visible, because it's still in the river.
 - **Pins are manual.** No timer. A pin ends when Mark unticks Featured, or when a newer featured post from the same series replaces it.
-- **Slot order:** newest pinned post first *(designer's call)*. If a fourth slot series is ever added, revisit both the slot count and this rule.
+- **Slot order is fixed per series:** newsletter after card 2, Island of Knowledge after card 4, Luminous after card 6. A series with no qualifying post leaves no slot *(designer's call, revised in planning: Handlebars can't sort separate per-series queries by date, so "newest first" isn't buildable server-side)*. If a fourth slot series is ever added, revisit both the slot count and this rule.
+- **Slot badge links live in the series list,** not Ghost: on dev the Content API returns `/404/` as the URL of a tag that a collection owns (`luminous`, `newsletter`).
 - **No JS:** slot selection is server-side (Handlebars `{{#get}}`). It works for crawlers and no-script visitors.
 
 ### 4.4 Card styles
