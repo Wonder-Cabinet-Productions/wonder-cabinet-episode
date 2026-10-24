@@ -6,6 +6,9 @@
     data-post-id (components/list-item does). Without JS, that link navigates here.
 --}}
 
+{{!-- Channels set no `tag` context, so default.hbs adds no brand class; assign WC explicitly. --}}
+{{#contentFor "body_class"}} brand-wonder-cabinet{{/contentFor}}
+
 <main id="main-content" class="gh-main wc-main">
     <section class="gh-archive gh-outer">
         <div class="gh-archive-inner gh-inner">
