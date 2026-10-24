@@ -97,7 +97,7 @@ hard Ghost limit that blocks CI and theme upload.
 Always check `npx --no-install gscan --version` before believing a local gscan run, or just
 use the pinned form above.
 
-**Custom settings are at 20/20 — the cap.** Adding one now requires retiring one first.
+**Custom settings are at 17/20** (#79 retired some). Three are free; at 20, adding one means retiring one first. Recount with `node -e 'console.log(Object.keys(require("./package.json").config.custom).length)'`.
 
 ## Brand Implementation
 
