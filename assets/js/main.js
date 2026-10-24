@@ -114,10 +114,14 @@
                 button.hidden = true;
             }
 
-            const firstLink = added.length && added[0].querySelector('a[href]');
+            // Move focus only for keyboard activation (Enter/Space give detail 0). After a
+            // mouse or touch click it would just draw a focus ring; the announcement below
+            // still reaches screen readers either way.
+            const viaKeyboard = event.detail === 0;
+            const firstLink = viaKeyboard && added.length && added[0].querySelector('a[href]');
             if (firstLink) {
                 firstLink.focus();
-            } else if (button.hidden) {
+            } else if (viaKeyboard && button.hidden) {
                 // Nothing new and the button is gone: don't leave focus on a hidden element.
                 const archive = button.parentElement.querySelector('a[href]:not([data-wc-loadmore])');
                 if (archive) archive.focus();

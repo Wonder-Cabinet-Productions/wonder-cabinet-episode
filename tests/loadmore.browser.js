@@ -31,5 +31,16 @@
     expect(btn.getAttribute('href') === '/latest/page/3/' || btn.hidden, 'button advances to page 3, or hides at the end');
     expect(location.pathname === '/', 'URL not rewritten');
     expect(!btn.hasAttribute('aria-busy'), 'aria-busy cleared');
+
+    // A mouse click (detail 1) loads the next batch but leaves focus alone: no stray focus ring
+    if (!btn.hidden) {
+        const focused = document.activeElement;
+        const count = ids().length;
+        btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 1 }));
+        for (let i = 0; i < 50 && btn.hasAttribute('aria-busy'); i++) await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 200));
+        expect(ids().length > count, 'mouse click appended cards');
+        expect(document.activeElement === focused, 'mouse click left focus where it was');
+    }
     return JSON.stringify({ ok: failures.length === 0, added, said, next: btn.hidden ? 'hidden' : btn.getAttribute('href'), failures });
 })();
