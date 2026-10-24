@@ -1314,6 +1314,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     justify-content: center;
     min-width: 24px;  /* WCAG 2.2 SC 2.5.8 target size */
     min-height: 24px;
+    text-align: center; /* a label long enough to wrap stays centred */
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
@@ -1326,7 +1327,8 @@ body.home-template .wc-brand-band .wc-podcast-services {
     opacity: 0.7;
 }
 
-/* Nav and social icons read as one stack under the cabinet */
+/* Nav and social icons read as one stack under the cabinet: cancel the social links'
+   own 40px top margin, leaving the footer column's 24px gap */
 .wc-footer-nav + .wc-social-links {
     margin-top: 0;
 }
