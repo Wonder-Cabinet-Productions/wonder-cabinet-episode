@@ -515,7 +515,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
+    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024)) no-repeat center center;
     background-size: clamp(400px, 55vw, 687px) clamp(400px, 55vw, 687px);
     opacity: 0.45; /* Figma spec */
     pointer-events: none;
@@ -772,7 +772,7 @@ body.tag-template.brand-luminous .wc-head {
        transparent nav (no black header cutoff) and fade into the dark. Same treatment
        as the Luminous swirl. Length-based Y positions the image TOP, so subtract half
        the size to keep the heart on the wordmark as the size flexes. */
-    background-image: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp));
+    background-image: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024));
     background-repeat: no-repeat;
     background-size: min(880px, 72vw) auto;
     background-position: center calc(436px - min(440px, 36vw));
@@ -1441,7 +1441,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
+    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024)) no-repeat center center;
     background-size: 687px 687px;
     opacity: 0.45;
     pointer-events: none;
@@ -3287,7 +3287,7 @@ body.brand-luminous .wc-transcript-toggle:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
+    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024)) no-repeat center center;
     background-size: 500px 500px;
     opacity: 0.35;
     pointer-events: none;
