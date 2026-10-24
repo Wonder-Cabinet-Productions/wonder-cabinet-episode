@@ -165,6 +165,13 @@ Cream `#FFFAEB` relative luminance ≈ 0.9563.
 - black `#000000` on `#9A59FF` → **5.25:1** (passes AA); white on violet → 4.00:1 (fails). → badge text is black.
 - `#1F0F33` (31,15,51) — near-black violet for dark UI; no on-cream contrast requirement.
 
+### 4b. `--comments-accent`: Ghost's comments widget (2026-10-24, #140)
+
+Ghost's comments-ui draws in an iframe and takes its accent from `data-accent-color` on its script tag, which Ghost always sets to the site accent (WC green). A brand overrides that by setting `--comments-accent` in its `body.brand-{show}` block. The inline script after `{{comments}}` in `post.hbs` copies the value onto the tag before the widget runs. Brands that leave it unset keep Ghost's accent.
+
+- Luminous: `--comments-accent: var(--luminous-accent-text-on-cream)` (`#8B4DEB`). **Sanctioned exception:** the widget shows the derived violet, not the signature `#9A59FF`. It fills its button with the accent and picks white text itself, which the theme can't override. White on `#8B4DEB` is 4.82:1 (AA); white on `#9A59FF` is 4.00:1 (fails). The "Sign in" link, which is accent text on cream, is 4.62:1.
+- The widget runs `mode="light"` on cream. A dark comments surface would need these figures re-checked.
+
 ---
 
 ## 5. Decision tree for agents

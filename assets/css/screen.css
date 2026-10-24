@@ -69,7 +69,7 @@ body.brand-luminous {
     --show-accent-dark: var(--luminous-accent-dark);
     --show-on-accent: var(--luminous-accent-text);   /* black — 5.25:1 on #9A59FF */
     /* Ghost comments widget accent (read by the inline script in post.hbs; it draws in an
-       iframe, so CSS can't reach it). #8B4DEB: white on it 4.82:1, as text on cream 4.56:1. */
+       iframe, so CSS can't reach it). #8B4DEB: white on it 4.82:1, as text on cream 4.62:1. */
     --comments-accent: var(--luminous-accent-text-on-cream);
 }
 
