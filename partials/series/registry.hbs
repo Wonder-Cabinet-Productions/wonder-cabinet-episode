@@ -2,8 +2,8 @@
     Branded series registry (#100). The one place that maps tag slugs to homepage branding.
 
     Adding a series = one line in each mode below + a `.wc-brand--<slug>` token block in
-    screen.css (Series brands). Handlebars can't read CSS and custom settings are at Ghost's
-    20/20 cap, so this list can't live in Admin.
+    screen.css (Series brands). Handlebars can't read CSS, and custom settings are flat strings
+    capped at 20 by Ghost, so this list can't live in Admin.
 
     Tags are matched by SLUG via the post's tag loop, not `{{#has tag=…}}`: `has` matches the
     tag's NAME, which is editable in Admin and would silently drop the colour on a rename.
