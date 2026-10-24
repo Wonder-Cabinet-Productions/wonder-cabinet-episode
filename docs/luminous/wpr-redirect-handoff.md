@@ -1,6 +1,6 @@
 # Luminous → Wonder Cabinet: what we're asking WPR to do
 
-**Status (2026-10-24):** final. Luminous now lives at **https://wondercabinetproductions.com/luminous/**, with all 18 archive episodes published at their original air dates. This page is the public record of one small request to Wisconsin Public Radio (WPR), and why we're making it. It is linked from the email we send them.
+**Status (2026-10-24):** final. Luminous now lives at **https://wondercabinetproductions.com/luminous/**, with all 18 archive episodes published at their original air dates. This page records one small request to Wisconsin Public Radio (WPR), and why we're making it. The request itself goes by email with the CSV attached, so this page is the reference copy, not the message.
 
 ## The short version
 
