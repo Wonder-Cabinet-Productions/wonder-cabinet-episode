@@ -151,7 +151,7 @@ Note: `--wc-dark-green` (`#043013`) and `--wc-green-text` (`#087834`) are theme-
 
 Spec: `docs/superpowers/specs/2026-10-20-homepage-river-and-footer-design.md` (#100).
 
-**The river** (`home.hbs`): the 8 newest posts that aren't tagged `newsletter`. That covers Wonder Cabinet (including Island of Knowledge) and Luminous, interleaved by date. Each card takes its series' colours through `partials/series/registry.hbs` → `.wc-brand--<slug>` (tokens in `screen.css`, "Series brands"), plus a small series label. Plain Wonder Cabinet cards look as they always have.
+**The river** (`home.hbs`): the 8 newest posts that aren't tagged `newsletter`. That covers Wonder Cabinet (including Island of Knowledge) and Luminous, interleaved by date. Each card takes its series' colours through `partials/series/registry.hbs` → `.wc-brand--<slug>` (tokens in `screen.css`, "Series brands"), plus the same tab badge the pinned cards wear (series name, linked to its page). Plain Wonder Cabinet cards look as they always have; only pinned cards put the image on the right.
 
 **Sticky slots**: up to three, after river cards 2, 4 and 6. Each holds one series' **newest Featured post**, and only when the river doesn't already show it:
 - after card 2: newsletter (always shows its newest featured post, since newsletters never enter the river)
