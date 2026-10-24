@@ -232,6 +232,16 @@ For a page with slug "about":
 | Build errors | `ssh wc-ghostdev 'journalctl -u ghost-theme-watch -n 50 --no-pager'`, verify imports |
 | Anything deeper (Ghost down, data, rollback) | Container reference: `../../../knowledge/ghost01-lxc-readme.md` in the ghost-dev workspace |
 
+## Agent skills
+
+The engineering skills (triage, wayfinder, domain-modeling) read their per-repo config from `docs/agents/`:
+
+- `docs/agents/issue-tracker.md` — GitHub Issues on this repo; companion repos keep their own
+- `docs/agents/triage-labels.md` — the five triage-state labels, applied alongside the area and `S1`–`S4` labels
+- `docs/agents/domain.md` — single-context; `CONTEXT.md` and `docs/adr/` are created lazily, so their absence is expected
+
+Long-range work is tracked as `wayfinder:map` issues; the active map is #91 (Luminous Relaunch).
+
 ## External Resources
 
 - [Ghost Themes Documentation](https://ghost.org/docs/themes/)

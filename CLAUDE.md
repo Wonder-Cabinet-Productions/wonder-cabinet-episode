@@ -257,3 +257,27 @@ Most responsive styles use `@media (max-width: 767px)`.
 ## Parent Workspace Context
 
 This theme lives within a larger Ghost development environment at `ghost-dev/`. When committing changes to this theme, ensure you're in this directory (not the parent repo).
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `Wonder-Cabinet-Productions/wonder-cabinet-episode`, via the `gh` CLI — companion repos in the site stack keep their own issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`), applied *alongside* this repo's existing area and `S1`–`S4` severity labels. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — a root `CONTEXT.md` plus `docs/adr/`, both created lazily by `/domain-modeling`. See `docs/agents/domain.md`.
+
+### Long-range planning
+
+Multi-session efforts are charted as `/mattpocock-skills:wayfinder` maps on this repo's tracker, labelled `wayfinder:map`. One map is active at a time; parking an old one is how a new one opens.
+
+| Map | Destination | Status |
+|---|---|---|
+| [#91](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/91) Luminous Relaunch | All 17 Luminous episodes live at `/luminous/{slug}/` under CPRE branding, `dev/luminous` deployed to production | Active |
+
+Note: `AGENTS.md` in this repo is a **separate, diverged file**, not a symlink to `CLAUDE.md` as it is in the metarepo. Changes here do not propagate there — `AGENTS.md` carries a short pointer to `docs/agents/` instead of this whole block.
