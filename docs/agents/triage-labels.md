@@ -12,4 +12,4 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 
-Edit the right-hand column to match whatever vocabulary you actually use.
+**Status in this repo:** all five labels already exist under their canonical names, so the right-hand column is intentionally identical to the left. Change it only together with the labels themselves — a mismatch here silently desynchronises the skills from the tracker.

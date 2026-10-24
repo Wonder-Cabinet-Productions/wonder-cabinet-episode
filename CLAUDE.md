@@ -230,6 +230,10 @@ Single-context — a root `CONTEXT.md` plus `docs/adr/`, both created lazily by 
 
 ### Long-range planning
 
-The site-stack effort is charted as a `/mattpocock-skills:wayfinder` map on this repo's tracker (label `wayfinder:map`). Background evidence: `../../../planning/2026-08-12-wayfinder-charting-brief.md` in the metarepo.
+Multi-session efforts are charted as `/mattpocock-skills:wayfinder` maps on this repo's tracker, labelled `wayfinder:map`. One map is active at a time; parking an old one is how a new one opens.
 
-Note: `AGENTS.md` in this repo is a **separate, diverged file**, not a symlink to `CLAUDE.md` as it is in the metarepo. Changes here do not propagate there.
+| Map | Destination | Status |
+|---|---|---|
+| [#91](https://github.com/Wonder-Cabinet-Productions/wonder-cabinet-episode/issues/91) Luminous Relaunch | All 17 Luminous episodes live at `/luminous/{slug}/` under CPRE branding, `dev/luminous` deployed to production | Active |
+
+Note: `AGENTS.md` in this repo is a **separate, diverged file**, not a symlink to `CLAUDE.md` as it is in the metarepo. Changes here do not propagate there — `AGENTS.md` carries a short pointer to `docs/agents/` instead of this whole block.
