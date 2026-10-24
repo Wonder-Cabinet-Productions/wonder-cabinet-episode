@@ -240,7 +240,7 @@ The engineering skills (triage, wayfinder, domain-modeling) read their per-repo 
 - `docs/agents/triage-labels.md` — the five triage-state labels, applied alongside the area and `S1`–`S4` labels
 - `docs/agents/domain.md` — single-context; `CONTEXT.md` and `docs/adr/` are created lazily, so their absence is expected
 
-Long-range work is tracked as `wayfinder:map` issues; the active map is #91 (Luminous Relaunch).
+Long-range work is tracked as `wayfinder:map` issues (`gh issue list --label wayfinder:map`); at the time of writing that is #91, Luminous Relaunch.
 
 ## External Resources
 
