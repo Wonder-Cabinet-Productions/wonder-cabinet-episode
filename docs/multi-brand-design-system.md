@@ -167,10 +167,20 @@ Cream `#FFFAEB` relative luminance ≈ 0.9563.
 
 ### 4b. `--comments-accent`: Ghost's comments widget (2026-10-24, #140)
 
-Ghost's comments-ui draws in an iframe and takes its accent from `data-accent-color` on its script tag, which Ghost always sets to the site accent (WC green). A brand overrides that by setting `--comments-accent` in its `body.brand-{show}` block. The inline script after `{{comments}}` in `post.hbs` copies the value onto the tag before the widget runs. Brands that leave it unset keep Ghost's accent.
+Ghost's comments-ui draws in an iframe and takes its accent from `data-accent-color` on its script tag, which Ghost always sets to the site accent. Since 2026-10-24 the site accent is a neutral black, so it can't clash with a show's colors. The inline script after `{{comments}}` in `post.hbs` copies `--comments-accent` onto the tag before the widget runs.
 
-- Luminous: `--comments-accent: var(--luminous-accent-text-on-cream)` (`#8B4DEB`). **Sanctioned exception:** the widget shows the derived violet, not the signature `#9A59FF`. It fills its button with the accent and picks white text itself, which the theme can't override. White on `#8B4DEB` is 4.82:1 (AA); white on `#9A59FF` is 4.00:1 (fails). The "Sign in" link, which is accent text on cream, is 4.62:1.
-- The widget runs `mode="light"` on cream. A dark comments surface would need these figures re-checked.
+`--comments-accent` is **show-agnostic**. It's declared once, on `body`, as `var(--show-accent-text)`, so the comment button follows whichever show the page is branded as and matches its player. A new show needs no comments-specific rule. It only needs a `body.brand-{slug}` block, where the slug comes from the episode's **primary tag**, that sets a `--show-accent-text` passing the two checks below. A page with no styled brand falls back to `:root`'s WC value (`#087834`), which is also what its player falls back to. The declaration sits on `body` rather than `:root` because a custom property resolves `var()` where it's declared. On `:root` it would freeze to WC's value and ignore the `body.brand-{show}` override.
+
+The widget fills its button with the accent and picks white text itself, which the theme can't override. The "Sign in" link is accent text on cream. Both need 4.5:1:
+
+| Show | `--show-accent-text` | White on it | As text on cream |
+|---|---|---|---|
+| Wonder Cabinet | `#087834` | 5.61:1 | 5.37:1 |
+| Luminous | `#8B4DEB` | 4.82:1 | 4.62:1 |
+
+**Sanctioned exception:** the widget shows each show's darker accent-as-text, not the signature accent the player draws with (`#10A544` / `#9A59FF`). White on those fails: 3.24:1 / 4.00:1.
+
+The widget runs `mode="light"` on cream. A dark comments surface would need these figures re-checked.
 
 ---
 

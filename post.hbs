@@ -39,8 +39,8 @@
         <div class="wc-comments-inner gh-inner">
             {{comments mode="light"}}
             {{!-- Ghost's comments widget takes its accent from data-accent-color on its (deferred)
-                 script tag, which is always the site-wide WC green. A brand that sets
-                 --comments-accent (only Luminous today) swaps it in before the widget reads it. --}}
+                 script tag, which is always the site-wide accent. --comments-accent (the active
+                 show's --show-accent-text) swaps it in before the widget reads it. --}}
             <script>
                 (function () {
                     var c = getComputedStyle(document.body).getPropertyValue('--comments-accent').trim();
