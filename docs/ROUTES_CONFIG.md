@@ -2,6 +2,27 @@
 
 Guide to configuring custom routes, collections, and taxonomies in Ghost.
 
+## This site's routes
+
+**[`docs/routes.yaml`](routes.yaml) is the production file**, tracked so every change is reviewed. To change routes:
+
+1. Edit `docs/routes.yaml` in a PR. The theme must already have any template the file names.
+2. Once it's merged, upload that file unchanged: Ghost Admin → Settings → Labs → Routes → Upload.
+3. Check the affected URLs on the live site.
+
+Ghost replaces the whole config on upload, so always upload the complete file. The old `docs/routes-luminous.reference.yaml` was a partial mirror and has been removed: uploading it would have dropped `/newsletter/` and the taxonomies.
+
+What the current file sets up:
+
+| Path | Kind | Notes |
+|---|---|---|
+| `/` | collection | Wonder Cabinet episodes, `/{slug}/`. Excludes newsletter posts; Luminous posts land in `/luminous/` instead. |
+| `/luminous/` | collection | `/luminous/{slug}/`, `index-luminous.hbs` |
+| `/newsletter/` | collection | `/newsletter/{slug}/`, `newsletter.hbs` |
+| `/island-of-knowledge/` | **channel** | Lists `tag:island-of-knowledge` posts with `tag.hbs`. A channel because IoK episodes are Wonder Cabinet posts: they keep their `/{slug}/` URLs and stay on the homepage. `data:` 301s `/tag/island-of-knowledge/` here. |
+
+A collection claims each post for the first collection whose filter matches, and sets its URL. A channel only lists posts. Use a channel when the posts already belong somewhere else.
+
 ## Overview
 
 Ghost uses `routes.yaml` to control URL structure and template routing. This file lives in Ghost's content folder (not in the theme), but themes must understand it to work correctly with custom routes.

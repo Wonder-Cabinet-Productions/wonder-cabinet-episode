@@ -1,0 +1,58 @@
+{{!--
+    Show About — an optional "About" modal for a show landing page (#124).
+    Setup and authoring for Ghost Admin editors: docs/SHOW_ABOUT.md.
+
+    Content source: a published Ghost page that uses the "Show About" template
+    (custom-show-about.hbs) AND carries the show's tag (e.g. `luminous`). The slug is
+    free. Its title is the modal heading; its body is the content.
+    No such page → nothing renders. That is what makes the modal optional per show.
+
+    Usage — inside a .wc-podcast-services-links row, after the listen links:
+        {{> "components/show-about" tagSlug="wonder-cabinet"}}
+        {{> "components/show-about" tagSlug="luminous"}}
+
+    The trigger reuses the .wc-podcast-service button anatomy (icon, small label, name:
+    "About" over the show's name, read from the page's primary tag), so it sits in that
+    row as a peer of the listen links and collapses to its icon on mobile the same way.
+    It is a real link to the page, so it still works without JS, in a new tab, or in a
+    browser without <dialog>. main.js upgrades it to open the dialog. There is
+    deliberately nothing show-specific in here: brand styling comes from the
+    --show-accent* tokens set by the body brand class.
+
+    Authoring a Show About page (Ghost Admin), so every show's modal reads the same:
+      - Title: a question or name, with curly quotes (’ “ ”), not straight ones.
+        It is the modal heading.
+      - Open with a short intro paragraph or two, no heading above it.
+      - Each further section starts with an H2 (e.g. "About the host"). Not a bold
+        paragraph: H2s are what screen-reader users navigate by.
+      - No captions on images unless they add information; a name under a portrait
+        of the person just named is noise.
+      - End with a button card (e.g. "More from Steve"), not a bare link.
+--}}
+{{#get "pages" filter="custom_template:custom-show-about+tag:{{tagSlug}}" include="tags" limit="1"}}
+    {{#foreach pages}}
+        <div class="wc-show-about">
+            <a class="wc-podcast-service wc-show-about-trigger" href="{{url}}" data-wc-about-open="wc-about-{{slug}}" aria-haspopup="dialog">
+                {{> "icons/info"}}
+                <span class="wc-podcast-service-label">About</span>
+                <span class="wc-podcast-service-name">{{primary_tag.name}}</span>
+            </a>
+            <dialog class="wc-about-dialog" id="wc-about-{{slug}}" aria-labelledby="wc-about-{{slug}}-title">
+                <div class="wc-about-dialog-inner">
+                    {{!-- Sticky: title and Close stay in view while the body scrolls. Close
+                         comes after the title so it isn't the first thing announced; main.js
+                         focuses the title on open. --}}
+                    <div class="wc-about-header">
+                        <h2 class="wc-about-title" id="wc-about-{{slug}}-title" tabindex="-1">{{title}}</h2>
+                        <button type="button" class="wc-about-close" data-wc-about-close aria-label="Close">
+                            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                        </button>
+                    </div>
+                    <div class="wc-about-content gh-content">
+                        {{content}}
+                    </div>
+                </div>
+            </dialog>
+        </div>
+    {{/foreach}}
+{{/get}}

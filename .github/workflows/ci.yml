@@ -29,6 +29,9 @@ jobs:
       - name: GScan Validation
         run: npm run test
 
+      - name: Zip keeps images and fonts intact
+        run: npm run zip && scripts/check-zip-binaries.sh
+
   base-guard:
     # Required check on main. Runs on every PR into main (never on dev/** PRs) so it always
     # reports a real conclusion — a skipped job counting as success is not something to lean on

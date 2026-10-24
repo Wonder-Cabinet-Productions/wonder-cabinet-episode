@@ -6,7 +6,7 @@
 
 :root {
     /* Brand Colors — Wonder Cabinet */
-    --wc-green: #10A544;
+    --wc-green: #10A544; /* Brand green. ⚠ As a focus-ring / non-text color on cream this is 3.10:1 — only 0.10 above the WCAG 1.4.11 3:1 floor. Darkening or desaturating risks regressing focus-indicator visibility below 3:1; keep any edit ≥3:1 on cream. See #51, #40, #29. */
     --wc-green-text: #087834; /* WCAG AA compliant green for text on cream (4.5:1+) */
     --wc-black: #000000;
     --wc-cream: #FFFAEB;
@@ -16,9 +16,11 @@
     --iok-accent: #b6d0d8;
     --iok-accent-text: #1a3a44;
 
-    /* Brand Colors — Luminous (placeholder until brand is finalized) */
-    --luminous-accent: #D4A843;
-    --luminous-accent-text: var(--wc-black);
+    /* Brand Colors — Luminous (finalized — Art & Sons, May 2026; see docs/luminous/brand-guide.md) */
+    --luminous-accent: #9A59FF;               /* signature violet — badges/borders/large display only; fails AA as body text on cream (3.84:1) */
+    --luminous-accent-text: var(--wc-black);  /* text ON the violet accent — 5.25:1 on #9A59FF (AA) */
+    --luminous-accent-text-on-cream: #8B4DEB; /* violet as readable text on cream — 4.62:1 (AA); parallel to --wc-green-text */
+    --luminous-accent-dark: #1F0F33;          /* deep violet for dark UI; parallel to --wc-dark-green */
 
     /* Show-Agnostic Tokens
        Components use these instead of --wc-* directly.
@@ -26,7 +28,12 @@
        body class, data attribute, or tag-specific context. */
     --show-accent: var(--wc-green);
     --show-accent-text: var(--wc-green-text);
+    --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
+    --show-on-accent: var(--wc-black);       /* text/icons sitting ON --show-accent. Black clears AA on both
+                                                brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. Cream fails both
+                                                (3.10:1 / 3.83:1) — see #81. Not to be confused with
+                                                --show-accent-text, which is the accent used AS text on cream. */
 
     /* Typography */
     --font-heading: 'Jost', sans-serif;
@@ -46,6 +53,24 @@
 
     /* Border radius */
     --wc-radius: 0;
+}
+
+/* ============================================
+   Brand context activation (multi-brand scoping)
+   A page-level body class (set in default.hbs) overrides the
+   --show-accent* indirection tokens to the active show's palette.
+   Wonder Cabinet is the default (no class). Add a body.brand-{show}
+   block per full-brand-context show. See docs/multi-brand-design-system.md §7.
+   ============================================ */
+body.brand-luminous {
+    --show-accent: var(--luminous-accent);
+    --show-accent-text: var(--luminous-accent-text-on-cream);
+    --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
+    --show-accent-dark: var(--luminous-accent-dark);
+    --show-on-accent: var(--luminous-accent-text);   /* black — 5.25:1 on #9A59FF */
+    /* Ghost comments widget accent (read by the inline script in post.hbs; it draws in an
+       iframe, so CSS can't reach it). #8B4DEB: white on it 4.82:1, as text on cream 4.62:1. */
+    --comments-accent: var(--luminous-accent-text-on-cream);
 }
 
 body {
@@ -277,7 +302,8 @@ body {
     opacity: 0.8;
 }
 
-/* Subscribe button - simple green rectangle per Figma */
+/* Subscribe button - brand-accent rectangle per Figma (green on WC, violet on Luminous
+   via the --show-accent indirection token). */
 .wc-head-subscribe {
     display: inline-flex;
     align-items: center;
@@ -288,8 +314,8 @@ body {
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
-    color: var(--wc-cream);
-    background-color: var(--wc-green);
+    color: var(--show-on-accent);
+    background-color: var(--show-accent);
     text-decoration: none;
     border: none;
     cursor: pointer;
@@ -492,7 +518,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
+    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024)) no-repeat center center;
     background-size: clamp(400px, 55vw, 687px) clamp(400px, 55vw, 687px);
     opacity: 0.45; /* Figma spec */
     pointer-events: none;
@@ -536,6 +562,16 @@ body {
     margin-bottom: var(--wc-spacing-md);
 }
 
+/* Hero tagline — shared by both brands, no per-brand exception. WC fills it with a
+   short show quip, Luminous with a ~99-character institutional sponsor credit; both
+   take the same italic EB Garamond treatment. Measure comes from .wc-hero-content's
+   max-width: 700px, not from a per-brand `ch` value.
+   Contrast: MEASURED, passes AA. axe reports this element as "incomplete" on both
+   brands because the backdrop is a ::before pseudo-element it can't resolve. Sampled
+   directly instead — worst case 14.5:1 against #FFFAEB over the Luminous wavy overlay,
+   well clear of the 4.5:1 small-text bar (23px is under the 24px large-text cutoff).
+   Re-measure only if the wavy asset or its 0.9 opacity changes.
+   See docs/luminous/sponsor-rename-handoff.md item 7. */
 .wc-hero-tagline {
     font-family: var(--font-body);
     font-size: 2.3rem; /* Figma: 23px */
@@ -694,6 +730,123 @@ body {
 }
 
 /* ============================================
+   Brand Band — continuous artwork bleed
+   Wraps hero + thick-rule + podcast-services so ONE backdrop bleeds behind the
+   (translucent) nav, the hero, and the podcast bar. Present ONLY on the two
+   LANDING pages: WC home (body.home-template) and the Luminous collection index
+   (body.tag-template.brand-luminous). Episode pages have no .wc-brand-band, so
+   nothing here touches them.
+   ============================================ */
+
+/* Nav height reserved by the bleed; tune here if the header height changes. */
+body.home-template,
+body.tag-template.brand-luminous {
+    --wc-nav-h: 112px;
+}
+
+.wc-brand-band {
+    position: relative;
+    background-color: var(--wc-black);
+    /* Nav bleed: the nav gives back its height (negative margin below) and goes
+       transparent, so the band slides up beneath it; we pad the band's content
+       back down by the same amount, leaving only the backdrop behind the nav. */
+    padding-top: var(--wc-nav-h, 112px);
+}
+
+/* Nav goes translucent on the landing pages and yields its vertical space. */
+body.home-template .wc-head,
+body.tag-template.brand-luminous .wc-head {
+    background-color: transparent;
+    position: relative;
+    z-index: 10;
+    margin-bottom: calc(-1 * var(--wc-nav-h, 112px));
+}
+
+/* Shared brand backdrop spanning the whole band (behind nav + hero + podcast bar). */
+.wc-brand-band::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* WC: galaxy spiral — heart centered on the WONDER CABINET wordmark (~436px from
+       band-top), sized large enough that its faint outer stars bleed UP behind the
+       transparent nav (no black header cutoff) and fade into the dark. Same treatment
+       as the Luminous swirl. Length-based Y positions the image TOP, so subtract half
+       the size to keep the heart on the wordmark as the size flexes. */
+    background-image: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024));
+    background-repeat: no-repeat;
+    background-size: min(880px, 72vw) auto;
+    background-position: center calc(436px - min(440px, 36vw));
+    opacity: 0.45; /* Figma spec */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Luminous: static "swirl" behind the hero, WC-style ───────────────────
+   Mirrors WC's galaxy: the wavy radial burst lives in the band's ::before, so it
+   SCROLLS WITH THE HERO (no parallax) and its heart stays locked on the LUMINOUS
+   wordmark at every screen size. Sized (not `cover`) so it radiates from the
+   wordmark and fades into the dark — no hard pane edge. The band is pulled up
+   behind the transparent nav (shared nav-bleed rule + default band padding) and
+   the burst is large enough to reach the very top, so it bleeds behind the nav
+   with NO black header cutoff. Tune the heart with background-position, the spread
+   with background-size. */
+body.brand-luminous .wc-brand-band::before {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-repeat: no-repeat;
+    background-size: min(1000px, 120vw) auto;   /* burst spread — shrink for more black around it */
+    /* Length-based Y positions the image's TOP, so subtract half the burst height
+       to keep the HEART locked on the wordmark (~440px from band-top) as size changes. */
+    background-position: center calc(440px - min(500px, 60vw));
+    opacity: 0.9;
+}
+
+/* Band children paint above the backdrop. */
+.wc-brand-band > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero-zone + podcast bar go transparent so the single band backdrop shows through.
+   The hero-zone's own galaxy ::before is now redundant (moved up to the band). */
+.wc-brand-band .wc-hero-zone,
+.wc-brand-band .wc-podcast-services {
+    background-color: transparent;
+}
+.wc-brand-band .wc-hero-zone::before {
+    display: none;
+}
+
+/* WC podcast bar: the galaxy is a discrete spiral up top, so instead of flat black
+   here, spill a faint cosmic glow down from the hero — reads as the same starfield
+   continuing. Kept whisper-low so the podcast text stays crisp. WC-only; Luminous's
+   wavy pattern already covers its whole band. */
+body.home-template .wc-brand-band .wc-podcast-services {
+    background:
+        radial-gradient(ellipse 110% 100% at 50% -15%, rgba(255, 250, 235, 0.07), transparent 62%);
+}
+
+@media (max-width: 767px) {
+    body.home-template,
+    body.tag-template.brand-luminous {
+        --wc-nav-h: 84px;
+    }
+    /* Re-anchor the swirl heart on the higher mobile wordmark (WC ~332px, Luminous
+       ~318px from band-top), kept large enough (720px, half = 360px) that it still
+       bleeds up behind the shorter mobile nav. Calibrated ~500px — fine-tune on device. */
+    body.home-template .wc-brand-band::before {
+        background-size: 720px auto;
+        background-position: center -28px; /* 332 wordmark − 360 half */
+    }
+    body.brand-luminous .wc-brand-band::before {
+        background-size: 720px auto;
+        background-position: center -42px; /* 318 wordmark − 360 half */
+    }
+}
+
+/* ============================================
    Episode List / Cards
    ============================================ */
 
@@ -718,7 +871,7 @@ body {
     flex-direction: row;
     gap: var(--wc-spacing-lg) !important;
     padding: 30px; /* Figma spec: ~30px internal padding */
-    border: 2px solid var(--wc-green);
+    border: 2px solid var(--show-accent);
     background-color: var(--wc-black);
     text-decoration: none;
 }
@@ -732,8 +885,8 @@ body {
     position: absolute;
     top: -1px;
     right: 20px;
-    background-color: var(--wc-green);
-    color: var(--wc-black);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
     font-family: var(--font-heading);
     font-size: 1.1rem;
     font-weight: 700;
@@ -766,7 +919,7 @@ body {
 }
 
 .wc-episode-card-inner:hover {
-    border-color: var(--wc-green);
+    border-color: var(--show-accent);
 }
 
 .wc-episode-card-image {
@@ -841,8 +994,8 @@ body {
     margin-top: auto;
     min-height: 45px;
     padding: 0 20px;
-    background-color: var(--wc-green);
-    color: var(--wc-cream);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
@@ -1067,18 +1220,18 @@ body {
     background-color: var(--wc-cream);
     font-family: var(--font-heading);
     font-size: 1.6rem;
-    color: rgba(0, 0, 0, 0.5);
+    color: #6b6862; /* 5.32:1 on cream (AA); was rgba(0,0,0,.5) = 3.93:1 */
 }
 
 .wc-cta-btn {
     display: flex;
     align-items: center;
     padding: 0 var(--wc-spacing-md);
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
-    color: var(--wc-cream);
+    color: var(--show-on-accent);
 }
 
 @media (max-width: 767px) {
@@ -1291,10 +1444,38 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
+    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024)) no-repeat center center;
     background-size: 687px 687px;
     opacity: 0.45;
     pointer-events: none;
+}
+
+/* Luminous episodes: the /luminous/ landing's wavy burst replaces the galaxy,
+   radiating from the player card the way the landing's radiates from the wordmark. */
+body.brand-luminous .wc-audio-hero-wrapper::before {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-size: min(1000px, 120vw) auto;
+    opacity: 0.9;
+}
+
+/* ...and bleeds up behind the translucent nav, same as the landing's brand band.
+   Gated on .wc-has-audio so a no-audio post's fallback header never slides under
+   the nav. The wrapper adds the nav's height back as padding, and the burst shifts
+   down by half of it so its heart stays on the player card. */
+body.post-template.brand-luminous:has(.wc-has-audio) {
+    --wc-nav-h: 112px;
+}
+body.post-template.brand-luminous:has(.wc-has-audio) .wc-head {
+    background-color: transparent;
+    position: relative;
+    z-index: 10;
+    margin-bottom: calc(-1 * var(--wc-nav-h));
+}
+body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper {
+    padding-top: calc(120px + var(--wc-nav-h, 0px));
+}
+body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
+    background-position: center calc(50% + var(--wc-nav-h, 0px) / 2);
 }
 
 /* Green player card — elevated above galaxy.
@@ -1339,14 +1520,30 @@ body {
     justify-content: center;
 }
 
+/* Hero text is CREAM on the bright accent. This is a KNOWN, DELIBERATE WCAG AA failure —
+   do not "fix" it back to black without talking to the owner first.
+
+   Measured: cream on #10A544 is 3.10:1, on #9A59FF 3.83:1. The 14px date and 15px dek are
+   held to 1.4.3's 4.5:1 floor and FAIL on both brands; the 32px/700 title clears the
+   large-text 3:1 exemption by 0.10. Episode pages therefore conform at WCAG Level A, not AA.
+
+   Black text (6.49:1 / 5.25:1) and a deepened fill (5.37:1 / 4.62:1) were both implemented,
+   rendered on live pages, and rejected by the owner on appearance — #10A544 is bright enough
+   that no legible text sits on it comfortably: white is 3.24:1, cream 3.10:1, black passes
+   but reads heavy and label-like. The brand green is fixed and not ours to change.
+
+   Decision recorded on #105. The one untried path that keeps this fill AND passes is moving
+   the date and dek off the card onto the black page background, where cream is 20:1. */
 .wc-audio-hero-date {
     font-family: var(--font-heading);
-    font-size: 1.4rem; /* Bumped from 1.1rem — WCAG AA-large (3:1) at this size */
+    font-size: 1.4rem; /* 14px — NOT WCAG large text (needs 24px, or 18.66px bold),
+                          so this is held to the 4.5:1 floor, not 3:1. An earlier comment
+                          here claimed the 1.1rem→1.4rem bump bought the 3:1 exemption;
+                          it never did. See #105. */
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--wc-cream);
-    opacity: 0.9;
     margin-bottom: 0.5rem;
 }
 
@@ -1364,7 +1561,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.5rem; /* Matches episode card excerpt */
     font-style: normal;
-    color: rgba(255, 250, 235, 0.9);
+    color: var(--wc-cream);
     line-height: 1.5;
     margin: 0 0 1.5rem;
 }
@@ -1485,6 +1682,13 @@ body {
         opacity: 0.35;
     }
 
+    body.post-template.brand-luminous:has(.wc-has-audio) {
+        --wc-nav-h: 84px;
+    }
+    body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper {
+        padding-top: calc(var(--wc-spacing-xl) + var(--wc-nav-h, 0px));
+    }
+
     .wc-audio-hero {
         padding: 1.5rem 15px;
         border-radius: 14px; /* Slightly reduced from desktop 16px, still rounded */
@@ -1555,7 +1759,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin: 0 0 var(--wc-spacing-md);
 }
 
@@ -1574,12 +1778,12 @@ body {
 }
 
 .wc-episode-notes-content a {
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     text-decoration: underline;
 }
 
 .wc-episode-notes-content a:hover {
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 /* Images in episode notes content — allow full width display */
@@ -1659,7 +1863,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text);
+    color: var(--show-accent-text);
     margin: var(--wc-spacing-lg) 0 var(--wc-spacing-sm);
 }
 
@@ -1680,7 +1884,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text);
+    color: var(--show-accent-text);
     margin-bottom: var(--wc-spacing-sm);
 }
 
@@ -1704,7 +1908,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin: 0 0 var(--wc-spacing-md);
 }
 
@@ -1713,7 +1917,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.4rem; /* Figma spec: 14px Bold */
     font-weight: 700;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin-bottom: var(--wc-spacing-xs);
     text-decoration: none;
 }
@@ -1850,12 +2054,12 @@ body {
 
 .kg-callout-card-blue {
     background-color: rgba(16, 165, 68, 0.1); /* Use green instead of blue */
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 .kg-callout-card-green {
     background-color: rgba(16, 165, 68, 0.1);
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 .kg-callout-card-yellow {
@@ -1875,8 +2079,8 @@ body {
 }
 
 .kg-callout-card-accent {
-    background-color: var(--wc-green);
-    color: var(--wc-cream);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
 }
 
 .kg-callout-emoji {
@@ -1955,8 +2159,8 @@ body {
 }
 
 .kg-btn-accent {
-    background-color: var(--wc-green);
-    color: var(--wc-cream);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
 }
 
 /* File Card */
@@ -1999,8 +2203,8 @@ body {
 }
 
 .kg-file-card-icon {
-    background-color: var(--wc-green);
-    color: var(--wc-cream);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
     padding: var(--wc-spacing-sm);
     border-radius: var(--wc-radius);
 }
@@ -2060,7 +2264,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     margin-bottom: var(--wc-spacing-md);
 }
 
@@ -2120,6 +2324,140 @@ body {
     height: auto;
     opacity: 0.5;
     object-fit: contain;
+}
+
+/* Luminous: wavy organic hero replaces the galaxy raster (§6 asymmetric).
+   The /luminous/ landing (index-luminous.hbs + components/luminous-hero.hbs) uses its own
+   hero-zone; the wavy fills the hero-zone galaxy layer under body.brand-luminous. */
+body.brand-luminous .wc-hero-zone::before {
+    background-image: url(../images/luminous/bg-wavy.svg);
+    background-size: cover;
+    opacity: 0.9;
+}
+
+/* Luminous hero: eye-icon motif above the wordmark. Sized to the Primary Logo
+   lockup in Luminous_BrandGuide.pdf (Art & Sons) p2: the eye lens ≈ 0.68× the
+   wordmark's width. The eye asset is a square canvas whose violet lens fills ~88%
+   width / ~49% height (measured), so the element is ~0.77× the wordmark width and
+   we crop the transparent top/bottom with aspect-ratio + object-fit so the lens
+   sits tight above the wordmark. --lum-eye-w is the one knob to tune. */
+.wc-hero-eye {
+    --lum-eye-w: 480px; /* ≈ 0.77 × the 620px wordmark → lens ≈ 0.68× (brand spec) */
+    width: min(var(--lum-eye-w), 72vw);
+    height: auto;
+    aspect-ratio: 1 / 0.56; /* crop the square canvas down toward the 1.80:1 lens */
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: var(--wc-spacing-xs);
+}
+.wc-hero-title--luminous {
+    max-width: 620px;
+    width: 100%;
+}
+
+/* Luminous hero tagline: no per-brand rule. The sponsor credit (formerly baked into
+   wordmark.svg) uses the shared .wc-hero-tagline treatment — see that rule for the
+   type, and for the contrast caveat that now applies to both brands. */
+
+/* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
+   footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
+   is untouched; all scoped to body.brand-luminous. */
+body.brand-luminous .wc-footer-cabinet {
+    display: none;
+}
+body.brand-luminous .wc-footer-illustration {
+    width: auto;
+}
+body.brand-luminous .wc-footer-overlay {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+    padding: var(--wc-spacing-xl) 0;
+}
+
+/* Luminous CTAs are a flat violet button, no bracket corners (§6 asymmetric) */
+body.brand-luminous .wc-bracket-btn-corner {
+    display: none;
+}
+body.brand-luminous .wc-bracket-btn {
+    background: var(--show-accent);
+    color: var(--show-on-accent); /* black on both accents: 6.49:1 WC / 5.25:1 Luminous */
+    border-radius: 4px;
+    padding: 14px 32px;
+}
+
+/* Luminous: the designer's LineSeparator deliverable — a fine DOTTED line in cream
+   (#FFFAEB) — replaces the solid green rule (§6 asymmetric). NOT dashed, NOT violet.
+
+   This is now the ACTUAL asset (divider-dashed.svg, byte-identical to the pack's
+   LuminousWeb_LineSeparator.svg) rather than a CSS approximation of it. Two rounds of
+   drift came from re-implementing it by hand: first colour/cap style, then dot size and
+   an invented second weight (#108). The geometry below is the file's own — round cream
+   dots, ⌀9.86px on a 30.77px period — so it cannot drift again without editing the asset.
+
+   background-size pins the artwork in px so the dots stay a FIXED size at every
+   breakpoint instead of scaling with the container. Scaling would shrink them to ~3px on
+   a phone, where the dotted motif stops reading at all. The box is max-width 810px,
+   narrower than the artwork, so it simply centre-crops — no tiling, hence no-repeat.
+
+   1170px, not the intrinsic 1200px, is deliberate: at 1200px the crop lands mid-dot and
+   shears one in half (−5.44px at an 810px box). 1170px = ×0.975 puts exactly 27 periods
+   across 810px, so both crop edges share phase and land in gaps — +4.66px clearance.
+   The dots shrink 2.5% (⌀11.04 → 10.76 incl. round caps), which is imperceptible.
+   NOTE this tunes the 810px case only. The capsule:period ratio is fixed by the
+   designer's dasharray, so at arbitrary narrower widths a crop edge still clips ~69% of
+   the time at ANY scale; mobile would need a one-period tile asset instead. #108.
+
+   ONE separator, deliberately: the Luminous pack and brand guide describe a single
+   line-separator asset. The thick/thin split is a Wonder Cabinet concept (green rules at
+   2px/3px, see .wc-rule--thick below) that was mirrored onto Luminous with no basis in
+   spec. Both classes therefore resolve to the same treatment here; the WC base rules are
+   untouched. Gated by brand-guardian 2026-09-21 (#108) — no brand exception needed, this
+   is a correction back toward the canonical asset. */
+body.brand-luminous .wc-rule,
+body.brand-luminous .wc-rule--thick {
+    height: 10px;
+    background: none;
+    border: none;
+    background-image: url(../images/luminous/divider-dashed.svg);
+    background-size: 1170px auto;   /* ×0.975 of the 1200×152 artboard — see note above */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Luminous nav logo: swap the WC green cabinet mark for a violet-cabinet variant
+   (logo-cabinet-violet-800.png — recolored from the brand raster) so it shows on the
+   dark nav and matches the violet scheme instead of clashing with green. Both marks
+   are in navbar.hbs; toggled by brand. Luminous-only. */
+.wc-head-logo-img--luminous {
+    display: none;
+}
+body.brand-luminous .wc-head-logo-img--default {
+    display: none;
+}
+/* ...but NOT on the Luminous landing page. There the nav mark sits directly above the
+   large eye icon and the cabinet's legs collide with the top of the eye, reading as one
+   merged shape. tag-template distinguishes the collection route (/luminous/ and its
+   paged pages, both of which render the eye hero) from post-template episode pages,
+   where the mark is wanted and there is nothing to collide with. The anchor keeps its
+   accessible name from aria-label in navbar.hbs, so hiding both marks does not leave a
+   nameless link. */
+body.brand-luminous.tag-template .wc-head-logo-img--luminous {
+    display: none;
+}
+
+body.brand-luminous .wc-head-logo-img--luminous {
+    display: block;
+    width: 68px;      /* explicit — the shrink-to-fit anchor + max-width:100% was clamping it to 0 */
+    height: 68px;
+    max-width: none;
+    /* shared-theme-assets ships `.gh-head-logo img:nth-child(2) { opacity:0; position:absolute }`
+       for Ghost's light/dark logo-pair pattern. navbar.hbs puts BOTH brand marks in that anchor,
+       so the violet cabinet is nth-child(2) and was painted at zero opacity on every Luminous
+       page — present in the DOM at 68x68, simply invisible. Override both properties. */
+    opacity: 1;
+    position: static;
 }
 
 .wc-tag-hero-content {
@@ -2396,7 +2734,7 @@ body {
 .wc-rule {
     border: none;
     height: 2px;
-    background-color: var(--wc-green);
+    background-color: var(--show-accent);
     max-width: 810px;
     margin: var(--wc-spacing-sm) auto;
 }
@@ -2488,11 +2826,11 @@ body {
 }
 
 .wc-page-content .gh-content a {
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
 }
 
 .wc-page-content .gh-content a:hover {
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
 }
 
 /* Page Content Mobile Responsive */
@@ -2782,10 +3120,10 @@ body {
     gap: var(--wc-spacing-sm);
     width: 100%;
     padding: var(--wc-spacing-sm) var(--wc-spacing-md);
-    background: rgba(8, 120, 52, 0.08); /* Match --wc-green-text */
-    border: 1px solid rgba(8, 120, 52, 0.2);
+    background: rgba(var(--show-accent-text-rgb), 0.08); /* accent-text @ 8% — follows active brand */
+    border: 1px solid rgba(var(--show-accent-text-rgb), 0.2);
     border-radius: 4px;
-    color: var(--wc-green-text); /* WCAG AA compliant on cream bg */
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
@@ -2796,11 +3134,24 @@ body {
 }
 
 .wc-transcript-toggle:hover {
-    background: rgba(8, 120, 52, 0.12); /* Match --wc-green-text */
+    background: rgba(var(--show-accent-text-rgb), 0.12); /* accent-text @ 12% — follows active brand */
+}
+
+/* Luminous: no tint. Violet text clears AA on plain cream (4.62:1) but not on its own
+   8% tint (4.16:1) or the 12% hover tint (3.93:1). Hover marks the button with a full-
+   strength border instead. WC's green passes on both tints (4.81 / 4.52), so WC keeps them. */
+body.brand-luminous .wc-transcript-toggle,
+body.brand-luminous .wc-transcript-toggle:hover {
+    background: transparent;
+    transition: border-color 0.2s ease;
+}
+
+body.brand-luminous .wc-transcript-toggle:hover {
+    border-color: var(--show-accent-text);
 }
 
 .wc-transcript-toggle:focus-visible {
-    outline: 2px solid var(--wc-green-text);
+    outline: 2px solid var(--show-accent-text);
     outline-offset: 2px;
 }
 
@@ -2816,17 +3167,26 @@ body {
     transform: rotate(180deg);
 }
 
+/* Accordion via grid-template-rows 0fr→1fr: animates cleanly with no layout thrash
+   (unlike max-height, which also can't interpolate to `none`, so it never truly
+   animated). The overflow-hidden collapsing element is .wc-transcript-inner; padding
+   lives on the nested .wc-transcript-body so it's clipped flat when collapsed. */
 .wc-transcript-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
 }
 
 .wc-transcript-content.is-open {
-    max-height: none;
+    grid-template-rows: 1fr;
 }
 
 .wc-transcript-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.wc-transcript-body {
     padding: var(--wc-spacing-md) 0;
 }
 
@@ -2859,7 +3219,7 @@ body {
         height: 16px;
     }
 
-    .wc-transcript-inner {
+    .wc-transcript-body {
         padding: var(--wc-spacing-sm) 0;
     }
 }
@@ -2889,8 +3249,8 @@ body {
     transform: translateX(-50%);
     z-index: 9999;
     padding: var(--wc-spacing-sm) var(--wc-spacing-md);
-    background-color: var(--wc-green);
-    color: var(--wc-cream);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 600;
@@ -2930,7 +3290,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp)) no-repeat center center;
+    background: var(--wc-galaxy-bg, url(../images/bg-galaxy-spiral-1200w-2x.webp?v=20261024)) no-repeat center center;
     background-size: 500px 500px;
     opacity: 0.35;
     pointer-events: none;
@@ -3012,7 +3372,7 @@ body {
 /* Focus ring color variables by context */
 :root {
     --wc-focus-ring-light: var(--wc-cream);    /* For dark backgrounds */
-    --wc-focus-ring-dark: var(--wc-green);     /* For light backgrounds */
+    --wc-focus-ring-dark: var(--show-accent);  /* For light backgrounds; follows active brand (defaults to --wc-green → 3.10:1 on cream, only 0.10 above the WCAG 3:1 non-text floor — do not let a --wc-green edit drop below 3:1. See #51). */
 }
 
 /* Navbar elements (dark background) */
@@ -3059,7 +3419,7 @@ body {
 
 /* CTA email input and button */
 .wc-cta-input:focus-visible {
-    outline: 2px solid var(--wc-green);
+    outline: 2px solid var(--show-accent);
     outline-offset: 0;
 }
 
@@ -3090,12 +3450,6 @@ body {
 .wc-episode-notes-content a:focus-visible,
 .wc-episode-links a:focus-visible {
     outline: 2px solid var(--wc-focus-ring-dark);
-    outline-offset: 2px;
-}
-
-/* Transcript toggle (dark background) */
-.wc-transcript-toggle:focus-visible {
-    outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }
 
@@ -3142,8 +3496,8 @@ body {
     margin: 0 auto;
     padding-top: var(--wc-spacing-lg);
     padding-bottom: var(--wc-spacing-lg);
-    border-top: 2px solid var(--wc-green);
-    border-bottom: 2px solid var(--wc-green);
+    border-top: 2px solid var(--show-accent);
+    border-bottom: 2px solid var(--show-accent);
 }
 
 /* Grid container — single column by default, two columns when multi */
@@ -3201,7 +3555,7 @@ body {
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid var(--wc-green);
+    border: 2px solid var(--show-accent);
     transition: border-color 0.2s ease;
 }
 
@@ -3225,7 +3579,7 @@ body {
 }
 
 .wc-author-name a:hover {
-    color: var(--wc-green);
+    color: var(--show-accent);
 }
 
 /* Bio text */
@@ -3274,7 +3628,7 @@ body {
 }
 
 .wc-author-link:hover {
-    color: var(--wc-green);
+    color: var(--show-accent);
     opacity: 1;
 }
 
@@ -3330,7 +3684,7 @@ body {
     margin: 0 auto var(--wc-spacing-md) auto;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid var(--wc-green);
+    border: 3px solid var(--show-accent);
 }
 
 .gh-archive-image img {
@@ -3384,7 +3738,7 @@ body {
 }
 
 .gh-archive-social a:hover {
-    color: var(--wc-green);
+    color: var(--show-accent);
     opacity: 1;
 }
 
@@ -3451,7 +3805,7 @@ body {
 .wc-form-select:focus,
 .wc-form-textarea:focus {
     outline: none;
-    border-color: var(--wc-green);
+    border-color: var(--show-accent);
 }
 
 .wc-form-select {
@@ -3481,20 +3835,20 @@ body {
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
-    color: var(--wc-cream);
-    background-color: var(--wc-green);
-    border: 2px solid var(--wc-green);
+    color: var(--show-on-accent);
+    background-color: var(--show-accent);
+    border: 2px solid var(--show-accent);
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .wc-form-submit:hover {
-    background-color: var(--wc-dark-green);
-    border-color: var(--wc-dark-green);
+    background-color: var(--show-accent-dark);
+    border-color: var(--show-accent-dark);
 }
 
 .wc-form-submit:focus-visible {
-    outline: 2px solid var(--wc-green);
+    outline: 2px solid var(--show-accent);
     outline-offset: 4px;
 }
 
@@ -3508,7 +3862,7 @@ body {
     font-family: var(--font-heading);
     font-size: 3.2rem;
     font-weight: 700;
-    color: var(--wc-dark-green);
+    color: var(--show-accent-dark);
     margin-bottom: var(--wc-spacing-sm);
 }
 
@@ -3551,5 +3905,177 @@ body {
     .wc-form-submit {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* ============================================
+   Show About Modal (#124)
+   Optional per-show "About" link on a show landing page that opens a <dialog>
+   (partials/components/show-about.hbs). Brand-agnostic: follows --show-accent*.
+   ============================================ */
+
+/* Trigger — a .wc-podcast-service peer at the end of the listen-links row; it takes
+   that component's look (and its mobile icon-only collapse) wholesale. The wrapper
+   steps out of the flex row so the link itself is the row item. */
+.wc-show-about {
+    display: contents;
+}
+
+/* Listen-links row: three items max. Four (three listen links + About) break into a
+   2×2 block instead of three-and-a-straggler. Desktop only — the mobile row is icons
+   alone, and four of those fit across. Counts children, so the display:contents
+   About wrapper counts as one. */
+@media (min-width: 768px) {
+    .wc-podcast-services-links:has(> :nth-child(4):last-child) {
+        display: grid;
+        grid-template-columns: repeat(2, max-content);
+        justify-content: center;
+        column-gap: var(--wc-spacing-xl);
+        row-gap: var(--wc-spacing-md);
+    }
+
+    /* In the 2×2 About sits among the platforms; a lighter name keeps it from reading
+       as a fourth place to listen. */
+    .wc-podcast-services-links:has(> :nth-child(4):last-child) .wc-show-about-trigger .wc-podcast-service-name {
+        opacity: 0.8;
+    }
+}
+
+/* Dialog — cream panel, black text, accent rule on top */
+.wc-about-dialog {
+    --wc-about-pad: var(--wc-spacing-lg); /* panel side/bottom padding; the fade matches it */
+    width: min(720px, calc(100vw - 2 * var(--wc-spacing-md)));
+    max-height: calc(100vh - 2 * var(--wc-spacing-lg));
+    max-height: calc(100dvh - 2 * var(--wc-spacing-lg)); /* mobile toolbars */
+    overscroll-behavior: contain; /* scrolling past the end doesn't move the page */
+    padding: 0;
+    border: 0;
+    border-top: 6px solid var(--show-accent);
+    border-radius: var(--wc-radius);
+    background: var(--wc-cream);
+    color: var(--wc-black);
+}
+
+.wc-about-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+body:has(.wc-about-dialog[open]) {
+    overflow: hidden; /* no page scroll behind the modal */
+}
+
+.wc-about-dialog-inner {
+    padding: 0 var(--wc-about-pad) var(--wc-about-pad);
+}
+
+/* The <dialog> is the scroller; the header sticks to its top so the title and Close
+   never scroll away. */
+.wc-about-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--wc-spacing-sm);
+    padding: var(--wc-about-pad) 0 var(--wc-spacing-sm);
+    margin-bottom: var(--wc-spacing-sm);
+    background: var(--wc-cream);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* "More below" cue: a cream fade pinned to the bottom of the scroller. It hangs off the
+   <dialog> (the scroller), not the inner box: sticky can't leave its parent's content
+   box, so inside .wc-about-dialog-inner it would end up over the last line. Here, at the
+   end of the content it lies over the inner box's bottom padding, which it matches. */
+.wc-about-dialog::after {
+    content: "";
+    position: sticky;
+    bottom: 0;
+    display: block;
+    height: var(--wc-about-pad);
+    margin-top: calc(-1 * var(--wc-about-pad));
+    background: linear-gradient(to bottom, rgba(255, 250, 235, 0), var(--wc-cream));
+    pointer-events: none;
+}
+
+.wc-about-close {
+    flex-shrink: 0;
+    margin: calc(-1 * var(--wc-spacing-xs)) calc(-1 * var(--wc-spacing-xs)) 0 0; /* optical: X aligns with the text edge */
+    display: flex;
+    padding: var(--wc-spacing-xs);
+    background: none;
+    border: 0;
+    color: var(--wc-black);
+    cursor: pointer;
+}
+
+.wc-about-close:hover {
+    color: var(--show-accent-text);
+}
+
+.wc-about-close:focus-visible {
+    outline: 2px solid var(--show-accent-text);
+    outline-offset: 2px;
+}
+
+.wc-about-title {
+    margin: 0;
+    font-size: 3.2rem;
+    text-transform: uppercase;
+    color: var(--wc-black);
+}
+
+.wc-about-title:focus {
+    outline: none; /* focused programmatically on open, not interactive */
+}
+
+.wc-about-content {
+    font-family: var(--font-body);
+    font-size: 1.9rem;
+    line-height: 1.6;
+    color: var(--wc-black);
+}
+
+.wc-about-content a {
+    color: var(--show-accent-text); /* WCAG AA compliant on cream bg */
+}
+
+/* The dialog renders inside the dark podcast-services band, which flips the shared
+   theme's heading colour (--color-darker-gray) to light. Restore post-body headings. */
+.wc-about-content h2,
+.wc-about-content h3,
+.wc-about-content h4 {
+    font-family: var(--font-heading);
+    color: var(--wc-black);
+    margin-top: var(--wc-spacing-lg);
+}
+
+/* Button card — Ghost's cards.min.css (.kg-button-card a.kg-btn, 0,2,1) outranks the
+   theme's .kg-btn rule; this restores the brand button inside the modal only. */
+.wc-about-content .kg-button-card .kg-btn {
+    padding: 12px 24px;
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: var(--wc-radius);
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
+}
+
+@media (max-width: 767px) {
+    .wc-about-dialog {
+        --wc-about-pad: var(--wc-spacing-md);
+    }
+
+    .wc-about-title {
+        font-size: 2.4rem;
+    }
+
+    .wc-about-content {
+        font-size: 1.7rem;
     }
 }

@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Archives (theme zips from `npm run zip`, local asset drops)
+*.zip
+
 # Editor
 .vscode/
 *.swp
@@ -16,3 +19,6 @@ Thumbs.db
 
 # Asset bundles (working material lives in metarepo design-assets/)
 assets/*.zip
+
+# Claude Code local state + worktrees (would be swept up by git add -A)
+.claude/

@@ -31,9 +31,12 @@
         waveformHeight: 64,
         waveformHeightMobile: 48,
         // Brand colors from CLAUDE.md
+        // waveColor is shared across all brands — keep hardcoded.
+        // progressColor / cursorColor derive from --show-accent at runtime (see initAudioPlayer);
+        // these values are retained here only as documentation of the fallback default.
         waveColor: 'rgba(255, 250, 235, 0.4)',
-        progressColor: '#10A544',
-        cursorColor: '#10A544'
+        progressColor: '#10A544', // fallback; overridden by --show-accent at init
+        cursorColor: '#10A544'    // fallback; overridden by --show-accent at init
     };
 
     // Store wavesurfer instance globally within IIFE for keyboard access
@@ -233,12 +236,20 @@
         audio.preload = 'metadata';
         audio.src = audioUrl;
 
+        // Resolve active brand accent from CSS custom property.
+        // The brand context sets --show-accent on <body> (body.brand-{show},
+        // see default.hbs), so read from document.body — NOT documentElement:
+        // a custom property set on <body> does not cascade up to <html>.
+        // Falls back to WC green so this is a no-op under the default brand.
+        var showAccent = getComputedStyle(document.body)
+            .getPropertyValue('--show-accent').trim() || '#10A544';
+
         // Create WaveSurfer instance with brand styling, using <audio> backend
         var wavesurfer = WaveSurfer.create({
             container: waveformContainer,
             waveColor: CONFIG.waveColor,
-            progressColor: CONFIG.progressColor,
-            cursorColor: CONFIG.cursorColor,
+            progressColor: showAccent,
+            cursorColor: showAccent,
             cursorWidth: 2,
             barWidth: 3,
             barGap: 2,
@@ -287,8 +298,37 @@
         // the underlying <audio> element is working fine. WaveSurfer
         // fires decode errors when it can't access audio data for
         // waveform rendering (CORS), but playback still works.
+        // Fallback source. Imported episodes carry BOTH the Ghost-hosted copy
+        // (data-audio-url) and the publisher's original (data-original-audio-url).
+        // If the Ghost copy is missing — e.g. the import wrote a URL for a different
+        // Ghost instance, which is the state every Luminous episode is in — the
+        // original still resolves and serves audio/mpeg with
+        // `access-control-allow-origin: *`, so playback AND waveform decoding both
+        // work from it. Try it once before declaring the episode unplayable. See #103.
+        // NB: the data attributes live on `.wc-audio-player`, which is NOT the same node as
+        // `playerContainer` (`<section id="wc-audio-player">`). findAudioUrl() has the same
+        // split — it only finds the URL via its second branch. Query the data element.
+        var audioDataEl = document.querySelector('.wc-audio-player[data-original-audio-url], [data-original-audio-url]');
+        var fallbackUrl = audioDataEl && audioDataEl.dataset.originalAudioUrl;
+        var fallbackTried = false;
+
         wavesurfer.on('error', function(error) {
             console.warn('Wonder Cabinet Audio Error:', error);
+            if (!mediaCanPlay && fallbackUrl && !fallbackTried && fallbackUrl !== audioUrl) {
+                // Primary source is unreachable — retry once with the original.
+                fallbackTried = true;
+                console.log('Wonder Cabinet: primary audio failed, retrying with the original source');
+                try {
+                    audio.src = fallbackUrl;
+                    audio.load();
+                    wavesurfer.load(fallbackUrl);
+                } catch (e) {
+                    console.warn('Wonder Cabinet: fallback source failed too', e);
+                    showPlayerError(waveformContainer, 'Unable to load audio');
+                    playerContainer.classList.add('wc-audio-player--error');
+                }
+                return;
+            }
             if (!mediaCanPlay) {
                 // Audio truly failed to load — show error state
                 showPlayerError(waveformContainer, 'Unable to load audio');
@@ -376,22 +416,30 @@
      */
     function initTimeDisplay(wavesurfer) {
         const timeDisplay = document.getElementById('wc-time-display');
+        const waveform = document.getElementById('wc-waveform');
 
         if (!timeDisplay) return;
 
         function updateTimeDisplay() {
-            var current = formatTime(wavesurfer.getCurrentTime());
-            var duration = formatTime(wavesurfer.getDuration());
+            var currentTime = wavesurfer.getCurrentTime();
+            var durationTime = wavesurfer.getDuration();
+            var current = formatTime(currentTime);
+            var duration = formatTime(durationTime);
             timeDisplay.textContent = current + ' / ' + duration;
+
+            // Keep the waveform slider's reported position in step with playback;
+            // without this, screen readers always hear 0 (#82).
+            if (waveform && waveform.getAttribute('role') === 'slider' && durationTime) {
+                waveform.setAttribute('aria-valuenow', String(Math.round(currentTime / durationTime * 100)));
+                waveform.setAttribute('aria-valuetext', current + ' of ' + duration);
+            }
         }
 
         // Update on playback
         wavesurfer.on('audioprocess', updateTimeDisplay);
 
         // Set duration when ready
-        wavesurfer.on('ready', function() {
-            timeDisplay.textContent = '0:00 / ' + formatTime(wavesurfer.getDuration());
-        });
+        wavesurfer.on('ready', updateTimeDisplay);
 
         // Update on seek
         wavesurfer.on('seeking', updateTimeDisplay);
@@ -538,6 +586,9 @@
      * Initialize keyboard shortcuts for audio control
      */
     function initKeyboardShortcuts(wavesurfer) {
+        var player = document.getElementById('wc-audio-player');
+        var waveform = document.getElementById('wc-waveform');
+
         document.addEventListener('keydown', function(e) {
             // Don't trigger if user is typing in an input
             if (isInputFocused()) return;
@@ -545,7 +596,27 @@
             // Don't trigger if player isn't loaded
             if (!wavesurfer || !wavesurferInstance) return;
 
-            switch (e.key) {
+            // Leave browser and OS shortcuts (Cmd+L, Ctrl+0, ...) alone.
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+            // Only while focus is inside the player. Page-wide, these keys took over
+            // Space, the arrows, Home and End, so keyboard users couldn't scroll the
+            // page or transcript, and Space on any focused button started the episode.
+            var active = document.activeElement;
+            if (!player || !active || !player.contains(active)) return;
+
+            // A focused button handles Space and Enter itself (Play, Skip, Speed...).
+            if ((e.key === ' ' || e.key === 'Enter') && active !== waveform) return;
+
+            var key = e.key;
+            // On the waveform slider, Up/Down move the position like any slider,
+            // instead of changing speed.
+            if (active === waveform) {
+                if (key === 'ArrowUp') key = 'ArrowRight';
+                else if (key === 'ArrowDown') key = 'ArrowLeft';
+            }
+
+            switch (key) {
                 case ' ':
                 case 'k':
                     // Space or K: Play/Pause
@@ -708,6 +779,15 @@
      * Show error state when audio fails to load
      */
     function showPlayerError(container, message) {
+        // The waveform container is marked up as a slider. Once it holds the error
+        // message and its Try Again button it isn't one, and a button inside a slider
+        // is a nested interactive control (#82). Drop the slider semantics first.
+        if (container.getAttribute('role') === 'slider') {
+            ['role', 'tabindex', 'aria-label', 'aria-valuemin', 'aria-valuemax',
+                'aria-valuenow', 'aria-valuetext'].forEach(function(attr) {
+                container.removeAttribute(attr);
+            });
+        }
         container.innerHTML =
             '<div class="wc-player-error">' +
                 '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
@@ -829,10 +909,16 @@
         var contentInner = document.createElement('div');
         contentInner.className = 'wc-transcript-inner';
 
+        // Padding lives on .wc-transcript-body (inside the overflow-hidden inner) so
+        // the grid-template-rows 0fr collapse clips it flat with no sliver.
+        var contentBody = document.createElement('div');
+        contentBody.className = 'wc-transcript-body';
+
         for (var i = 0; i < transcriptContent.length; i++) {
-            contentInner.appendChild(transcriptContent[i]);
+            contentBody.appendChild(transcriptContent[i]);
         }
 
+        contentInner.appendChild(contentBody);
         contentWrapper.appendChild(contentInner);
         section.appendChild(toggle);
         section.appendChild(contentWrapper);

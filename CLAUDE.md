@@ -45,14 +45,59 @@ Active series: **`dev/luminous`**.
 
 Do not deviate from the brand spec unless explicitly instructed.
 
+## Dev Environment — the live-update loop (rev 2026-06-05: runtime moved to LXC `ghost01`)
+
+**Ghost and gulp do NOT run on this Mac.** The runtime lives on a homelab Proxmox LXC (`ghost01`, SSH alias `wc-ghostdev`); this directory is the editing surface and git home. To iterate on designs:
+
+1. **Edit theme files here and save.** That's the whole job — no build or run step.
+2. A mutagen session (`wc-theme`) syncs saves to the CT in ~1–2 s, where a gulp watcher (`ghost-theme-watch.service`) rebuilds `assets/built/` automatically and syncs it back here.
+3. **Verify at https://wondercabinet.riechers.co** — refresh the browser (`.hbs` edits show immediately; CSS/JS edits show after the ~2 s rebuild). chrome-devtools MCP works against this URL for one-off visual checks. Admin is at `/ghost/`.
+4. **Before merging anything touching shared CSS, `partials/components/`, `audio-player.js`, or `--show-accent`** — work `docs/luminous/cross-brand-qa-checklist.md` **by hand** across both brand contexts: the §A "WC is a visual no-op" invariant, accent variables, AA contrast, and WC-vocabulary leaks. It catches *unintended* drift only — `brand-guardian` still gates design intent.
+
+   The **`wc-theme-qa`** skill automates the mechanizable parts of that checklist (via `agent-browser`) and reports what it did *not* cover. Prefer it when it loads — but **check that it does before relying on it**, and fall back to the manual pass when it doesn't:
+
+   ```bash
+   ls ~/.claude/skills/wc-theme-qa/SKILL.md   # exists → the skill will load
+   ```
+
+   `~/.claude/skills/wc-theme-qa` is a symlink into the `the-lodge` checkout, so it can fail to resolve for reasons nothing in this repo will signal. The checklist stays the gate; the skill automates it.
+
+   Whichever way it ran: **do not record the gate as satisfied unless checks actually executed.** A skill that failed to load is not a pass.
+
+   When checking brand vars by hand: read from `document.body`, **not** `document.documentElement`. Sprint 2 moved brand context to a body class, so querying `:root` returns WC green even on a correctly-branded Luminous page.
+
+If changes don't appear: `mutagen sync list` (expect `wc-theme … Watching for changes`) and `ssh wc-ghostdev 'systemctl is-active ghost-dev ghost-theme-watch'`. Never start Ghost or gulp locally. Full container reference: `../../../knowledge/ghost01-lxc-readme.md` (+ `ghost01-lxc-notes.md`) in the ghost-dev workspace.
+
 ## Commands
 
 ```bash
-npm run dev      # Start Gulp watch with livereload
+# Reference only — `dev` runs as a service on ghost01, NOT here. gscan also gates PRs in CI.
+npm run dev      # Gulp watch with livereload (= ghost-theme-watch.service on the CT)
 npm run zip      # Build and create distribution archive
-npm run test     # Run GScan theme validation
-npx gulp build   # One-time build (CSS + JS)
+npm run test     # Run GScan theme validation — see the trap below before trusting it
 ```
+
+### ⚠️ Running gscan on the Mac — read this before trusting a result
+
+`npm run test` maps to bare `gscan .`, which **fails on the Mac** (`gscan: command not found`)
+because `node_modules/` isn't synced here. The obvious workaround is worse than the failure:
+
+```bash
+npx --no-install gscan .    # ❌ silently resolves a stale cached gscan 3.3.1
+npx --yes gscan@5.2.4 .     # ✅ the version CI installs, matches devDependencies
+```
+
+`--no-install` doesn't error when the package is missing locally — it falls back to whatever
+npx has cached, which here is **3.3.1, not the `^5.2.4` in `devDependencies`**. The two
+versions disagree in both directions: 3.3.1 reports ~5 phantom errors (8 templates "invalid
+Handlebars", missing `.kg-*` classes) that 5.2.4 does not, and it never applies newer rules —
+including the **20-custom-setting cap** (`GS010-PJ-CUST-THEME-TOTAL-SETTINGS`), which is a
+hard Ghost limit that blocks CI and theme upload.
+
+Always check `npx --no-install gscan --version` before believing a local gscan run, or just
+use the pinned form above.
+
+**Custom settings are at 20/20 — the cap.** Adding one now requires retiring one first.
 
 ## Brand Implementation
 
@@ -159,7 +204,6 @@ Defined in `package.json` under `config.custom`:
 
 | Setting | Type | Purpose |
 |---------|------|---------|
-| `background_color` | color | Page background (default: #000000) |
 | `email_signup_text` | text | CTA section heading |
 | `apple_podcasts_link` | text | Apple Podcasts URL |
 | `spotify_link` | text | Spotify URL |
@@ -170,7 +214,7 @@ Access in templates: `{{@custom.apple_podcasts_link}}`
 ## Development Notes
 
 - Ghost hot-reloads `.hbs` templates automatically
-- CSS/JS changes require rebuild: `npx gulp build`
+- CSS/JS changes rebuild automatically — gulp watch on the CT fires on save (via mutagen) and the output syncs back; never edit `assets/built/*` by hand
 - The `assets/built/` folder must be committed - Ghost serves from there
 - Audio player JS is NOT bundled - loaded separately on post pages
 

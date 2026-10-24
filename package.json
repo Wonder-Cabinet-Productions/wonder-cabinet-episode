@@ -42,13 +42,15 @@
         },
         "card_assets": true,
         "custom": {
-            "background_color": {
-                "type": "color",
-                "default": "#000000"
-            },
             "email_signup_text": {
                 "type": "text",
                 "default": "Subscribe to make sure you never miss an episode."
+            },
+            "episode_section_heading": {
+                "type": "text",
+                "default": "Latest Episodes",
+                "description": "Heading above the episode list on the homepage and the Luminous landing page",
+                "group": "homepage"
             },
             "apple_podcasts_link": {
                 "type": "text",
@@ -86,6 +88,18 @@
                 "default": "",
                 "group": "homepage"
             },
+            "luminous_pod_link": {
+                "type": "text",
+                "default": "",
+                "description": "pod.link URL for the Luminous show (additional podcast apps)",
+                "group": "homepage"
+            },
+            "luminous_hero_tagline": {
+                "type": "text",
+                "default": "Conversations from the University of Wisconsin–Madison Center for Psychedelic Research and Education",
+                "description": "Luminous hero tagline / sponsor credit. Renders as raw HTML — not escaped or filtered.",
+                "group": "homepage"
+            },
             "instagram_link": {
                 "type": "text",
                 "default": ""
@@ -98,10 +112,6 @@
                 "type": "text",
                 "default": ""
             },
-            "linkedin_link": {
-                "type": "text",
-                "default": ""
-            },
             "tiktok_link": {
                 "type": "text",
                 "default": ""
@@ -110,22 +120,11 @@
                 "type": "text",
                 "default": ""
             },
-            "mastodon_link": {
+            "hero_tagline": {
                 "type": "text",
-                "default": ""
-            },
-            "email_link": {
-                "type": "text",
-                "default": "",
-                "description": "Contact email address (just the email, no mailto:)"
-            },
-            "hero_title_image": {
-                "type": "image",
-                "description": "Wonder Cabinet title graphic for homepage hero"
-            },
-            "galaxy_background_image": {
-                "type": "image",
-                "description": "Galaxy spiral background image for hero sections"
+                "default": "From the creators of <em>To The Best Of Our Knowledge</em>",
+                "description": "Homepage hero tagline. Renders as raw HTML — not escaped or filtered.",
+                "group": "homepage"
             }
         }
     },
