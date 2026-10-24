@@ -91,6 +91,7 @@
         loading = true;
         button.setAttribute('aria-busy', 'true');
         const href = button.href;
+        const hadFocus = document.activeElement === button;
 
         try {
             const res = await fetch(href);
@@ -121,12 +122,12 @@
             const firstLink = viaKeyboard && added.length && added[0].querySelector('a[href]');
             if (firstLink) {
                 firstLink.focus();
-            } else if (viaKeyboard && button.hidden) {
-                // Nothing new and the button is gone: don't leave focus on a hidden element.
+            } else if (button.hidden && (viaKeyboard || hadFocus)) {
+                // The button is gone: don't leave focus on a hidden element.
                 const archive = button.parentElement.querySelector('a[href]:not([data-wc-loadmore])');
                 if (archive) archive.focus();
             }
-            announce(added.length ? `${added.length} more episodes loaded` : 'No more episodes');
+            announce(added.length ? `${added.length} more ${added.length === 1 ? 'episode' : 'episodes'} loaded` : 'No more episodes');
         } catch (e) {
             location.href = href;
         } finally {
