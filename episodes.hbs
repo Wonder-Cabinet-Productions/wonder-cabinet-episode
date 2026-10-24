@@ -1,0 +1,22 @@
+{{!< default}}
+{{!--
+    /episodes/ channel (#100, docs/routes.yaml): every Wonder Cabinet episode, newest first,
+    linked from below the homepage river. The heading is the wonder-cabinet tag's name, so it
+    stays editable in Ghost Admin.
+--}}
+
+<main id="main-content" class="gh-main wc-main">
+    <section class="wc-episodes-header gh-outer">
+        <div class="gh-inner">
+            {{#get "tags" filter="slug:wonder-cabinet" limit="1"}}{{#foreach tags}}
+                <h1 class="wc-section-heading">{{name}} episodes{{#if @root.pagination.total}} <span class="wc-episode-count">({{@root.pagination.total}} available)</span>{{/if}}</h1>
+            {{/foreach}}{{/get}}
+        </div>
+    </section>
+
+    {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
+
+    {{> "components/pagination"}}
+
+    {{> "components/cta"}}
+</main>
