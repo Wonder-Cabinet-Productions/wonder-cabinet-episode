@@ -1,99 +1,90 @@
-# Luminous → WPR redirect handoff
+# Luminous → Wonder Cabinet: what we're asking WPR to do
 
-**Purpose**: the cross-domain mapping WPR needs so that traffic to the old To The Best Of Our Knowledge / Luminous episode pages reaches the new Wonder Cabinet permalinks. Generated 2026-06-08; verified live (all 17 WPR URLs returned HTTP 200).
+**Status (2026-10-24):** final. Luminous now lives at **https://wondercabinetproductions.com/luminous/**, with all 18 archive episodes published at their original air dates. This page is the public record of one small request to Wisconsin Public Radio (WPR), and why we're making it. It is linked from the email we send them.
 
-**Production domain**: `https://wondercabinetproductions.com` (URLs below are final). Dev/preview is `wondercabinet.riechers.co`. The `/luminous/{slug}/` routing is delivered by the Sprint 2.3 `routes.yaml` collection.
+## The short version
 
-**Chosen approach**: ask WPR to **add a link + `rel=canonical`** on the 17 pages — not a redirect. WPR keeps its archive; we become the canonical home and pick up referral traffic.
+*Luminous*, Steve Paulson's series on the science, philosophy and culture of psychedelics, first ran inside *To The Best Of Our Knowledge* (TTBOOK) and lives on wpr.org as 18 episode pages. Luminous is now its own podcast, produced by Wonder Cabinet Productions with the UW–Madison Center for Psychedelic Research and Education, and each episode has a permanent home on our site.
 
-## The ask (draft message to WPR — paste, fill the name + domain, attach the CSV)
+We'd like people who find the old pages to land on the new ones. That means one redirect per episode: **18 rows, listed below, nothing to work out.**
 
-> **Subject:** Small web request — 16 "To The Best Of Our Knowledge" / Luminous episode pages
->
-> Hi [name],
->
-> The *Luminous* psychedelics series now has a dedicated home on our new site, **Wonder Cabinet**. Those 17 episodes currently live on wpr.org under the To The Best Of Our Knowledge show — we're not asking you to take anything down. Just two small, mechanical changes on each of those 17 pages so listeners and search engines can find the new home:
->
-> 1. **Add one line near the top of the episode:** *"This series now lives at Wonder Cabinet →"* linked to the matching new URL.
-> 2. **Set the page's canonical tag** — `<link rel="canonical" href="…">` — to the matching new URL, so search treats Wonder Cabinet as the source of truth.
->
-> The exact page-by-page mapping is below (and attached as a CSV) — 17 rows, your current URL → the new Wonder Cabinet URL. No judgment calls, just a lookup; the slugs differ so please match by row, not by pattern.
->
-> Thanks so much — happy to hop on a 10-minute call if that's easier.
+## What we're asking
 
-The `from_url` / `to_url` table and CSV below are the attachment for that message (here `to_url` = the link + canonical target, not a redirect).
+**Preferred: a permanent redirect (HTTP 301)** from each WPR episode page in the table to its Wonder Cabinet page. The full list is in [`wpr-redirects.csv`](wpr-redirects.csv): `from_url,to_url`, one row per episode, ready for a redirect plugin or a server rule. The slugs differ between the sites, so please match by row, not by pattern.
 
-## Pages WPR needs to edit (the 17 URLs where the text + canonical go)
+**If redirects aren't possible**, two edits on each of the same 18 pages get most of the benefit:
+1. One line near the top: *"Luminous now lives at Wonder Cabinet →"*, linked to the matching new page.
+2. Set the page's canonical tag, `<link rel="canonical" href="…">`, to the matching new page.
 
-Each of these existing WPR pages gets the one-line link + the `rel=canonical` pointing at its paired Wonder Cabinet URL (pairings in the mapping table below):
+**Two optional extras**, also in the CSV:
+- `…/luminous-do-psychedelics-reveal-a-deeper-dimension-of-reality` is a second WPR page for one of the episodes. It can redirect to the same place as its twin.
+- `ttbook.org/luminous`, the old series page, currently lands on the TTBOOK show home. Pointing it at `wondercabinetproductions.com/luminous/` sends series-level traffic to the series.
 
-1. https://www.wpr.org/shows/to-the-best-of-our-knowledge/roland-griffiths-on-new-psilocybin-studies
-2. https://www.wpr.org/shows/to-the-best-of-our-knowledge/dying-without-fear-how-psychedelics-can-ease-the-anxiety-of-terminal-illness
-3. https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-terror-and-the-ecstasy-of-psychedelics
-4. https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-do-psychedelics-reveal-a-deeper-dimension-of-reality-2
-5. https://www.wpr.org/shows/to-the-best-of-our-knowledge/does-psychedelic-therapy-need-the-trip
-6. https://www.wpr.org/shows/to-the-best-of-our-knowledge/will-psychedelics-replace-antidepressants
-7. https://www.wpr.org/shows/to-the-best-of-our-knowledge/spiritual-warriors-in-the-psychedelic-underground
-8. https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-tragic-story-of-maria-sabinas-sacred-mushrooms
-9. https://www.wpr.org/shows/to-the-best-of-our-knowledge/empowering-indigenous-voices-in-the-psychedelic-industry
-10. https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-long-history-of-psychedelic-theft
-11. https://www.wpr.org/shows/to-the-best-of-our-knowledge/did-the-ancient-greeks-use-drugs-to-find-god
-12. https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-godmother-of-the-european-psychedelic-revival
-13. https://www.wpr.org/shows/to-the-best-of-our-knowledge/exploring-consciousness-on-toad-venom
-14. https://www.wpr.org/shows/to-the-best-of-our-knowledge/magic-mushrooms-and-the-entropic-brain
-15. https://www.wpr.org/shows/to-the-best-of-our-knowledge/spirit-medicine-yuria-celidwens-vision-for-an-ethical-psychedelics
-16. https://www.wpr.org/shows/to-the-best-of-our-knowledge/our-minds-remain-open-when-the-lsd-wears-off
-17. https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-reclaiming-the-acid-queen
+We're not asking WPR to remove anything else, and the TTBOOK broadcasts that included Luminous segments stay as they are. For example, the TTBOOK page `…/did-the-ancient-greeks-use-drugs-to-find-god` (no "Luminous:" prefix) isn't on the list.
 
-> Verified live 2026-06-08 — all 17 returned HTTP 200 (rows 1–16 from the interview import; row 17 *Reclaiming the Acid Queen* added 2026-06-10, sourced from `ttbook.org/show/luminous-reclaiming-acid-queen`). Worth a re-check right before sending, in case WPR reshuffles slugs.
+## Why it matters
 
-## Context
+- **Listeners land on the current home.** It has full episodes, transcripts and new episodes as they come out. The WPR pages are a snapshot from when the series ran inside TTBOOK.
+- **Search engines stop splitting the series in two.** Today two sites carry the same 18 episodes. A redirect, or a canonical tag, tells search which one is the source, so the series gets found instead of competing with itself.
+- **Nothing breaks.** The old ttbook.org episode links already redirect to these WPR pages, so with WPR's redirect in place they reach Wonder Cabinet too. The audio is served by PRX and doesn't depend on either website.
 
-- Old `ttbook.org/interview/{slug}` URLs already 301 to `wpr.org/shows/to-the-best-of-our-knowledge/{slug}` (WPR controls this).
-- There is no "Luminous" grouping on WPR — the series lives only on the new Wonder Cabinet site.
-- WPR slugs differ from ours, so this is an explicit per-episode table, not a rule.
+## Mapping: 18 episodes, oldest first
 
-## Mapping (17 episodes)
+Every WPR URL was checked live (HTTP 200, title matches the episode) on 2026-10-24.
 
-| # | Episode | Current WPR URL (redirect FROM) | New Wonder Cabinet URL (redirect TO) |
-|---|---|---|---|
-| 1 | How a pioneering psychedelic researcher 'leaned in' to hi… | https://www.wpr.org/shows/to-the-best-of-our-knowledge/roland-griffiths-on-new-psilocybin-studies | https://wondercabinetproductions.com/luminous/how-pioneering-psychedelic-researcher-leaned-his-terminal-cancer-diagnosis/ |
-| 2 | Dying without fear: How psychedelics can ease the anxiety… | https://www.wpr.org/shows/to-the-best-of-our-knowledge/dying-without-fear-how-psychedelics-can-ease-the-anxiety-of-terminal-illness | https://wondercabinetproductions.com/luminous/dying-without-fear-how-psychedelics-can-ease-anxiety-terminal-illness/ |
-| 3 | The terror and the ecstasy of psychedelics | https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-terror-and-the-ecstasy-of-psychedelics | https://wondercabinetproductions.com/luminous/terror-and-ecstasy-psychedelics/ |
-| 4 | Luminous: Do psychedelics reveal a deeper dimension of re… | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-do-psychedelics-reveal-a-deeper-dimension-of-reality-2 | https://wondercabinetproductions.com/luminous/luminous-do-psychedelics-reveal-deeper-dimension-reality/ |
-| 5 | Does psychedelic therapy need the trip? | https://www.wpr.org/shows/to-the-best-of-our-knowledge/does-psychedelic-therapy-need-the-trip | https://wondercabinetproductions.com/luminous/does-psychedelic-therapy-need-trip/ |
-| 6 | Will psychedelics replace antidepressants? | https://www.wpr.org/shows/to-the-best-of-our-knowledge/will-psychedelics-replace-antidepressants | https://wondercabinetproductions.com/luminous/will-psychedelics-replace-antidepressants/ |
-| 7 | Spiritual warriors in the psychedelic underground | https://www.wpr.org/shows/to-the-best-of-our-knowledge/spiritual-warriors-in-the-psychedelic-underground | https://wondercabinetproductions.com/luminous/spiritual-warriors-psychedelic-underground/ |
-| 8 | The Tragic Story of Maria Sabina's Sacred Mushrooms | https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-tragic-story-of-maria-sabinas-sacred-mushrooms | https://wondercabinetproductions.com/luminous/tragic-story-maria-sabinas-sacred-mushrooms/ |
-| 9 | Empowering Indigenous voices in the psychedelic industry | https://www.wpr.org/shows/to-the-best-of-our-knowledge/empowering-indigenous-voices-in-the-psychedelic-industry | https://wondercabinetproductions.com/luminous/empowering-indigenous-voices-psychedelic-industry/ |
-| 10 | The long history of psychedelic theft | https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-long-history-of-psychedelic-theft | https://wondercabinetproductions.com/luminous/long-history-psychedelic-theft/ |
-| 11 | Did the ancient Greeks use drugs to find God? | https://www.wpr.org/shows/to-the-best-of-our-knowledge/did-the-ancient-greeks-use-drugs-to-find-god | https://wondercabinetproductions.com/luminous/did-ancient-greeks-use-drugs-find-god/ |
-| 12 | The godmother of the European psychedelic revival | https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-godmother-of-the-european-psychedelic-revival | https://wondercabinetproductions.com/luminous/godmother-european-psychedelic-revival/ |
-| 13 | Exploring consciousness on toad venom | https://www.wpr.org/shows/to-the-best-of-our-knowledge/exploring-consciousness-on-toad-venom | https://wondercabinetproductions.com/luminous/exploring-consciousness-toad-venom/ |
-| 14 | Magic mushrooms and the 'entropic brain' | https://www.wpr.org/shows/to-the-best-of-our-knowledge/magic-mushrooms-and-the-entropic-brain | https://wondercabinetproductions.com/luminous/magic-mushrooms-and-entropic-brain/ |
-| 15 | Spirit Medicine: Yuria Celidwen's vision for an ethical p… | https://www.wpr.org/shows/to-the-best-of-our-knowledge/spirit-medicine-yuria-celidwens-vision-for-an-ethical-psychedelics | https://wondercabinetproductions.com/luminous/spirit-medicine-yuria-celidwens-vision-ethical-psychedelics/ |
-| 16 | Our minds remain open when the LSD wears off | https://www.wpr.org/shows/to-the-best-of-our-knowledge/our-minds-remain-open-when-the-lsd-wears-off | https://wondercabinetproductions.com/luminous/our-minds-remain-open-when-lsd-wears/ |
-| 17 | Reclaiming the Acid Queen | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-reclaiming-the-acid-queen | https://wondercabinetproductions.com/luminous/reclaiming-the-acid-queen/ |
+| # | Episode | Air date | WPR page (redirect from) | Wonder Cabinet page (redirect to) |
+|---|---|---|---|---|
+| 1 | What Can Psychedelics Teach Us About Dying? | 2023-04-08 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-what-can-psychedelics-teach-us-about-dying-2 | https://wondercabinetproductions.com/luminous/what-can-psychedelics-teach-us-about-dying/ |
+| 2 | Building The Psychedelic Revolution | 2023-05-17 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-building-the-psychedelic-revolution | https://wondercabinetproductions.com/luminous/building-the-psychedelic-revolution/ |
+| 3 | Melissa Etheridge on Ayahuasca | 2023-07-08 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-melissa-etheridge-on-ayahuasca | https://wondercabinetproductions.com/luminous/melissa-etheridge-on-ayahuasca/ |
+| 4 | Your Brain on Shrooms | 2023-07-15 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-your-brain-on-shrooms-2 | https://wondercabinetproductions.com/luminous/your-brain-on-shrooms/ |
+| 5 | What happens to an octopus on MDMA? | 2023-08-12 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-what-happens-to-an-octopus-on-mdma | https://wondercabinetproductions.com/luminous/what-happens-to-an-octopus-on-mdma/ |
+| 6 | Can psychedelics be decolonized? | 2023-10-21 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-can-psychedelics-be-decolonized | https://wondercabinetproductions.com/luminous/can-psychedelics-be-decolonized/ |
+| 7 | Can you have too much transcendence? | 2023-11-18 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-can-you-have-too-much-transcendence | https://wondercabinetproductions.com/luminous/can-you-have-too-much-transcendence/ |
+| 8 | Is it the drug or is it the trip? | 2023-12-16 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-is-it-the-drug-or-is-it-the-trip | https://wondercabinetproductions.com/luminous/is-it-the-drug-or-is-it-the-trip/ |
+| 9 | A brief history of getting high | 2024-01-27 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-a-brief-history-of-getting-high | https://wondercabinetproductions.com/luminous/a-brief-history-of-getting-high/ |
+| 10 | Did the ancient Greeks use drugs to find God? | 2024-05-04 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-did-the-ancient-greeks-use-drugs-to-find-god | https://wondercabinetproductions.com/luminous/did-the-ancient-greeks-use-drugs-to-find-god/ |
+| 11 | Erik Davis on LSD and the Psychedelic Underground | 2024-07-20 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/erik-davis-on-lsd-the-psychedelic-underground-and-visionary-experience | https://wondercabinetproductions.com/luminous/erik-davis-on-lsd-and-the-psychedelic-underground/ |
+| 12 | Katherine MacLean on the Limits of Consensus Reality | 2024-08-30 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-katherine-maclean-on-mushrooms-and-the-limits-of-consensus-reality | https://wondercabinetproductions.com/luminous/katherine-maclean-on-the-limits-of-consensus-reality/ |
+| 13 | Do psychedelics reveal a deeper dimension of reality? | 2024-11-25 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-do-psychedelics-reveal-a-deeper-dimension-of-reality-2 | https://wondercabinetproductions.com/luminous/do-psychedelics-reveal-a-deeper-dimension-of-reality/ |
+| 14 | Spring Washam, the Buddhist Shaman | 2025-01-25 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-spring-washam-the-buddhist-shaman | https://wondercabinetproductions.com/luminous/spring-washam-the-buddhist-shaman/ |
+| 15 | Chris Timmerman on how DMT can deconstruct the mind | 2025-03-01 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-chris-timmerman-on-how-dmt-can-deconstruct-the-mind | https://wondercabinetproductions.com/luminous/chris-timmerman-on-how-dmt-can-deconstruct-the-mind/ |
+| 16 | Marcelo and Kari Gleiser on tripping with your partner | 2025-05-09 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-marcelo-and-kari-gleiser-on-tripping-with-your-partner | https://wondercabinetproductions.com/luminous/marcelo-and-kari-gleiser-on-tripping-with-your-partner/ |
+| 17 | Thomas Metzinger on a 'Culture of Consciousness' | 2025-08-02 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-thomas-metzinger-on-why-we-need-a-culture-of-consciousness | https://wondercabinetproductions.com/luminous/thomas-metzinger-on-a-culture-of-consciousness/ |
+| 18 | Reclaiming the Acid Queen | 2025-11-08 | https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-reclaiming-the-acid-queen | https://wondercabinetproductions.com/luminous/reclaiming-the-acid-queen/ |
 
-## CSV (copy/paste for their CMS or dev)
+## What we did on our side
 
-```csv
-from_url,to_url,type
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/roland-griffiths-on-new-psilocybin-studies,https://wondercabinetproductions.com/luminous/how-pioneering-psychedelic-researcher-leaned-his-terminal-cancer-diagnosis/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/dying-without-fear-how-psychedelics-can-ease-the-anxiety-of-terminal-illness,https://wondercabinetproductions.com/luminous/dying-without-fear-how-psychedelics-can-ease-anxiety-terminal-illness/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-terror-and-the-ecstasy-of-psychedelics,https://wondercabinetproductions.com/luminous/terror-and-ecstasy-psychedelics/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-do-psychedelics-reveal-a-deeper-dimension-of-reality-2,https://wondercabinetproductions.com/luminous/luminous-do-psychedelics-reveal-deeper-dimension-reality/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/does-psychedelic-therapy-need-the-trip,https://wondercabinetproductions.com/luminous/does-psychedelic-therapy-need-trip/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/will-psychedelics-replace-antidepressants,https://wondercabinetproductions.com/luminous/will-psychedelics-replace-antidepressants/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/spiritual-warriors-in-the-psychedelic-underground,https://wondercabinetproductions.com/luminous/spiritual-warriors-psychedelic-underground/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-tragic-story-of-maria-sabinas-sacred-mushrooms,https://wondercabinetproductions.com/luminous/tragic-story-maria-sabinas-sacred-mushrooms/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/empowering-indigenous-voices-in-the-psychedelic-industry,https://wondercabinetproductions.com/luminous/empowering-indigenous-voices-psychedelic-industry/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-long-history-of-psychedelic-theft,https://wondercabinetproductions.com/luminous/long-history-psychedelic-theft/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/did-the-ancient-greeks-use-drugs-to-find-god,https://wondercabinetproductions.com/luminous/did-ancient-greeks-use-drugs-find-god/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/the-godmother-of-the-european-psychedelic-revival,https://wondercabinetproductions.com/luminous/godmother-european-psychedelic-revival/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/exploring-consciousness-on-toad-venom,https://wondercabinetproductions.com/luminous/exploring-consciousness-toad-venom/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/magic-mushrooms-and-the-entropic-brain,https://wondercabinetproductions.com/luminous/magic-mushrooms-and-entropic-brain/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/spirit-medicine-yuria-celidwens-vision-for-an-ethical-psychedelics,https://wondercabinetproductions.com/luminous/spirit-medicine-yuria-celidwens-vision-ethical-psychedelics/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/our-minds-remain-open-when-the-lsd-wears-off,https://wondercabinetproductions.com/luminous/our-minds-remain-open-when-lsd-wears/,301
-https://www.wpr.org/shows/to-the-best-of-our-knowledge/luminous-reclaiming-the-acid-queen,https://wondercabinetproductions.com/luminous/reclaiming-the-acid-queen/,301
-```
+- Each Wonder Cabinet episode page is self-canonical: its `<link rel="canonical">` points at itself, and no longer at ttbook.org or wpr.org.
+- Each episode's PRX record now links to its Wonder Cabinet page, so podcast apps send people there.
+- The archive was published with original air dates and no email to subscribers. It's an archive, not a relaunch blast.
+
+## For reference: the old ttbook.org addresses
+
+These already 301 to the WPR pages above. WPR controls these rules, and nothing in them needs to change.
+
+| Episode | Old ttbook.org URL |
+|---|---|
+| What Can Psychedelics Teach Us About Dying? | https://ttbook.org/show/luminous-what-can-psychedelics-teach-us-about-dying |
+| Building The Psychedelic Revolution | https://www.ttbook.org/show/luminous-building-psychedelic-revolution |
+| Melissa Etheridge on Ayahuasca | https://www.ttbook.org/show/luminous-melissa-etheridge-ayahuasca |
+| Your Brain on Shrooms | https://www.ttbook.org/show/luminous-your-brain-shrooms |
+| What happens to an octopus on MDMA? | https://www.ttbook.org/show/luminous-giving-mdma-octopuses |
+| Can psychedelics be decolonized? | https://www.ttbook.org/show/luminous-can-psychedelics-be-decolonized |
+| Can you have too much transcendence? | https://www.ttbook.org/show/luminous-can-you-have-too-much-transcendence |
+| Is it the drug or is it the trip? | https://www.ttbook.org/show/luminous-it-drug-or-it-trip |
+| A brief history of getting high | https://www.ttbook.org/show/luminous-brief-history-getting-high |
+| Did the ancient Greeks use drugs to find God? | https://www.ttbook.org/show/did-ancient-greeks-use-drugs-find-god |
+| Erik Davis on LSD and the Psychedelic Underground | https://www.ttbook.org/show/erik-davis-lsd-psychedelic-underground-and-visionary-experience |
+| Katherine MacLean on the Limits of Consensus Reality | https://www.ttbook.org/show/luminous-katherine-maclean-mushrooms-and-limits-consensus-reality |
+| Do psychedelics reveal a deeper dimension of reality? | https://www.ttbook.org/interview/luminous-do-psychedelics-reveal-deeper-dimension-reality |
+| Spring Washam, the Buddhist Shaman | https://www.ttbook.org/show/luminous-spring-washam-buddhist-shaman |
+| Chris Timmerman on how DMT can deconstruct the mind | https://www.ttbook.org/show/luminous-chris-timmerman-how-dmt-can-deconstruct-mind |
+| Marcelo and Kari Gleiser on tripping with your partner | https://www.ttbook.org/show/luminous-marcelo-and-kari-gleiser-tripping-your-partner |
+| Thomas Metzinger on a 'Culture of Consciousness' | https://www.ttbook.org/show/luminous-thomas-metzinger-why-we-need-culture-consciousness |
+| Reclaiming the Acid Queen | https://www.ttbook.org/show/luminous-reclaiming-acid-queen |
+
+## History
+
+- 2026-06-08: first draft. It mapped 17 TTBOOK *interview* pages rather than the Luminous episodes, and its target URLs were pre-launch slugs. Superseded.
+- 2026-10-24: rebuilt from the final production slug list (`prx-to-ghost-publisher/data/luminous-final-slugs.prod.csv`) after the cutover (#98). Every WPR page was re-verified live. Three old ttbook URLs missing from that list were recovered from the pre-cutover PRX feed and the prod content snapshot. Two WPR pages that the slug list recorded only as the TTBOOK show home were resolved to their episode pages. See #126 and #97.
