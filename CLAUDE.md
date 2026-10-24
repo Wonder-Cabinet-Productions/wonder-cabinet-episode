@@ -140,29 +140,31 @@ Note: `--wc-dark-green` (`#043013`) and `--wc-green-text` (`#087834`) are theme-
 | `partials/components/footer.hbs` | Footer with cabinet illustration |
 | `partials/components/tag-header.hbs` | Tag archive hero |
 | `partials/components/bracket-button.hbs` | Reusable bracket button component |
-| `partials/components/highlight-zone.hbs` | Configurable highlight card for series (newsletter, IoK, Luminous) |
+| `partials/components/highlight-zone.hbs` | Pinned (sticky-slot) card for a series post |
+| `partials/series/registry.hbs` | Branded series: card colour class, label, slot positions |
+| `partials/series/slot.hbs` | One sticky slot: newest featured post, only when the river doesn't show it |
 | `partials/components/post-header.hbs` | Non-audio post header with feature image and share button |
 | `partials/audio-player-hero.hbs` | WaveSurfer.js audio player hero |
 | `partials/podcast-services.hbs` | Apple/Spotify/YouTube Music links |
 
 ### Homepage Content Model
 
-The homepage (`home.hbs`) shows the 5 most recent posts (excluding `tag:newsletter` and `tag:luminous`) in chronological order.
+Spec: `docs/superpowers/specs/2026-10-20-homepage-river-and-footer-design.md` (#100).
 
-**Highlight zones**: Three `highlight-zone.hbs` partials are injected between episode cards:
-- After 2nd episode: **Latest Newsletter** (`tag:newsletter+featured:true`)
-- After 3rd episode: **Island of Knowledge** (`tag:island-of-knowledge+featured:true`)
-- After 4th episode: **From Luminous** (`tag:luminous+featured:true`)
+**The river** (`home.hbs`): the 8 newest posts that aren't tagged `newsletter`. That covers Wonder Cabinet (including Island of Knowledge) and Luminous, interleaved by date. Each card takes its series' colours through `partials/series/registry.hbs` → `.wc-brand--<slug>` (tokens in `screen.css`, "Series brands"), plus a small series label. Plain Wonder Cabinet cards look as they always have.
 
-Each zone queries for one featured post matching its filter. If no post matches, the zone silently disappears. To show a highlight zone:
+**Sticky slots**: up to three, after river cards 2, 4 and 6. Each holds one series' **newest Featured post**, and only when the river doesn't already show it:
+- after card 2: newsletter (always shows its newest featured post, since newsletters never enter the river)
+- after card 4: Island of Knowledge
+- after card 6: Luminous
 
-1. Tag the post with the appropriate tag (e.g., `newsletter`, `island-of-knowledge`, `luminous`)
-2. Mark it as **Featured** in Ghost Admin
-3. Only one per tag should be featured at a time (each query uses `limit="1"`)
+To pin a post, tick **Featured** in Ghost Admin. A newer featured post in the same series replaces it; unticking ends it. Featuring a plain Wonder Cabinet episode has no homepage effect, and cards no longer show a "Featured" badge.
 
-CTA text is data-driven: posts tagged `newsletter` show "Read", all others show "View Episode" with a play icon. Badge labels link to the corresponding tag page.
+**Adding a branded series**: one line per mode in `partials/series/registry.hbs`, plus a `.wc-brand--<slug>` token block in `screen.css`. Tags are matched by **slug**, so renaming a tag in Admin is safe. `{{#has tag=…}}` matches tag *names*, so don't use it for this. Slot badge links live in the registry, because Ghost reports `/404/` as the URL of a tag that a collection owns.
 
-**Important**: The `badgeUrl` values in `home.hbs` are hardcoded to tag slugs (`/tag/newsletter/`, `/tag/island-of-knowledge/`, `/tag/luminous/`). If tag slugs change in Ghost Admin, these must be updated.
+**The batch size, 8, appears in three places that must agree**: the river's `limit="8"` and the slots' `riverSize=8` in `home.hbs`, and `limit: 8` on the `/latest/` route in `docs/routes.yaml`.
+
+**Checks**: `node tests/river.check.mjs` compares the rendered homepage with the expected river and slots computed from the Content API. `tests/river.browser.js` checks that long series names wrap.
 
 ### Audio Player
 

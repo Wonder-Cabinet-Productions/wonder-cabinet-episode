@@ -1,16 +1,13 @@
 {{!--
     Wonder Cabinet Episode Card
-    Displays episode with green border, artwork, and solid green button
-    Featured posts get a visual indicator badge
+    Displays episode with an accent border, artwork, and solid accent button.
+
+    seriesBrand=true (homepage river and /latest/ only): a post in a branded series
+    (series/registry) takes that series' colours and shows a small series label.
 --}}
 
-<article class="gh-list-item wc-episode-card{{#if isNewsletterFeature}} wc-episode-card--newsletter{{/if}} {{post_class}}">
+<article data-post-id="{{id}}" class="gh-list-item wc-episode-card{{#if seriesBrand}}{{> "series/registry" mode="card-class"}}{{/if}} {{post_class}}">
     <a class="gh-list-item-inner wc-episode-card-inner" href="{{url}}">
-        {{#if isNewsletterFeature}}
-            <span class="wc-newsletter-badge"><span class="sr-only">Featured newsletter: </span>Latest Newsletter</span>
-        {{else if featured}}
-            <span class="wc-featured-badge"><span class="sr-only">Featured episode: </span>Featured</span>
-        {{/if}}
         {{#if feature_image}}
             <figure class="gh-list-item-image wc-episode-card-image">
                 <img
@@ -27,6 +24,8 @@
             {{#if showPublishedAt}}
                 <span class="gh-list-item-published-at wc-episode-card-date">{{date published_at format="DD MMM YYYY"}}</span>
             {{/if}}
+
+            {{#if seriesBrand}}{{> "series/registry" mode="card-label"}}{{/if}}
 
             <h3 class="gh-list-item-title wc-episode-card-title">{{title}}</h3>
 

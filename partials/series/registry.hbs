@@ -1,0 +1,25 @@
+{{~!--
+    Branded series registry (#100). The one place that maps tag slugs to homepage branding.
+
+    Adding a series = one line in each mode below + a `.wc-brand--<slug>` token block in
+    screen.css (Series brands). Handlebars can't read CSS and custom settings are at Ghost's
+    20/20 cap, so this list can't live in Admin.
+
+    Tags are matched by SLUG via the post's tag loop, not `{{#has tag=…}}`: `has` matches the
+    tag's NAME, which is editable in Admin and would silently drop the colour on a rename.
+
+    Modes (call from a post context, or pass position/riverSize for slots):
+    - card-class  → " wc-brand--<slug>" for each branded tag on the post. When a post has two,
+                    both classes print and CSS source order decides: luminous wins.
+    - card-label  → <span class="wc-series-label">Tag name</span> for each branded tag.
+    - slot        → the pinned card for slot `position` (1–3), or nothing.
+                    Positions: 1 newsletter (after river card 2), 2 Island of Knowledge
+                    (after card 4), 3 Luminous (after card 6).
+--~}}
+{{~#match mode "card-class"}}{{#foreach tags}}{{#match slug "island-of-knowledge"}} wc-brand--island-of-knowledge{{/match}}{{#match slug "luminous"}} wc-brand--luminous{{/match}}{{/foreach}}{{/match~}}
+{{~#match mode "card-label"}}{{#foreach tags}}{{#match slug "island-of-knowledge"}}<span class="wc-series-label">{{name}}</span>{{/match}}{{#match slug "luminous"}}<span class="wc-series-label">{{name}}</span>{{/match}}{{/foreach}}{{/match~}}
+{{~#match mode "slot"}}
+    {{#match position "==" 1}}{{> "series/slot" pinFilter="tag:newsletter+featured:true" slug="newsletter" url="/newsletter/" accentClass="wc-highlight--newsletter" always=true}}{{/match}}
+    {{#match position "==" 2}}{{> "series/slot" pinFilter="tag:island-of-knowledge+featured:true" slug="island-of-knowledge" url="/island-of-knowledge/" accentClass="wc-highlight--series" riverSize=riverSize}}{{/match}}
+    {{#match position "==" 3}}{{> "series/slot" pinFilter="tag:luminous+featured:true" slug="luminous" url="/luminous/" accentClass="wc-highlight--luminous" riverSize=riverSize}}{{/match}}
+{{/match~}}
