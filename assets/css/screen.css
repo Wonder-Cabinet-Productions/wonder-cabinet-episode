@@ -1284,28 +1284,37 @@ body.home-template .wc-brand-band .wc-podcast-services {
     height: auto;
 }
 
-/* Overlay: single centered column for nav + copyright between cabinet legs */
+/* Overlay: the copyright alone, centred between the cabinet legs (wireframe p. 1) */
 .wc-footer-overlay {
     position: absolute;
-    top: 21%;
+    top: 52%; /* Middle of the leg gap: the tabletop takes the top ~5% of the SVG */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 80px;
     width: max-content;
 }
 
-/* Secondary navigation — bare <a> tags are direct children (no .nav ul) */
+/* Secondary navigation — below the cabinet, so labels of any length wrap and stay centred
+   (#132). Bare <a> tags are direct children (no .nav ul). */
 .wc-footer-nav {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 48px;
-    padding-left: 11px; /* Optical: balances "About" (shorter) vs "Contact" (longer) */
+    column-gap: 48px;
+    row-gap: var(--wc-spacing-xs);
+    max-width: 100%;
+    padding: 0 var(--wc-spacing-sm);
 }
 
 .wc-footer-nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;  /* WCAG 2.2 SC 2.5.8 target size */
+    min-height: 24px;
+    text-align: center; /* a label long enough to wrap stays centred */
     font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 500;
@@ -1316,6 +1325,12 @@ body.home-template .wc-brand-band .wc-podcast-services {
 
 .wc-footer-nav a:hover {
     opacity: 0.7;
+}
+
+/* Nav and social icons read as one stack under the cabinet: cancel the social links'
+   own 40px top margin, leaving the footer column's 24px gap */
+.wc-footer-nav + .wc-social-links {
+    margin-top: 0;
 }
 
 .wc-footer-copyright {
@@ -1341,15 +1356,11 @@ body.home-template .wc-brand-band .wc-podcast-services {
     }
 
     .wc-footer-overlay {
-        gap: 28px; /* Compact: nav + copyright fit inside scaled cabinet */
         width: 100%; /* Override max-content so children can center properly */
     }
 
     .wc-footer-nav {
-        flex-direction: column;
-        align-items: center;
-        gap: var(--wc-spacing-xs); /* 8px — tight stack, still distinct lines */
-        padding-left: 0; /* Remove optical offset at small sizes */
+        column-gap: 32px;
     }
 
     .wc-footer-nav a {
@@ -2360,20 +2371,21 @@ body.brand-luminous .wc-hero-zone::before {
    type, and for the contrast caveat that now applies to both brands. */
 
 /* Luminous: cabinet illustration is WC-only vocabulary — hide it and let the
-   footer nav/copyright fall into normal flow (§6 asymmetric). footer.hbs DOM
-   is untouched; all scoped to body.brand-luminous. */
+   copyright fall into normal flow (§6 asymmetric). With no legs to sit between,
+   the copyright closes the stack: nav, social icons, then copyright (#132).
+   footer.hbs DOM is untouched; all scoped to body.brand-luminous. */
 body.brand-luminous .wc-footer-cabinet {
     display: none;
 }
 body.brand-luminous .wc-footer-illustration {
     width: auto;
+    order: 1;
 }
 body.brand-luminous .wc-footer-overlay {
     position: static;
     transform: none;
     top: auto;
     left: auto;
-    padding: var(--wc-spacing-xl) 0;
 }
 
 /* Luminous CTAs are a flat violet button, no bracket corners (§6 asymmetric) */

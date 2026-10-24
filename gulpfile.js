@@ -88,6 +88,7 @@ function zipper(done) {
             '!docs', '!docs/**',
             '!planning', '!planning/**',
             '!scripts', '!scripts/**',
+            '!tests', '!tests/**',
             '!AGENTS.md',
             '!AGENT_ONBOARDING.md',
             '!CLAUDE.md',
