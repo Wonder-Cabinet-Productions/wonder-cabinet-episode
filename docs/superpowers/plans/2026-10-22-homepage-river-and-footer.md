@@ -38,7 +38,7 @@
 - **Card brand precedence** *(implementer's call, replacing spec §4.2's "first in tag order")*: `luminous` beats `island-of-knowledge`, which beats Wonder Cabinet (no class).
 - **Series links live in the registry, not in Ghost.** On staging, the Content API returns `/404/` as the URL for tags that a collection owns, so `{{url}}` can't supply badge links. Use these:
   - newsletter: `/newsletter/`
-  - island-of-knowledge: `/tag/island-of-knowledge/`
+  - island-of-knowledge: `/island-of-knowledge/` (the prod channel added at the cutover)
   - luminous: `/luminous/`
 - **Markup hooks the tests rely on:**
   - every card has `data-post-id="{{id}}"`;
@@ -183,9 +183,8 @@ Before Task 3 starts, message the #125 session, or comment on #125 if it isn't l
 - Create:
   - `latest.hbs` (the river channel; plain, branded cards);
   - `episodes.hbs` (Wonder Cabinet archive);
-  - `docs/routes.yaml` (tracked mirror of the full production file);
   - `tests/routes.check.mjs`.
-- Delete: `docs/routes-luminous.reference.yaml`. Its caveat comments move to the top of `docs/routes.yaml`.
+- Modify: `docs/routes.yaml`, the tracked copy of the production routes that #139 added. Route changes go through this file in a PR, and Mark uploads it unchanged.
 
 **Interfaces:**
 - Consumes: `tests/lib/site.mjs`.
@@ -213,9 +212,8 @@ assert(!/player-|wavesurfer-styles/.test(mirror), 'dead routes dropped');
 
 - [ ] **Step 2: Run it.** Run `node tests/routes.check.mjs`. Expect: FAIL, because the routes don't exist yet (404).
 
-- [ ] **Step 3: Write `docs/routes.yaml`.**
-  - Start from `~/Downloads/wc-prod-cutover-backup-2026-10-20/routes.yaml`.
-  - Drop the seven `/player-*/` and `/wavesurfer-styles/` routes.
+- [ ] **Step 3: Edit `docs/routes.yaml`.**
+  - Rebase onto `main` after #139 merges, then edit the file it added. The dead `/player-*/` routes are already gone, and the `/island-of-knowledge/` channel stays as it is.
   - Add under `routes:`:
 
 ```yaml
@@ -244,7 +242,7 @@ assert(!/player-|wavesurfer-styles/.test(mirror), 'dead routes dropped');
 - [ ] **Step 5: Run it.** Run `node tests/routes.check.mjs`. Expect: PASS.
 
 - [ ] **Step 6: Commit.**
-  - `git add latest.hbs episodes.hbs docs/routes.yaml tests/routes.check.mjs partials/components/list-item.hbs && git rm docs/routes-luminous.reference.yaml`
+  - `git add latest.hbs episodes.hbs docs/routes.yaml tests/routes.check.mjs partials/components/list-item.hbs`
   - Commit message: `feat(routes): /latest/ and /episodes/ channels; mirror prod routes.yaml (#100)`.
 
 ### Task 4: Series registry, branded river cards and slots

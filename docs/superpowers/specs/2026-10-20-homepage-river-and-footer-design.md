@@ -89,7 +89,7 @@ Separately, the **footer nav** is squeezed between the legs of the cabinet illus
 
 ### 4.4 Card styles
 - **Pinned (slot) cards:** today's highlight card (`components/highlight-zone`), already brand-guardian-approved. It's driven generically:
-  - the badge text is the series tag's **name** (editable in Admin), linking to the series' page (`/luminous/` for Luminous, `/tag/<slug>/` otherwise);
+  - the badge text is the series tag's **name** (editable in Admin), linking to the series' page (`/luminous/`, `/island-of-knowledge/`, `/newsletter/`);
   - the accent class comes from the brand;
   - the CTA keeps today's data-driven "Read" / "View Episode".
   - Whether a pinned card also says "Featured" is left to the prototype *(designer's call, settle by eye)*.
@@ -109,7 +109,7 @@ Separately, the **footer nav** is squeezed between the legs of the cabinet illus
 - **`/latest/` channel** (`controller: channel`): every non-newsletter post, newest first, paginated. Page 1 duplicates the homepage river; "Load more" fetches `/latest/page/N/` and the no-JS fallback links there. *(Path is the designer's call.)*
 - **`/episodes/` channel:** Wonder Cabinet posts only (`tag:wonder-cabinet`, no newsletters), paginated, using the existing archive look. Mark chose this path.
 - **Why channels, not collections:** a collection *owns* its posts' URLs, and a post belongs to one collection. Widening `/` to include Luminous would move every Luminous episode off `/luminous/{slug}/`. Channels list posts without owning them, so they don't overlap with `/`, `/luminous/` or `/newsletter/`. Confirm this on dev before relying on it.
-- **Build the prod change from production's live `routes.yaml`,** not `docs/routes-luminous.reference.yaml`, which is a partial mirror. Mark's cutover backup is at `~/Downloads/wc-prod-cutover-backup-2026-10-20/routes.yaml`. Drop the seven dead `/player-*/` and `/wavesurfer-styles/` routes in the same change. Keep a tracked mirror of the final file in `docs/`.
+- **Edit the tracked `docs/routes.yaml`** (added in #139 after the cutover; it matches production, has no dead `/player-*/` routes, and already carries an `/island-of-knowledge/` channel). Route changes go through that file in a PR, and Mark uploads it unchanged.
 - **The `/` collection's own pagination** (`/page/N/`, rendered by `index.hbs`) stays live, because Ghost always paginates a collection. It's no longer linked from the homepage. Existing inbound links keep working, with no redirect *(designer's call; revisit if it confuses search)*.
 - **Deploy order:** upload the routes before, or together with, the theme that links to them. Otherwise "Load more" and "All Wonder Cabinet episodes" point at 404s.
 
