@@ -87,4 +87,4 @@ These already 301 to the WPR pages above. WPR controls these rules, and nothing 
 ## History
 
 - 2026-06-08: first draft. It mapped 17 TTBOOK *interview* pages rather than the Luminous episodes, and its target URLs were pre-launch slugs. Superseded.
-- 2026-10-24: rebuilt from the final production slug list (`prx-to-ghost-publisher/data/luminous-final-slugs.prod.csv`) after the cutover (#98). Every WPR page was re-verified live. Three old ttbook URLs missing from that list were recovered from the pre-cutover PRX feed and the prod content snapshot. Two WPR pages that the slug list recorded only as the TTBOOK show home were resolved to their episode pages. See #126 and #97.
+- 2026-10-24: rebuilt from the final production slug list (`prx-to-ghost-publisher/data/luminous-final-slugs.prod.csv`) after the production cutover. Every WPR page was re-verified live. Three old ttbook URLs missing from that list were recovered from the pre-cutover PRX feed and the prod content snapshot. Two WPR pages that the slug list recorded only as the TTBOOK show home were resolved to their episode pages. See #126 and #97.
