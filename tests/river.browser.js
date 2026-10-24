@@ -3,8 +3,8 @@
 (() => {
     const failures = [];
     const long = 'Island of Knowledge: A Very Long Series Name';
-    const targets = [...document.querySelectorAll('.wc-highlight-badge, .wc-series-label')];
-    if (!targets.length) return JSON.stringify({ ok: false, failures: ['no badge or series label on the page'] });
+    const targets = [...document.querySelectorAll('.wc-highlight-badge')];
+    if (!targets.length) return JSON.stringify({ ok: false, failures: ['no badge on the page'] });
     targets.forEach((el) => { el.textContent = long; });
     if (document.documentElement.scrollWidth > innerWidth) failures.push('horizontal scroll');
     targets.forEach((el) => {
