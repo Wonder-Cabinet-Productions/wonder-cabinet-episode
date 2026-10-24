@@ -79,4 +79,7 @@ for (const [name, accent] of [['Wonder Cabinet', '10A544'], ['Luminous', '9A59FF
     assert(contrast(accent, '000000') >= 4.5, `${name}: accent on black ≥ 4.5:1 (${contrast(accent, '000000').toFixed(2)})`);
 }
 
+// IoK buttons and badges: --iok-accent-text on --iok-accent, as on the approved slot card
+assert(contrast('1A3A44', 'B6D0D8') >= 4.5, `Island of Knowledge: text on accent ≥ 4.5:1 (${contrast('1A3A44', 'B6D0D8').toFixed(2)})`);
+
 report('river');
