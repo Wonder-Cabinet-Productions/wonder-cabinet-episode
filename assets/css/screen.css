@@ -3415,8 +3415,8 @@ body.brand-luminous .wc-transcript-toggle {
     outline-offset: 4px;
 }
 
-/* Episode cards "View Episode" button (dark background) */
-.wc-list-item-link:focus-visible {
+/* Episode cards: the whole card is one link (dark background) */
+.wc-episode-card-inner:focus-visible {
     outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }
