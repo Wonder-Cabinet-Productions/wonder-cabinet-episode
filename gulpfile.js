@@ -87,6 +87,7 @@ function zipper(done) {
             // Exclude non-theme files from zip
             '!docs', '!docs/**',
             '!planning', '!planning/**',
+            '!scripts', '!scripts/**',
             '!AGENTS.md',
             '!AGENT_ONBOARDING.md',
             '!CLAUDE.md',
@@ -94,7 +95,9 @@ function zipper(done) {
             '!.cursor', '!.cursor/**',
             '!package-lock.json',
             '!.DS_Store'
-        ]),
+        // gulp 5 reads files as UTF-8 text by default, which corrupted every image and font
+        // in the zip (prod served them all mangled until 2026-10-24). Keep raw bytes.
+        ], {encoding: false}),
         zip(filename),
         dest('dist/')
     ], handleError(done));
