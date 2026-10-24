@@ -31,43 +31,20 @@
         </div>
     </section>
 
-    {{!-- Episodes with highlight zones injected between items --}}
+    {{!-- The river (#100): every non-newsletter post, newest first, in its series' colours.
+         Sticky slots (series/registry) sit after cards 2, 4 and 6 and show a series' newest
+         featured post only when the river doesn't. The batch size (8) must match riverSize
+         below and `limit: 8` on the /latest/ route in docs/routes.yaml. --}}
     <div class="gh-list simple gh-outer">
         <div class="gh-list-inner gh-inner">
-            <div class="gh-list-feed">
-                {{#get "posts" include="tags,authors" filter="tag:-newsletter+tag:-luminous" limit="5"}}
+            <div class="gh-list-feed" data-wc-river>
+                {{#get "posts" include="tags,authors" filter="tag:-newsletter" limit="8"}}
                     {{#foreach posts}}
-                        {{> components/list-item showExcerpt=true showPublishedAt=true}}
+                        {{> components/list-item seriesBrand=true showExcerpt=true showPublishedAt=true}}
 
-                        {{!-- Highlight Zone 1: Latest Newsletter (after 2nd episode) --}}
-                        {{#match @index "==" 1}}
-                            {{> "components/highlight-zone"
-                                tagFilter="tag:newsletter+featured:true"
-                                badgeLabel="Latest Newsletter"
-                                badgeUrl="/tag/newsletter/"
-                                accentClass="wc-highlight--newsletter"
-                            }}
-                        {{/match}}
-
-                        {{!-- Highlight Zone 2: Special Series (after 3rd episode) --}}
-                        {{#match @index "==" 2}}
-                            {{> "components/highlight-zone"
-                                tagFilter="tag:island-of-knowledge+featured:true"
-                                badgeLabel="Island of Knowledge"
-                                badgeUrl="/tag/island-of-knowledge/"
-                                accentClass="wc-highlight--series"
-                            }}
-                        {{/match}}
-
-                        {{!-- Highlight Zone 3: Latest Luminous (after 4th episode) --}}
-                        {{#match @index "==" 3}}
-                            {{> "components/highlight-zone"
-                                tagFilter="tag:luminous+featured:true"
-                                badgeLabel="From Luminous"
-                                badgeUrl="/tag/luminous/"
-                                accentClass="wc-highlight--luminous"
-                            }}
-                        {{/match}}
+                        {{#match @index "==" 1}}{{> "series/registry" mode="slot" position=1 riverSize=8}}{{/match}}
+                        {{#match @index "==" 3}}{{> "series/registry" mode="slot" position=2 riverSize=8}}{{/match}}
+                        {{#match @index "==" 5}}{{> "series/registry" mode="slot" position=3 riverSize=8}}{{/match}}
                     {{/foreach}}
                 {{/get}}
             </div>
@@ -77,14 +54,5 @@
     {{!-- Green rule after episodes --}}
     <hr class="wc-rule">
 
-    {{#match pagination.pages ">" 1}}
-        <nav class="wc-pagination wc-pagination--home gh-outer" aria-label="More episodes">
-            <div class="wc-pagination-inner gh-inner">
-                <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.next}}">
-                    More Episodes &rarr;
-                </a>
-            </div>
-        </nav>
-    {{/match}}
     {{> "components/cta" title=@custom.email_signup_text}}
 </main>

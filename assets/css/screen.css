@@ -61,8 +61,21 @@
    --show-accent* indirection tokens to the active show's palette.
    Wonder Cabinet is the default (no class). Add a body.brand-{show}
    block per full-brand-context show. See docs/multi-brand-design-system.md §7.
+
+   Series brands (#100): .wc-brand--<slug> sets the same tokens on one element, so a
+   homepage card can carry its series' colours on a Wonder Cabinet page. The class comes
+   from partials/series/registry.hbs. Source order is precedence: a post in two branded
+   series takes the LATER block, so luminous stays last.
    ============================================ */
-body.brand-luminous {
+.wc-brand--island-of-knowledge {
+    --show-accent: var(--iok-accent);
+    --show-accent-text: var(--iok-accent-text);
+    --show-accent-text-rgb: 26, 58, 68;      /* --iok-accent-text channels (#1A3A44) */
+    --show-on-accent: var(--wc-black);       /* black on #B6D0D8: 13.6:1 */
+}
+
+body.brand-luminous,
+.wc-brand--luminous {
     --show-accent: var(--luminous-accent);
     --show-accent-text: var(--luminous-accent-text-on-cream);
     --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
@@ -876,46 +889,19 @@ body.home-template .wc-brand-band .wc-podcast-services {
     text-decoration: none;
 }
 
-/* Featured post styling — thicker border, no glow (flat aesthetic) */
-.wc-episode-card.featured .wc-episode-card-inner {
-    border-width: 3px;
-}
-
-.wc-featured-badge {
-    position: absolute;
-    top: -1px;
-    right: 20px;
-    background-color: var(--show-accent);
-    color: var(--show-on-accent);
+/* Series label on a branded river card (#100): names the series so a violet or blue
+   card in a green list explains itself. Accent on the black card: IoK 13.6:1,
+   Luminous 5.25:1. */
+.wc-series-label {
+    display: block;
+    margin-bottom: var(--wc-spacing-xs);
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 6px 12px;
-    z-index: 10;
-}
-
-.wc-newsletter-badge {
-    position: absolute;
-    top: -1px;
-    left: 20px;
-    background-color: var(--wc-cream);
-    color: var(--wc-black);
-    font-family: var(--font-heading);
-    font-size: 1.1rem;
-    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 6px 12px;
-    z-index: 10;
-}
-
-/* Newsletter card: flip image to right side, extra vertical breathing room for badge */
-.wc-episode-card--newsletter .wc-episode-card-inner {
-    flex-direction: row-reverse !important;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    color: var(--show-accent);
+    overflow-wrap: anywhere;
 }
 
 .wc-episode-card-inner:hover {
@@ -1057,23 +1043,6 @@ body.home-template .wc-brand-band .wc-podcast-services {
         min-height: 45px; /* Matches header button height; exceeds 44px iOS minimum */
     }
 
-    /* Featured badge position adjustment for stacked mobile layout */
-    .wc-featured-badge {
-        right: 15px;
-        font-size: 1rem;
-        padding: 5px 10px;
-    }
-
-    .wc-newsletter-badge {
-        left: 15px;
-        font-size: 1rem;
-        padding: 5px 10px;
-    }
-
-    /* On mobile, cards stack vertically — revert to normal column order */
-    .wc-episode-card--newsletter .wc-episode-card-inner {
-        flex-direction: column !important;
-    }
 }
 
 /* ============================================
@@ -1104,6 +1073,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding: 6px 12px;
+    max-width: calc(100% - 40px); /* a long series name wraps inside the card (#100) */
     z-index: 10;
     text-decoration: none;
     transition: opacity 0.2s ease;
@@ -1167,6 +1137,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
 
     .wc-highlight-badge {
         left: 15px;
+        max-width: calc(100% - 30px);
         font-size: 1rem;
         padding: 5px 10px;
     }
