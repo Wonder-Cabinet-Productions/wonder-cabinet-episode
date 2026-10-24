@@ -8,6 +8,7 @@
     /* Brand Colors — Wonder Cabinet */
     --wc-green: #10A544; /* Brand green. ⚠ As a focus-ring / non-text color on cream this is 3.10:1 — only 0.10 above the WCAG 1.4.11 3:1 floor. Darkening or desaturating risks regressing focus-indicator visibility below 3:1; keep any edit ≥3:1 on cream. See #51, #40, #29. */
     --wc-green-text: #087834; /* WCAG AA compliant green for text on cream (4.5:1+) */
+    --wc-green-button: #0D8537; /* lightest brand-hue green that carries white text (4.74:1) and reads as text on cream (4.55:1). Comment button only; the cream margin is thin, so don't use it for other text or lighten it */
     --wc-black: #000000;
     --wc-cream: #FFFAEB;
     --wc-dark-green: #043013;
@@ -30,6 +31,8 @@
     --show-accent-text: var(--wc-green-text);
     --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
+    --show-accent-button: var(--wc-green-button); /* accent as a fill under WHITE text, also passing as text on cream:
+                                                     both need 4.5:1. Closest to --show-accent that does. Read by --comments-accent. */
     --show-on-accent: var(--wc-black);       /* text/icons sitting ON --show-accent. Black clears AA on both
                                                 brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. Cream fails both
                                                 (3.10:1 / 3.83:1) — see #81. Not to be confused with
@@ -67,18 +70,18 @@ body.brand-luminous {
     --show-accent-text: var(--luminous-accent-text-on-cream);
     --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
     --show-accent-dark: var(--luminous-accent-dark);
+    --show-accent-button: var(--luminous-accent-text-on-cream); /* #8B4DEB: white on it 4.82:1, on cream 4.62:1 */
     --show-on-accent: var(--luminous-accent-text);   /* black — 5.25:1 on #9A59FF */
 }
 
 body {
     font-family: var(--font-body);
     background-color: var(--background-color);
-    /* Ghost comments widget accent: the active show's accent-as-text, so the comment button
-       matches the player in every show (read by the inline script in post.hbs; the widget
-       draws in an iframe, so CSS can't reach it). Declared on body, not :root, so it resolves
-       against the body.brand-{show} overrides. WC #087834: white on it 5.61:1, as text on cream
-       5.37:1. Luminous #8B4DEB: 4.82 / 4.62. A new show passes if its --show-accent-text does. */
-    --comments-accent: var(--show-accent-text);
+    /* Ghost comments widget accent: the active show's --show-accent-button, so the comment
+       button matches the player in every show (read by the inline script in post.hbs; the
+       widget draws in an iframe, so CSS can't reach it). Declared on body, not :root, so it
+       resolves against the body.brand-{show} overrides. */
+    --comments-accent: var(--show-accent-button);
 }
 
 /* Override shared theme font with brand typography */

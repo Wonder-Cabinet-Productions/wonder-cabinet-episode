@@ -92,6 +92,8 @@ Each brand declares its raw palette. Components never read these directly (excep
 | **Luminous** | `--luminous-accent` `#9A59FF` | `--luminous-accent-text-on-cream` `#8B4DEB` (4.62:1) | `--luminous-accent-text` = `var(--wc-black)` (5.25:1 on violet) | `--luminous-accent-dark` `#1F0F33` |
 | **IoK** | `--iok-accent` `#b6d0d8` | *(none — accent-only, never used as page text)* | `--iok-accent-text` `#1a3a44` | *(none)* |
 
+A fifth show token, `--show-accent-button`, is the button fill: the accent as a fill under white text, which must also pass as text on cream. WC uses `--wc-green-button` `#0D8537` (4.74:1 / 4.55:1). It's for the comment button only, so don't reuse it for other text, since its cream margin is thin. Luminous reuses `--luminous-accent-text-on-cream` `#8B4DEB`. See §4b.
+
 **Token semantics — the distinction that bit the original draft.** Two different "text" needs exist and must not be conflated:
 - **text-on-cream**: the accent rendered *as readable text* on the cream background (links, headings). This is what `--show-accent-text` resolves to. For WC that's `--wc-green-text`; for Luminous `--luminous-accent-text-on-cream`. Must pass WCAG AA (4.5:1).
 - **text-on-accent**: the text color placed *on top of* an accent-colored fill (a badge, a button). Components read the brand-neutral `--show-on-accent` (§4), which resolves to black under both brands — 6.49:1 on WC green, 5.25:1 on Luminous violet. The raw `--{brand}-accent-text` tokens still exist and are read **directly** by the `.wc-highlight--{variant}` cross-brand islands, which render one brand's card inside another brand's page and so must not follow the *page's* accent. Contrast is measured against the accent, not cream.
@@ -169,16 +171,18 @@ Cream `#FFFAEB` relative luminance ≈ 0.9563.
 
 Ghost's comments-ui draws in an iframe and takes its accent from `data-accent-color` on its script tag, which Ghost always sets to the site accent. Since 2026-10-24 the site accent is a neutral black, so it can't clash with a show's colors. The inline script after `{{comments}}` in `post.hbs` copies `--comments-accent` onto the tag before the widget runs.
 
-`--comments-accent` is **show-agnostic**. It's declared once, on `body`, as `var(--show-accent-text)`, so the comment button follows whichever show the page is branded as and matches its player. A new show needs no comments-specific rule. It only needs a `body.brand-{slug}` block, where the slug comes from the episode's **primary tag**, that sets a `--show-accent-text` passing the two checks below. A page with no styled brand falls back to `:root`'s WC value (`#087834`), which is also what its player falls back to. The declaration sits on `body` rather than `:root` because a custom property resolves `var()` where it's declared. On `:root` it would freeze to WC's value and ignore the `body.brand-{show}` override.
+`--comments-accent` is **show-agnostic**. It's declared once, on `body`, as `var(--show-accent-button)`, so the comment button follows whichever show the page is branded as and matches its player. A new show needs no comments-specific rule. It only needs a `body.brand-{slug}` block, where the slug comes from the episode's **primary tag**, that sets a `--show-accent-button` passing the two checks below. A page with no styled brand falls back to `:root`'s WC value (`#0D8537`), which is also what its player falls back to. Because `:root` always sets it, a new show that forgets the token gets WC green rather than a broken widget. If its comment button shows green on a non-WC page, that's the sign the token is missing. The declaration sits on `body` rather than `:root` because a custom property resolves `var()` where it's declared. On `:root` it would freeze to WC's value and ignore the `body.brand-{show}` override.
 
 The widget fills its button with the accent and picks white text itself, which the theme can't override. The "Sign in" link is accent text on cream. Both need 4.5:1:
 
-| Show | `--show-accent-text` | White on it | As text on cream |
+| Show | `--show-accent-button` | White on it | As text on cream |
 |---|---|---|---|
-| Wonder Cabinet | `#087834` | 5.61:1 | 5.37:1 |
-| Luminous | `#8B4DEB` | 4.82:1 | 4.62:1 |
+| Wonder Cabinet | `--wc-green-button` `#0D8537` | 4.74:1 | 4.55:1 |
+| Luminous | `--luminous-accent-text-on-cream` `#8B4DEB` | 4.82:1 | 4.62:1 |
 
-**Sanctioned exception:** the widget shows each show's darker accent-as-text, not the signature accent the player draws with (`#10A544` / `#9A59FF`). White on those fails: 3.24:1 / 4.00:1.
+`--show-accent-button` is the accent as a fill under white text: the color **closest to the player's signature accent** that passes both checks. It is not `--show-accent-text`. WC's text green `#087834` passes too (5.61 / 5.37), but it's a visibly larger step down from the player than Luminous takes. `#0D8537` keeps `#10A544`'s hue and saturation and lowers lightness only until the cream check passes. The cream margin is thin (4.55), so don't lighten it further.
+
+**Sanctioned exception:** the widget shows each show's button shade, not the signature accent the player draws with (`#10A544` / `#9A59FF`). White on those fails: 3.24:1 / 4.00:1.
 
 The widget runs `mode="light"` on cream. A dark comments surface would need these figures re-checked.
 
