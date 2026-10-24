@@ -891,19 +891,20 @@ body.home-template .wc-brand-band .wc-podcast-services {
     text-decoration: none;
 }
 
-/* Series label on a branded river card (#100): names the series so a violet or blue
-   card in a green list explains itself. Accent on the black card: IoK 13.6:1,
-   Luminous 5.25:1. */
-.wc-series-label {
-    display: block;
-    margin-bottom: var(--wc-spacing-xs);
-    font-family: var(--font-heading);
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--show-accent);
-    overflow-wrap: anywhere;
+/* Series badge on a branded river card (#100): the pinned cards' tab badge (.wc-highlight-badge,
+   Highlight Zones below), in the card's series colours. On the accent: IoK 7.5:1, Luminous 5.25:1.
+   The badge sits outside the card link (no nested links), so the link makes room for it. */
+.wc-series-badge {
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
+}
+
+.wc-series-badge + .wc-series-badge {
+    display: none; /* a post in two series: one tab, the one matching its colours */
+}
+
+.wc-series-badge ~ .wc-episode-card-inner {
+    padding-top: 40px;
 }
 
 .wc-episode-card-inner:hover {

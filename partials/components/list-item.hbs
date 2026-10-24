@@ -3,10 +3,11 @@
     Displays episode with an accent border, artwork, and solid accent button.
 
     seriesBrand=true (homepage river and /latest/ only): a post in a branded series
-    (series/registry) takes that series' colours and shows a small series label.
+    (series/registry) takes that series' colours and the pinned cards' tab badge.
 --}}
 
 <article data-post-id="{{id}}" class="gh-list-item wc-episode-card{{#if seriesBrand}}{{> "series/registry" mode="card-class"}}{{/if}} {{post_class}}">
+    {{#if seriesBrand}}{{> "series/registry" mode="card-badge"}}{{/if}}
     <a class="gh-list-item-inner wc-episode-card-inner" href="{{url}}">
         {{#if feature_image}}
             <figure class="gh-list-item-image wc-episode-card-image">
@@ -24,8 +25,6 @@
             {{#if showPublishedAt}}
                 <span class="gh-list-item-published-at wc-episode-card-date">{{date published_at format="DD MMM YYYY"}}</span>
             {{/if}}
-
-            {{#if seriesBrand}}{{> "series/registry" mode="card-label"}}{{/if}}
 
             <h3 class="gh-list-item-title wc-episode-card-title">{{title}}</h3>
 

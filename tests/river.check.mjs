@@ -35,7 +35,9 @@ const show = (list) => list.map((x) => x.replace(/[0-9a-f]{24}/, (id) => slug[id
 assert(JSON.stringify(got) === JSON.stringify(expected), `river + slots order\n  got\n    ${show(got)}\n  expected\n    ${show(expected)}`);
 assert(new Set(got.map((g) => g.split(':').pop())).size === got.length, 'no post appears twice on page 1 (#35)');
 
-// Series colour and label on river cards
+const SERIES_URL = { newsletter: '/newsletter/', 'island-of-knowledge': '/island-of-knowledge/', luminous: '/luminous/' };
+
+// Series colour and tab badge on river cards (the pinned cards' badge, linked to the series page)
 const cards = body.split('<article').slice(1);
 for (const p of river) {
     const card = cards.find((c) => c.includes(`data-post-id="${p.id}"`) && !c.startsWith(' data-wc-slot'));
@@ -44,14 +46,14 @@ for (const p of river) {
     const brand = BRANDS.find((b) => has(p, b));
     if (brand) {
         assert(head.includes(`wc-brand--${brand}`), `${p.slug}: card carries wc-brand--${brand}`);
-        assert(card.includes('wc-series-label'), `${p.slug}: card shows a series label`);
+        const badge = card.match(/<a class="wc-highlight-badge wc-series-badge" href="([^"]*)">([^<]*)<\/a>/);
+        assert(badge && badge[1] === SERIES_URL[brand] && badge[2].trim(), `${p.slug}: card shows the ${brand} tab badge`);
     } else {
-        assert(!/wc-brand--/.test(head) && !card.includes('wc-series-label'), `${p.slug}: plain Wonder Cabinet card`);
+        assert(!/wc-brand--/.test(head) && !card.includes('wc-series-badge'), `${p.slug}: plain Wonder Cabinet card`);
     }
 }
 
 // Slot badges: tag name, linked to the series page from the registry
-const SERIES_URL = { newsletter: '/newsletter/', 'island-of-knowledge': '/island-of-knowledge/', luminous: '/luminous/' };
 for (const card of cards.filter((c) => c.startsWith(' data-wc-slot'))) {
     const series = card.match(/data-wc-slot="([^"]+)"/)[1];
     const badge = card.match(/<a class="wc-highlight-badge" href="([^"]*)">([^<]*)<\/a>/);
