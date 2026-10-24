@@ -1,0 +1,43 @@
+# PRODUCTION routes.yaml for wondercabinetproductions.com: the exact file uploaded via
+# Ghost Admin → Settings → Labs → Routes. Edit it here, review it in a PR, then upload
+# this file as-is. Never upload a partial file: Ghost replaces the whole config, so a
+# missing collection or taxonomy disappears from the site. See docs/ROUTES_CONFIG.md.
+# Dev (ghost01) keeps its own copy at content/settings/routes.yaml on the LXC.
+
+routes:
+  # Island of Knowledge landing page (added 2026-10-24). A channel, not a collection:
+  # IoK episodes are Wonder Cabinet posts and keep their /{slug}/ URLs and their place
+  # on the homepage; this page only lists them. data: also 301s /tag/island-of-knowledge/
+  # here. Uses tag.hbs until IoK gets its own template.
+  /island-of-knowledge/:
+    controller: channel
+    filter: tag:island-of-knowledge
+    template: tag
+    data: tag.island-of-knowledge
+
+collections:
+  # Homepage = Wonder Cabinet podcast landing page
+  # Excludes newsletter posts to keep homepage focused on episodes
+  /:
+    permalink: /{slug}/
+    filter: tag:wonder-cabinet+tag:-newsletter
+    template: index
+    data: tag.wonder-cabinet
+
+  # Luminous - Episode theme style (simpler, no cabinet framing)
+  /luminous/:
+    permalink: /luminous/{slug}/
+    filter: tag:luminous
+    template: index-luminous
+    data: tag.luminous
+
+  # Newsletter collection
+  /newsletter/:
+    permalink: /newsletter/{slug}/
+    filter: tag:newsletter
+    template: newsletter
+    data: tag.newsletter
+
+taxonomies:
+  tag: /tag/{slug}/
+  author: /author/{slug}/
