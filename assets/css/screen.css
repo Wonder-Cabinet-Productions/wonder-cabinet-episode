@@ -20,6 +20,7 @@
     --luminous-accent: #9A59FF;               /* signature violet — badges/borders/large display only; fails AA as body text on cream (3.84:1) */
     --luminous-accent-text: var(--wc-black);  /* text ON the violet accent — 5.25:1 on #9A59FF (AA) */
     --luminous-accent-text-on-cream: #8B4DEB; /* violet as readable text on cream — 4.62:1 (AA); parallel to --wc-green-text */
+    --luminous-accent-text-on-tint: #7E3FE0;  /* deeper violet for text on a violet-tinted cream — 4.93:1 on an 8% tint, 4.67:1 on 12% (AA); text on tint only, not links/headings */
     --luminous-accent-dark: #1F0F33;          /* deep violet for dark UI; parallel to --wc-dark-green */
 
     /* Show-Agnostic Tokens
@@ -3151,17 +3152,12 @@ body.brand-luminous .wc-head-logo-img--luminous {
     background: rgba(var(--show-accent-text-rgb), 0.12); /* accent-text @ 12% — follows active brand */
 }
 
-/* Luminous: no tint. Violet text clears AA on plain cream (4.62:1) but not on its own
-   8% tint (4.16:1) or the 12% hover tint (3.93:1). Hover marks the button with a full-
-   strength border instead. WC's green passes on both tints (4.81 / 4.52), so WC keeps them. */
-body.brand-luminous .wc-transcript-toggle,
-body.brand-luminous .wc-transcript-toggle:hover {
-    background: transparent;
-    transition: border-color 0.2s ease;
-}
-
-body.brand-luminous .wc-transcript-toggle:hover {
-    border-color: var(--show-accent-text);
+/* Luminous: the standard violet text clears AA on plain cream (4.62:1) but not on its
+   own 8% / 12% tints (4.16 / 3.93). A deeper violet keeps the tints and passes on both
+   (4.93 / 4.67), matching WC, whose green passes as-is (4.81 / 4.52). The tint itself
+   still mixes from --show-accent-text-rgb, so the fill matches WC's in violet. */
+body.brand-luminous .wc-transcript-toggle {
+    color: var(--luminous-accent-text-on-tint);
 }
 
 .wc-transcript-toggle:focus-visible {

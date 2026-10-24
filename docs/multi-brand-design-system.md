@@ -96,6 +96,8 @@ Each brand declares its raw palette. Components never read these directly (excep
 - **text-on-cream**: the accent rendered *as readable text* on the cream background (links, headings). This is what `--show-accent-text` resolves to. For WC that's `--wc-green-text`; for Luminous `--luminous-accent-text-on-cream`. Must pass WCAG AA (4.5:1).
 - **text-on-accent**: the text color placed *on top of* an accent-colored fill (a badge, a button). Components read the brand-neutral `--show-on-accent` (§4), which resolves to black under both brands — 6.49:1 on WC green, 5.25:1 on Luminous violet. The raw `--{brand}-accent-text` tokens still exist and are read **directly** by the `.wc-highlight--{variant}` cross-brand islands, which render one brand's card inside another brand's page and so must not follow the *page's* accent. Contrast is measured against the accent, not cream.
 
+**Sanctioned exception — deeper violet for text on a violet tint (recorded 2026-10-24).** `#8B4DEB` passes on plain cream (4.62:1) but not on its own 8% / 12% tint (4.16 / 3.93), so the Luminous transcript toggle reads `--luminous-accent-text-on-tint` `#7E3FE0` instead (4.93 / 4.67). It is scoped to text sitting on a `--show-accent-text-rgb` tint. Any future Luminous control in that position reuses this token rather than minting its own, and `--show-accent-text` stays `#8B4DEB`. WC needs no equivalent, since `--wc-green-text` passes on its tints (4.81 / 4.52).
+
 **Sanctioned exception — black on WC green for CTAs (recorded 2026-09-21, #81).** The Art & Sons
 wireframes (`design-assets/site-design/mockups/WonderCabinetWebsite-010725-pages/`, pages 1-2) draw the
 bottom-of-page Subscribe CTA and the featured-episode card with **cream/white text on the green fill**, and

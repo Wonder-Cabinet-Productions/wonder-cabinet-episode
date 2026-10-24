@@ -73,6 +73,7 @@ The Wonder Cabinet brand defines two derived colors for accessibility (`--wc-gre
 |---|---|---|---|
 | `--luminous-accent` | `#9A59FF` | 3.84:1 (✗ AA text) | Signature: badges, borders, large display text (≥18pt bold) only |
 | `--luminous-accent-text-on-cream` | `#8B4DEB` | 4.62:1 (✓ AA) | Violet rendered **as readable text** on cream — links, headings. Luminous parallel to `--wc-green-text`. |
+| `--luminous-accent-text-on-tint` | `#7E3FE0` | 5.48:1; 4.93:1 on the 8% violet tint, 4.67:1 on 12% (✓ AA) | Text on a violet-tinted surface (`--show-accent-text-rgb` at 8%+): the transcript toggle. `#8B4DEB` fails there (4.16 / 3.93). Not for links or headings on plain cream. Added 2026-10-24, brand-guardian BLESS. |
 | `--luminous-accent-text` | `#000000` (`var(--wc-black)`) | 5.25:1 on violet (✓ AA) | Text placed **on** the violet accent (highlight badge/button). |
 | `--luminous-accent-dark` | `#1F0F33` | — | Deep-violet for dark UI. Parallel to `--wc-dark-green`. |
 
