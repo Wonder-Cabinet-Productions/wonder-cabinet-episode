@@ -29,6 +29,9 @@ jobs:
       - name: Build zip
         run: npm run zip
 
+      - name: Check zip binaries
+        run: scripts/check-zip-binaries.sh
+
       - name: Deploy to Ghost
         uses: TryGhost/action-deploy-theme@v1
         with:
