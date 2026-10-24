@@ -2612,6 +2612,37 @@ body.brand-luminous .wc-head-logo-img--luminous {
     text-align: center;
 }
 
+/* Homepage river: "Load more episodes" button over the "All Wonder Cabinet episodes" link (#100) */
+.wc-loadmore-inner {
+    flex-direction: column;
+    gap: var(--wc-spacing-sm);
+}
+
+.wc-loadmore {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 24px;
+    border: 2px solid var(--show-accent);
+}
+
+.wc-loadmore:hover {
+    opacity: 1;
+    text-decoration: none;
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
+}
+
+.wc-loadmore[aria-busy="true"] {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.wc-loadmore[hidden] {
+    display: none;
+}
+
 @media (max-width: 767px) {
     .wc-series-info-inner {
         padding: 0 var(--wc-spacing-sm); /* Ensure text doesn't touch edges */

@@ -61,6 +61,13 @@ for (const card of cards.filter((c) => c.startsWith(' data-wc-slot'))) {
 
 assert(!html.includes('wc-featured-badge'), 'Featured badge removed (spec §4.5)');
 
+// Load more without JS is a real link to the river's page 2; the archive link follows it (§4.1)
+const more = html.match(/<a [^>]*data-wc-loadmore[^>]*>/);
+const riverTotal = posts.filter((p) => !has(p, 'newsletter')).length;
+if (riverTotal > RIVER_SIZE) assert(more && /href="\/latest\/page\/2\/"/.test(more[0]), 'Load more links to /latest/page/2/');
+else assert(!more, 'no Load more when the river fits in one batch');
+assert(/<a [^>]*href="\/episodes\/"/.test(html), 'link to /episodes/ below the river');
+
 // WCAG AA for the new pairings (spec anti-goals): series label on the black card, and
 // --show-on-accent (black) on each accent used for buttons and badges.
 const lum = (hex) => {
