@@ -107,6 +107,12 @@ before it can merge. That is deliberate. `assets/built/` is committed, so a stal
 combine into a state neither branch ever validated. Strict mode forces the restack that makes
 the gscan run reflect reality.
 
+The `dev/**` ruleset skips that check when a branch is **created**
+(`do_not_enforce_on_create`, set 2026-10-24). Only PRs run `Validate Theme`, so without the
+skip a new series branch could never be pushed, and the ruleset has no bypass list. A new
+`dev/<series>` is a copy of `main`, which has already passed. Every merge into it still
+requires the check.
+
 ---
 
 ## Sprint-series lifecycle
