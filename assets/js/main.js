@@ -64,6 +64,79 @@
     });
 })();
 
+/* Homepage "Load more episodes" (#100): upgrades the link to the river's next /latest/ page
+   into an in-place load, so the footer and newsletter signup stay reachable. Inserts only
+   posts not already on the page (a pinned slot post can reappear in a later batch, #35),
+   moves focus to the first new card, and announces the count. On any failure it follows
+   the link instead, which is also all that happens without JS.
+   Kept above pagination(true), for the reason given on the Show About block. */
+(function () {
+    const button = document.querySelector('[data-wc-loadmore]');
+    const river = document.querySelector('[data-wc-river]');
+    if (!button || !river) return;
+    const status = document.querySelector('[data-wc-loadmore-status]');
+    let loading = false;
+
+    function announce(text) {
+        if (!status) return;
+        status.textContent = ''; // so a repeated message is announced again
+        setTimeout(function () { status.textContent = text; }, 50);
+    }
+
+    button.addEventListener('click', async function (event) {
+        // Let modified clicks (new tab/window) through to the page.
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        if (loading) return;
+        loading = true;
+        button.setAttribute('aria-busy', 'true');
+        const href = button.href;
+        const hadFocus = document.activeElement === button;
+
+        try {
+            const res = await fetch(href);
+            if (!res.ok) throw new Error(`${res.status} for ${href}`);
+            const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+
+            const onPage = new Set();
+            document.querySelectorAll('[data-post-id]').forEach(function (el) {
+                onPage.add(el.dataset.postId);
+            });
+            const added = [];
+            doc.querySelectorAll('.gh-feed > article[data-post-id]').forEach(function (card) {
+                if (onPage.has(card.dataset.postId)) return;
+                added.push(river.appendChild(document.importNode(card, true)));
+            });
+
+            const next = doc.querySelector('link[rel=next]');
+            if (next) {
+                button.setAttribute('href', new URL(next.getAttribute('href'), href).pathname);
+            } else {
+                button.hidden = true;
+            }
+
+            // Move focus only for keyboard activation (Enter/Space give detail 0). After a
+            // mouse or touch click it would just draw a focus ring; the announcement below
+            // still reaches screen readers either way.
+            const viaKeyboard = event.detail === 0;
+            const firstLink = viaKeyboard && added.length && added[0].querySelector('a[href]');
+            if (firstLink) {
+                firstLink.focus();
+            } else if (button.hidden && (viaKeyboard || hadFocus)) {
+                // The button is gone: don't leave focus on a hidden element.
+                const archive = button.parentElement.querySelector('a[href]:not([data-wc-loadmore])');
+                if (archive) archive.focus();
+            }
+            announce(added.length ? `${added.length} more ${added.length === 1 ? 'episode' : 'episodes'} loaded` : 'No more episodes');
+        } catch (e) {
+            location.href = href;
+        } finally {
+            loading = false;
+            button.removeAttribute('aria-busy');
+        }
+    });
+})();
+
 (function () {
     pagination(true);
 })();

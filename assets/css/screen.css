@@ -8,6 +8,7 @@
     /* Brand Colors — Wonder Cabinet */
     --wc-green: #10A544; /* Brand green. ⚠ As a focus-ring / non-text color on cream this is 3.10:1 — only 0.10 above the WCAG 1.4.11 3:1 floor. Darkening or desaturating risks regressing focus-indicator visibility below 3:1; keep any edit ≥3:1 on cream. See #51, #40, #29. */
     --wc-green-text: #087834; /* WCAG AA compliant green for text on cream (4.5:1+) */
+    --wc-green-button: #0D8537; /* lightest brand-hue green that carries white text (4.74:1) and reads as text on cream (4.55:1). Comment button only; the cream margin is thin, so don't use it for other text or lighten it */
     --wc-black: #000000;
     --wc-cream: #FFFAEB;
     --wc-dark-green: #043013;
@@ -20,6 +21,7 @@
     --luminous-accent: #9A59FF;               /* signature violet — badges/borders/large display only; fails AA as body text on cream (3.84:1) */
     --luminous-accent-text: var(--wc-black);  /* text ON the violet accent — 5.25:1 on #9A59FF (AA) */
     --luminous-accent-text-on-cream: #8B4DEB; /* violet as readable text on cream — 4.62:1 (AA); parallel to --wc-green-text */
+    --luminous-accent-text-on-tint: #7E3FE0;  /* deeper violet for text on a violet-tinted cream — 4.93:1 on an 8% tint, 4.67:1 on 12% (AA); text on tint only, not links/headings */
     --luminous-accent-dark: #1F0F33;          /* deep violet for dark UI; parallel to --wc-dark-green */
 
     /* Show-Agnostic Tokens
@@ -30,8 +32,11 @@
     --show-accent-text: var(--wc-green-text);
     --show-accent-text-rgb: 8, 120, 52;      /* --show-accent-text channels for rgba() composition (= --wc-green-text) */
     --show-accent-dark: var(--wc-dark-green);
+    --show-accent-button: var(--wc-green-button); /* accent as a fill under WHITE text, also passing as text on cream:
+                                                     both need 4.5:1. Closest to --show-accent that does. Read by --comments-accent. */
     --show-on-accent: var(--wc-black);       /* text/icons sitting ON --show-accent. Black clears AA on both
-                                                brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. Cream fails both
+                                                page brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. IoK river
+                                                cards override it (see "Series brands"). Cream fails both
                                                 (3.10:1 / 3.83:1) — see #81. Not to be confused with
                                                 --show-accent-text, which is the accent used AS text on cream. */
 
@@ -61,21 +66,37 @@
    --show-accent* indirection tokens to the active show's palette.
    Wonder Cabinet is the default (no class). Add a body.brand-{show}
    block per full-brand-context show. See docs/multi-brand-design-system.md §7.
+
+   Series brands (#100): .wc-brand--<slug> sets the same tokens on one element, so a
+   homepage card can carry its series' colours on a Wonder Cabinet page. The class comes
+   from partials/series/registry.hbs. Source order is precedence: a post in two branded
+   series takes the LATER block, so luminous stays last.
    ============================================ */
-body.brand-luminous {
+.wc-brand--island-of-knowledge {
+    --show-accent: var(--iok-accent);
+    --show-accent-text: var(--iok-accent-text);
+    --show-accent-text-rgb: 26, 58, 68;      /* --iok-accent-text channels (#1A3A44) */
+    --show-on-accent: var(--iok-accent-text); /* #1A3A44 on #B6D0D8: 7.5:1; matches the IoK slot card */
+}
+
+body.brand-luminous,
+.wc-brand--luminous {
     --show-accent: var(--luminous-accent);
     --show-accent-text: var(--luminous-accent-text-on-cream);
     --show-accent-text-rgb: 139, 77, 235;    /* --luminous-accent-text-on-cream channels (#8B4DEB) */
     --show-accent-dark: var(--luminous-accent-dark);
+    --show-accent-button: var(--luminous-accent-text-on-cream); /* #8B4DEB: white on it 4.82:1, on cream 4.62:1 */
     --show-on-accent: var(--luminous-accent-text);   /* black — 5.25:1 on #9A59FF */
-    /* Ghost comments widget accent (read by the inline script in post.hbs; it draws in an
-       iframe, so CSS can't reach it). #8B4DEB: white on it 4.82:1, as text on cream 4.62:1. */
-    --comments-accent: var(--luminous-accent-text-on-cream);
 }
 
 body {
     font-family: var(--font-body);
     background-color: var(--background-color);
+    /* Ghost comments widget accent: the active show's --show-accent-button, so the comment
+       button matches the player in every show (read by the inline script in post.hbs; the
+       widget draws in an iframe, so CSS can't reach it). Declared on body, not :root, so it
+       resolves against the body.brand-{show} overrides. */
+    --comments-accent: var(--show-accent-button);
 }
 
 /* Override shared theme font with brand typography */
@@ -876,46 +897,20 @@ body.home-template .wc-brand-band .wc-podcast-services {
     text-decoration: none;
 }
 
-/* Featured post styling — thicker border, no glow (flat aesthetic) */
-.wc-episode-card.featured .wc-episode-card-inner {
-    border-width: 3px;
-}
-
-.wc-featured-badge {
-    position: absolute;
-    top: -1px;
-    right: 20px;
+/* Series badge on a branded river card (#100): the pinned cards' tab badge (.wc-highlight-badge,
+   Highlight Zones below), in the card's series colours. On the accent: IoK 7.5:1, Luminous 5.25:1.
+   The badge sits outside the card link (no nested links), so the link makes room for it. */
+.wc-series-badge {
     background-color: var(--show-accent);
     color: var(--show-on-accent);
-    font-family: var(--font-heading);
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 6px 12px;
-    z-index: 10;
 }
 
-.wc-newsletter-badge {
-    position: absolute;
-    top: -1px;
-    left: 20px;
-    background-color: var(--wc-cream);
-    color: var(--wc-black);
-    font-family: var(--font-heading);
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 6px 12px;
-    z-index: 10;
+.wc-series-badge + .wc-series-badge {
+    display: none; /* a post in two series: one tab, the one matching its colours */
 }
 
-/* Newsletter card: flip image to right side, extra vertical breathing room for badge */
-.wc-episode-card--newsletter .wc-episode-card-inner {
-    flex-direction: row-reverse !important;
+.wc-series-badge ~ .wc-episode-card-inner {
     padding-top: 40px;
-    padding-bottom: 40px;
 }
 
 .wc-episode-card-inner:hover {
@@ -1057,23 +1052,6 @@ body.home-template .wc-brand-band .wc-podcast-services {
         min-height: 45px; /* Matches header button height; exceeds 44px iOS minimum */
     }
 
-    /* Featured badge position adjustment for stacked mobile layout */
-    .wc-featured-badge {
-        right: 15px;
-        font-size: 1rem;
-        padding: 5px 10px;
-    }
-
-    .wc-newsletter-badge {
-        left: 15px;
-        font-size: 1rem;
-        padding: 5px 10px;
-    }
-
-    /* On mobile, cards stack vertically — revert to normal column order */
-    .wc-episode-card--newsletter .wc-episode-card-inner {
-        flex-direction: column !important;
-    }
 }
 
 /* ============================================
@@ -1104,6 +1082,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding: 6px 12px;
+    max-width: calc(100% - 40px); /* a long series name wraps inside the card (#100) */
     z-index: 10;
     text-decoration: none;
     transition: opacity 0.2s ease;
@@ -1167,6 +1146,7 @@ body.home-template .wc-brand-band .wc-podcast-services {
 
     .wc-highlight-badge {
         left: 15px;
+        max-width: calc(100% - 30px);
         font-size: 1rem;
         padding: 5px 10px;
     }
@@ -2641,6 +2621,37 @@ body.brand-luminous .wc-head-logo-img--luminous {
     text-align: center;
 }
 
+/* Homepage river: "Load more episodes" button over the "All Wonder Cabinet episodes" link (#100) */
+.wc-loadmore-inner {
+    flex-direction: column;
+    gap: var(--wc-spacing-sm);
+}
+
+.wc-loadmore {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 24px;
+    border: 2px solid var(--show-accent);
+}
+
+.wc-loadmore:hover {
+    opacity: 1;
+    text-decoration: none;
+    background-color: var(--show-accent);
+    color: var(--show-on-accent);
+}
+
+.wc-loadmore[aria-busy="true"] {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.wc-loadmore[hidden] {
+    display: none;
+}
+
 @media (max-width: 767px) {
     .wc-series-info-inner {
         padding: 0 var(--wc-spacing-sm); /* Ensure text doesn't touch edges */
@@ -3149,17 +3160,12 @@ body.brand-luminous .wc-head-logo-img--luminous {
     background: rgba(var(--show-accent-text-rgb), 0.12); /* accent-text @ 12% — follows active brand */
 }
 
-/* Luminous: no tint. Violet text clears AA on plain cream (4.62:1) but not on its own
-   8% tint (4.16:1) or the 12% hover tint (3.93:1). Hover marks the button with a full-
-   strength border instead. WC's green passes on both tints (4.81 / 4.52), so WC keeps them. */
-body.brand-luminous .wc-transcript-toggle,
-body.brand-luminous .wc-transcript-toggle:hover {
-    background: transparent;
-    transition: border-color 0.2s ease;
-}
-
-body.brand-luminous .wc-transcript-toggle:hover {
-    border-color: var(--show-accent-text);
+/* Luminous: the standard violet text clears AA on plain cream (4.62:1) but not on its
+   own 8% / 12% tints (4.16 / 3.93). A deeper violet keeps the tints and passes on both
+   (4.93 / 4.67), matching WC, whose green passes as-is (4.81 / 4.52). The tint itself
+   still mixes from --show-accent-text-rgb, so the fill matches WC's in violet. */
+body.brand-luminous .wc-transcript-toggle {
+    color: var(--luminous-accent-text-on-tint);
 }
 
 .wc-transcript-toggle:focus-visible {
@@ -3417,8 +3423,8 @@ body.brand-luminous .wc-transcript-toggle:hover {
     outline-offset: 4px;
 }
 
-/* Episode cards "View Episode" button (dark background) */
-.wc-list-item-link:focus-visible {
+/* Episode cards: the whole card is one link (dark background) */
+.wc-episode-card-inner:focus-visible {
     outline: 2px solid var(--wc-focus-ring-light);
     outline-offset: 2px;
 }
