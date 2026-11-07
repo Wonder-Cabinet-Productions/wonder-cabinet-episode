@@ -64,6 +64,33 @@
     });
 })();
 
+/* External links open in a new tab. Ghost's editor has no per-link target, so links
+   in post, page and newsletter content (including ones added by hand later) can't carry
+   one; this sets it at load for every http(s) link off this site. The production domain
+   counts as internal everywhere, so the dev preview treats links to it like the live site
+   does. Kept above pagination(true) for the same reason as the About modal. */
+(function () {
+    const INTERNAL_HOSTS = [location.hostname, 'wondercabinetproductions.com'];
+    const bare = function (host) { return host.replace(/^www\./, ''); };
+    const internal = INTERNAL_HOSTS.map(bare);
+
+    document.querySelectorAll('a[href]').forEach(function (link) {
+        let url;
+        try {
+            url = new URL(link.getAttribute('href'), location.href);
+        } catch (e) {
+            return;
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+        if (internal.indexOf(bare(url.hostname)) !== -1) return;
+
+        link.target = '_blank';
+        const rel = link.rel.split(/\s+/).filter(Boolean);
+        if (rel.indexOf('noopener') === -1) rel.push('noopener');
+        link.rel = rel.join(' ');
+    });
+})();
+
 (function () {
     pagination(true);
 })();
