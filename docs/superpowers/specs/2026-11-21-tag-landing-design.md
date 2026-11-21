@@ -66,6 +66,21 @@ same platform, or sit beside it? Default: replace it, so each platform shows one
    for tag pages.
 3. **Playlists.** The meta convention, the `main.js` renderer, docs, and tests.
 
+## Follow-up: move every show's listen links to tag code injection
+
+Mark, 2026-11-21: platform links rarely change, so once slice 3 proves out, consider moving
+the WC and Luminous listen links onto the same tag code-injection convention. That would free
+up to six of the 20 custom settings. Things to weigh before doing it:
+
+- The links would become JS-rendered. Today they're server-rendered, including the homepage
+  hero's buttons, which would then pop in late and be missing without JS.
+- Code injection appears only on pages with tag context: home and `/luminous/` (both set
+  `data: tag.*`), and tag pages. Episode pages don't have it, so check whether they show listen
+  links, and find them another source if they do.
+- Editors would paste a snippet instead of filling in a labelled settings field.
+
+Not scheduled. Decide after slice 3 has run on prod for a while.
+
 ## Out of scope
 
 - Per-tag Admin settings: 17 of 20 custom settings are already used.
