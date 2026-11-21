@@ -1,0 +1,23 @@
+{{!--
+    One sticky slot (#100, spec §4.3). Called only from series/registry.
+
+    Takes the series' newest featured post and shows it only when the homepage river doesn't:
+    i.e. when at least `riverSize` non-newsletter posts are newer than it. Newsletters never
+    enter the river, so their slot passes `always=true`.
+
+    Params: pinFilter, slug, url, accentClass, riverSize | always
+    Context depth below: partial → get (pins) → foreach (pin) → get (newer river posts).
+--}}
+{{#get "posts" include="tags,authors" filter=pinFilter limit="1"}}
+    {{#foreach posts}}
+        {{#if ../../always}}
+            {{> "components/highlight-zone" badgeSlug=../../slug badgeUrl=../../url accentClass=../../accentClass}}
+        {{else}}
+            {{#get "posts" filter="tag:-newsletter+published_at:>'{{published_at}}'" limit="1" fields="id"}}
+                {{#match pagination.total ">=" ../../../riverSize}}
+                    {{> "components/highlight-zone" ../this badgeSlug=../../../slug badgeUrl=../../../url accentClass=../../../accentClass}}
+                {{/match}}
+            {{/get}}
+        {{/if}}
+    {{/foreach}}
+{{/get}}

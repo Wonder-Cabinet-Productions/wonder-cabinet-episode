@@ -15,6 +15,23 @@ routes:
     template: tag
     data: tag.island-of-knowledge
 
+  # The homepage river's full feed (#100). Every post except newsletters, 8 per page; page 1
+  # repeats the homepage river. The homepage's "Load more episodes" fetches
+  # /latest/page/N/ and links there without JS. limit must match the river's batch size in
+  # home.hbs. A channel, so it lists posts without owning their URLs.
+  /latest/:
+    controller: channel
+    filter: tag:-newsletter
+    limit: 8
+    template: latest
+
+  # Wonder Cabinet-only archive (#100), linked from below the homepage river. Same posts
+  # as the / collection. No data: here — the / collection already owns tag.wonder-cabinet.
+  /episodes/:
+    controller: channel
+    filter: tag:wonder-cabinet+tag:-newsletter
+    template: episodes
+
 collections:
   # Homepage = Wonder Cabinet podcast landing page
   # Excludes newsletter posts to keep homepage focused on episodes

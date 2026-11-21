@@ -1,0 +1,34 @@
+{{!< default}}
+{{!--
+    /latest/ channel (#100, docs/routes.yaml): the homepage river's full feed, 8 per page.
+    The homepage's "Load more episodes" fetches these pages and inserts their
+    `.gh-feed > article` cards, so keep the cards direct children of .gh-feed, carrying
+    data-post-id (components/list-item does). Without JS, that link navigates here.
+--}}
+
+{{!-- Channels set no `tag` context, so default.hbs adds no brand class; assign WC explicitly. --}}
+{{#contentFor "body_class"}} brand-wonder-cabinet{{/contentFor}}
+
+<main id="main-content" class="gh-main wc-main">
+    <section class="gh-archive gh-outer">
+        <div class="gh-archive-inner gh-inner">
+            <header class="gh-archive-header">
+                <h1 class="gh-archive-title">{{#if @custom.episode_section_heading}}{{@custom.episode_section_heading}}{{else}}Latest Episodes{{/if}}</h1>
+            </header>
+        </div>
+    </section>
+
+    <div class="gh-list simple gh-outer">
+        <div class="gh-list-inner gh-inner">
+            <div class="gh-list-feed gh-feed">
+                {{#foreach posts}}
+                    {{> components/list-item seriesBrand=true showExcerpt=true showPublishedAt=true}}
+                {{/foreach}}
+            </div>
+        </div>
+    </div>
+
+    {{> "components/pagination"}}
+
+    {{> "components/cta" title=@custom.email_signup_text}}
+</main>
