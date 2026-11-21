@@ -1,4 +1,4 @@
-// #23: list pages use the homepage's click-to-load "Load more episodes" instead of the old
+// #23: list pages use the homepage's click-to-load "Load more" instead of the old
 // prev/next pager. Server-rendered markup only; tests/loadmore.browser.js covers the click.
 // Run: node tests/archive.check.mjs   (WC_BASE to point elsewhere)
 import { fetchHtml, assert, report } from './lib/site.mjs';
@@ -14,6 +14,7 @@ for (const path of PAGES) {
         assert(!!btn, `${path}: has a Load more link`);
         const href = btn && (btn[1] || btn[2]);
         assert(href && new URL(href, 'http://x').pathname === `${path}page/2/`, `${path}: Load more links to ${path}page/2/ without JS (got ${href})`);
+        assert(/data-wc-loadmore[^>]*>Load more<\/a>/.test(html), `${path}: button reads "Load more" (lists aren't all episodes)`);
         assert(/data-wc-loadmore-status[^>]*aria-live="polite"|aria-live="polite"[^>]*data-wc-loadmore-status/.test(html), `${path}: has a live status region`);
     }
 }
