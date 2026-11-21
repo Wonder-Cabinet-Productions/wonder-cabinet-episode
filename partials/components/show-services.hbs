@@ -1,0 +1,28 @@
+{{!--
+    Show services row: the description, listen links and About button under a landing
+    page's hero. Shared by the WC homepage (via podcast-services), the Luminous landing and
+    tag landings (#125).
+
+    Description, one of:
+      blurbTag=<slug>  components/show-blurb: the tag's description, falling back to
+                       @site.description. Use this for the shows.
+      blurbText=<text> printed as given, with no fallback. Use this for tag landings, so an
+                       ordinary tag never shows the network's blurb.
+    Links:  apple= spotify= youtube=   URLs; each button renders only when set.
+    About:  aboutTag=<slug>            components/show-about (renders only if a Show About
+                                       page carries that tag).
+--}}
+<section class="wc-podcast-services gh-outer">
+    <div class="wc-podcast-services-inner gh-inner">
+        {{#if blurbTag}}
+            {{> "components/show-blurb" tagSlug=blurbTag}}
+        {{/if}}
+        {{#if blurbText}}
+            <p class="wc-podcast-services-desc">{{blurbText}}</p>
+        {{/if}}
+        <div class="wc-podcast-services-links">
+            {{> "components/listen-links" apple=apple spotify=spotify youtube=youtube}}
+            {{> "components/show-about" tagSlug=aboutTag}}
+        </div>
+    </div>
+</section>

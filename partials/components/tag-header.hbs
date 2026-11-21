@@ -1,13 +1,19 @@
 {{!--
     Wonder Cabinet Tag Archive Header
     Hero section with galaxy background for tag pages
-    Supports optional feature_image for series artwork, which then replaces the text title
+    Supports optional feature_image for series artwork, which then replaces the text title.
+
+    landing=true (components/tag-landing, #125): drop the hero's own galaxy, because the
+    brand band behind it carries the backdrop, and drop the description, which moves into
+    the services row below.
 --}}
 
-<section class="wc-tag-hero{{#if feature_image}} has-feature-image{{/if}}">
+<section class="wc-tag-hero{{#if feature_image}} has-feature-image{{/if}}{{#if landing}} wc-tag-hero--landing{{/if}}">
+    {{#unless landing}}
     <div class="wc-tag-hero-bg">
         <img src="{{asset "images/bg-galaxy-spiral-1200w-2x.webp"}}" alt="" class="wc-tag-hero-galaxy" aria-hidden="true">
     </div>
+    {{/unless}}
     <div class="wc-tag-hero-content gh-inner">
         {{!-- The hero names the tag exactly once (#125). With art (usually a wordmark logo)
              the art is the h1 and its alt text carries the name; without art the name
@@ -20,6 +26,7 @@
         {{else}}
             <h1 class="wc-tag-hero-title">{{name}}</h1>
         {{/if}}
+        {{#unless landing}}
         {{#if description}}
             <p class="wc-tag-hero-description">{{description}}</p>
         {{else}}
@@ -39,5 +46,6 @@
                 <p class="wc-tag-hero-description">{{@site.description}}</p>
             {{/has}}
         {{/if}}
+        {{/unless}}
     </div>
 </section>

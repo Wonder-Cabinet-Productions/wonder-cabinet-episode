@@ -780,14 +780,16 @@ body {
    Brand Band — continuous artwork bleed
    Wraps hero + thick-rule + podcast-services so ONE backdrop bleeds behind the
    (translucent) nav, the hero, and the podcast bar. Present ONLY on the two
-   LANDING pages: WC home (body.home-template) and the Luminous collection index
-   (body.tag-template.brand-luminous). Episode pages have no .wc-brand-band, so
-   nothing here touches them.
+   LANDING pages: WC home (body.home-template), the Luminous collection index
+   (body.tag-template.brand-luminous) and tag landings (body.wc-landing, #125,
+   components/tag-landing). Episode pages have no .wc-brand-band, so nothing here
+   touches them.
    ============================================ */
 
 /* Nav height reserved by the bleed; tune here if the header height changes. */
 body.home-template,
-body.tag-template.brand-luminous {
+body.tag-template.brand-luminous,
+body.wc-landing {
     --wc-nav-h: 112px;
 }
 
@@ -802,7 +804,8 @@ body.tag-template.brand-luminous {
 
 /* Nav goes translucent on the landing pages and yields its vertical space. */
 body.home-template .wc-head,
-body.tag-template.brand-luminous .wc-head {
+body.tag-template.brand-luminous .wc-head,
+body.wc-landing .wc-head {
     background-color: transparent;
     position: relative;
     z-index: 10;
@@ -870,15 +873,33 @@ body.brand-luminous .wc-brand-band::before {
    here, spill a faint cosmic glow down from the hero — reads as the same starfield
    continuing. Kept whisper-low so the podcast text stays crisp. WC-only; Luminous's
    wavy pattern already covers its whole band. */
-body.home-template .wc-brand-band .wc-podcast-services {
+body.home-template .wc-brand-band .wc-podcast-services,
+body.wc-landing .wc-brand-band .wc-podcast-services {
     background:
         radial-gradient(ellipse 110% 100% at 50% -15%, rgba(255, 250, 235, 0.07), transparent 62%);
 }
 
+/* Tag landing (#125): the tag hero sits in the band, so it drops its own black and
+   lets the band's galaxy show. The band's galaxy is calibrated to the homepage
+   wordmark (~436px down); the tag hero is shorter, so re-centre the heart on it:
+   nav (112px) + half the hero's 40vh min-height. */
+.wc-brand-band .wc-tag-hero {
+    background-color: transparent;
+}
+body.wc-landing .wc-brand-band::before {
+    background-size: min(720px, 72vw) auto;
+    background-position: center calc(112px + 20vh - min(360px, 36vw));
+}
+
 @media (max-width: 767px) {
     body.home-template,
-    body.tag-template.brand-luminous {
+    body.tag-template.brand-luminous,
+    body.wc-landing {
         --wc-nav-h: 84px;
+    }
+    body.wc-landing .wc-brand-band::before {
+        background-size: 560px auto;
+        background-position: center calc(84px + 15vh - 280px);
     }
     /* Re-anchor the swirl heart on the higher mobile wordmark (WC ~332px, Luminous
        ~318px from band-top), kept large enough (720px, half = 360px) that it still

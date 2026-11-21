@@ -1,0 +1,29 @@
+{{!--
+    Listen links: the "Listen on <platform>" buttons in a show's services row.
+    Each renders only when its URL is set. Each carries data-wc-platform, so a series
+    playlist (tag code injection, #125 slice 3) can replace the link for its platform.
+
+    Usage (inside .wc-podcast-services-links):
+        {{> "components/listen-links" apple=@custom.apple_podcasts_link spotify=@custom.spotify_link youtube=@custom.youtube_music_link}}
+--}}
+{{#if apple}}
+    <a href="{{apple}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" data-wc-platform="apple" aria-label="Listen on Apple Podcasts">
+        {{> "icons/apple"}}
+        <span class="wc-podcast-service-label">Listen on</span>
+        <span class="wc-podcast-service-name">Apple Podcasts</span>
+    </a>
+{{/if}}
+{{#if spotify}}
+    <a href="{{spotify}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" data-wc-platform="spotify" aria-label="Listen on Spotify">
+        {{> "icons/spotify"}}
+        <span class="wc-podcast-service-label">Listen on</span>
+        <span class="wc-podcast-service-name">Spotify</span>
+    </a>
+{{/if}}
+{{#if youtube}}
+    <a href="{{youtube}}" target="_blank" rel="noopener noreferrer" class="wc-podcast-service" data-wc-platform="youtube" aria-label="Listen on YouTube Music">
+        {{> "icons/youtube-music"}}
+        <span class="wc-podcast-service-label">Listen on</span>
+        <span class="wc-podcast-service-name">YouTube Music</span>
+    </a>
+{{/if}}
