@@ -1,5 +1,6 @@
-// #100 "Load more episodes" on the homepage. Run on a fresh load of /:
-//   agent-browser open <base>/ && agent-browser eval "$(cat tests/loadmore.browser.js)"
+// "Load more episodes": the homepage (#100) and every paginated list page (#23). Run on a
+// fresh load of page 1 of any of them:
+//   agent-browser open <base>/episodes/ && agent-browser eval "$(cat tests/loadmore.browser.js)"
 // The failure fallback (Review Focus 2) navigates away, so it's a separate step; see the
 // plan, Task 5. Returns {ok, failures, ...}.
 (async () => {
@@ -8,7 +9,10 @@
     const ids = () => [...document.querySelectorAll('[data-wc-river] [data-post-id]')].map((e) => e.dataset.postId);
     const btn = document.querySelector('[data-wc-loadmore]');
     if (!btn) return JSON.stringify({ ok: false, failures: ['no [data-wc-loadmore] on the page'] });
-    expect(btn.getAttribute('href') === '/latest/page/2/', 'no-JS fallback links to /latest/page/2/');
+    // The homepage loads from the /latest/ channel; list pages load their own next page.
+    const feed = location.pathname === '/' ? '/latest/' : location.pathname;
+    const start = location.pathname;
+    expect(btn.getAttribute('href') === `${feed}page/2/`, `no-JS fallback links to ${feed}page/2/`);
 
     const before = ids();
     let fetches = 0;
@@ -28,8 +32,8 @@
     expect(added === 0 || document.activeElement === firstNew, 'focus moved to the first new card');
     const said = document.querySelector('[data-wc-loadmore-status]').textContent;
     expect(new RegExp(`\\b${added}\\b`).test(said), `announcement "${said}" gives the count ${added}`);
-    expect(btn.getAttribute('href') === '/latest/page/3/' || btn.hidden, 'button advances to page 3, or hides at the end');
-    expect(location.pathname === '/', 'URL not rewritten');
+    expect(btn.getAttribute('href') === `${feed}page/3/` || btn.hidden, 'button advances to page 3, or hides at the end');
+    expect(location.pathname === start, 'URL not rewritten');
     expect(!btn.hasAttribute('aria-busy'), 'aria-busy cleared');
 
     // A mouse click (detail 1) loads the next batch but leaves focus alone: no stray focus ring

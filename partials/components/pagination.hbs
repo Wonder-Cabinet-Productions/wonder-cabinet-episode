@@ -1,32 +1,26 @@
 {{!--
-    Wonder Cabinet Pagination
-    Displays prev/next navigation for paginated lists
+    Wonder Cabinet "Load more episodes" (#23): the homepage's click-to-load (#100), on every
+    paginated list (tags, /episodes/, Luminous, newsletter, authors, /latest/).
+
+    The button is a real link to the next page. main.js upgrades it to fetch that page and
+    insert its cards into the [data-wc-river] feed in place. Without JS, or if the fetch
+    fails, the link just navigates. Pages after the first (reached that way, or linked
+    directly) also get a link back to newer episodes.
 
     Usage: {{> "components/pagination"}}
-    Requires: pagination context (automatically available in index, tag, author templates)
+    Requires: pagination context (index, tag, author and channel templates), and a feed
+    marked data-wc-river whose cards carry data-post-id (components/list, list-item).
 --}}
 
 {{#match pagination.pages ">" 1}}
-    <nav class="wc-pagination gh-outer" aria-label="Episode pagination">
-        <div class="wc-pagination-inner gh-inner">
-            {{#if pagination.prev}}
-                <a class="wc-pagination-link wc-pagination-prev" href="{{page_url pagination.prev}}">
-                    ← Newer Episodes
-                </a>
-            {{else}}
-                <span class="wc-pagination-link wc-pagination-prev is-disabled" aria-hidden="true"></span>
-            {{/if}}
-
-            <span class="wc-pagination-count">
-                Page {{pagination.page}} of {{pagination.pages}}
-            </span>
-
+    <nav class="wc-pagination wc-pagination--loadmore gh-outer" aria-label="More episodes">
+        <div class="wc-pagination-inner wc-loadmore-inner gh-inner">
             {{#if pagination.next}}
-                <a class="wc-pagination-link wc-pagination-next" href="{{page_url pagination.next}}">
-                    Older Episodes →
-                </a>
-            {{else}}
-                <span class="wc-pagination-link wc-pagination-next is-disabled" aria-hidden="true"></span>
+                <a class="wc-pagination-link wc-pagination-link--centered wc-loadmore" data-wc-loadmore href="{{page_url pagination.next}}">Load more episodes</a>
+            {{/if}}
+            <p class="sr-only" data-wc-loadmore-status aria-live="polite"></p>
+            {{#if pagination.prev}}
+                <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.prev}}">&larr; Newer episodes</a>
             {{/if}}
         </div>
     </nav>

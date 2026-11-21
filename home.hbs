@@ -56,7 +56,7 @@
     {{!-- Load more (#100): a real link to the river's next page; main.js upgrades it to
          insert that page's cards in place. Not .gh-feed above: that class would turn on the
          shared infinite scroll. --}}
-    <nav class="wc-pagination wc-pagination--home gh-outer" aria-label="More episodes">
+    <nav class="wc-pagination wc-pagination--loadmore gh-outer" aria-label="More episodes">
         <div class="wc-pagination-inner wc-loadmore-inner gh-inner">
             {{#match pagination.pages ">" 1}}
                 <a class="wc-pagination-link wc-pagination-link--centered wc-loadmore" data-wc-loadmore href="/latest/page/2/">Load more episodes</a>
