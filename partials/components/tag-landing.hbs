@@ -1,0 +1,26 @@
+{{!--
+    Tag landing (#125): a tag page as a mini-series landing, on the same skeleton as the
+    WC homepage and the Luminous landing: brand band (backdrop bleeding behind the nav),
+    hero, thick rule, services row, then a rule above the list.
+
+    Call inside {{#tag}} when the tag has art or a description (tag.hbs decides).
+    By content: each row appears only when its content exists in Ghost Admin.
+      hero          art as the h1, or the name as text   (tag feature_image / name)
+      description   tag description, no site fallback     (blurbText)
+      listen links  the parent show's (Wonder Cabinet)    (@custom.*_link)
+      About         a Show About page carrying this tag    (components/show-about)
+    Spec: docs/superpowers/specs/2026-11-21-tag-landing-design.md
+--}}
+{{#contentFor "body_class"}} wc-landing{{/contentFor}}
+
+<div class="wc-brand-band">
+    <div class="wc-hero-zone">
+        {{> "components/tag-header" landing=true}}
+    </div>
+
+    <hr class="wc-rule wc-rule--thick">
+
+    {{> "components/show-services" blurbText=description apple=@custom.apple_podcasts_link spotify=@custom.spotify_link youtube=@custom.youtube_music_link aboutTag=slug}}
+</div>
+
+<hr class="wc-rule">

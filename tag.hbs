@@ -1,11 +1,20 @@
 {{!< default}}
 
 <main id="main-content" class="gh-main wc-main">
+    {{!-- A tag with landing content (art or a description) gets the mini-series landing
+         (#125): brand band, hero, services row with About. A bare tag stays a plain
+         archive. Spec: docs/superpowers/specs/2026-11-21-tag-landing-design.md --}}
     {{#tag}}
-        {{> "components/tag-header"}}
+        {{#if feature_image}}
+            {{> "components/tag-landing"}}
+        {{else if description}}
+            {{> "components/tag-landing"}}
+        {{else}}
+            {{> "components/tag-header"}}
 
-        {{!-- Series Info Zone (shown when description exists) --}}
-        {{> "components/series-info"}}
+            {{!-- Series Info Zone (Luminous only; unreachable while routes claim the tag) --}}
+            {{> "components/series-info"}}
+        {{/if}}
     {{/tag}}
 
     {{> "components/list" layout="simple" showExcerpt=true showPublishedAt=true hasPagination=true}}
