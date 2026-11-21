@@ -1,11 +1,12 @@
 {{!--
-    Wonder Cabinet "Load more episodes" (#23): the homepage's click-to-load (#100), on every
+    Wonder Cabinet "Load more" (#23): the homepage's click-to-load (#100), on every
     paginated list (tags, /episodes/, Luminous, newsletter, authors, /latest/).
 
     The button is a real link to the next page. main.js upgrades it to fetch that page and
     insert its cards into the [data-wc-river] feed in place. Without JS, or if the fetch
     fails, the link just navigates. Pages after the first (reached that way, or linked
-    directly) also get a link back to newer episodes.
+    directly) also get a link back to newer posts. The copy says "Load more", not
+    "episodes", because the same button ends newsletter and tag lists too.
 
     Usage: {{> "components/pagination"}}
     Requires: pagination context (index, tag, author and channel templates), and a feed
@@ -13,14 +14,14 @@
 --}}
 
 {{#match pagination.pages ">" 1}}
-    <nav class="wc-pagination wc-pagination--loadmore gh-outer" aria-label="More episodes">
+    <nav class="wc-pagination wc-pagination--loadmore gh-outer" aria-label="More posts">
         <div class="wc-pagination-inner wc-loadmore-inner gh-inner">
             {{#if pagination.next}}
-                <a class="wc-pagination-link wc-pagination-link--centered wc-loadmore" data-wc-loadmore href="{{page_url pagination.next}}">Load more episodes</a>
+                <a class="wc-pagination-link wc-pagination-link--centered wc-loadmore" data-wc-loadmore href="{{page_url pagination.next}}">Load more</a>
             {{/if}}
             <p class="sr-only" data-wc-loadmore-status aria-live="polite"></p>
             {{#if pagination.prev}}
-                <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.prev}}">&larr; Newer episodes</a>
+                <a class="wc-pagination-link wc-pagination-link--centered" href="{{page_url pagination.prev}}">&larr; Newer</a>
             {{/if}}
         </div>
     </nav>

@@ -1,4 +1,4 @@
-// "Load more episodes": the homepage (#100) and every paginated list page (#23). Run on a
+// "Load more": the homepage (#100) and every paginated list page (#23). Run on a
 // fresh load of page 1 of any of them:
 //   agent-browser open <base>/episodes/ && agent-browser eval "$(cat tests/loadmore.browser.js)"
 // The failure fallback (Review Focus 2) navigates away, so it's a separate step; see the

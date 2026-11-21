@@ -2336,11 +2336,16 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
 }
 
 .wc-tag-hero-galaxy {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
+    /* Fit the galaxy inside the hero, which is shorter than it is wide: a width-sized
+       square was cropped flat at the hero's top and bottom edges. The radial mask feathers
+       the speckle so the image never shows a hard rectangle. */
+    width: auto;
+    height: 100%;
+    max-width: 100%;
     opacity: 0.5;
     object-fit: contain;
+    -webkit-mask-image: radial-gradient(closest-side, #000 65%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 65%, transparent 100%);
 }
 
 /* Luminous: wavy organic hero replaces the galaxy raster (§6 asymmetric).
@@ -2618,7 +2623,7 @@ body.brand-luminous .wc-head-logo-img--luminous {
     text-decoration: underline;
 }
 
-/* Every list ends in a centred "Load more episodes" (#100 homepage, #23 everywhere else) */
+/* Every list ends in a centred "Load more" (#100 homepage, #23 everywhere else) */
 .wc-pagination--loadmore .wc-pagination-inner {
     justify-content: center;
 }
@@ -2628,8 +2633,8 @@ body.brand-luminous .wc-head-logo-img--luminous {
     text-align: center;
 }
 
-/* "Load more episodes" button, over the homepage's "All Wonder Cabinet episodes" link (#100)
-   or a page's "Newer episodes" link (#23) */
+/* "Load more" button, over the homepage's "All Wonder Cabinet episodes" link (#100)
+   or a page's "Newer" link (#23) */
 .wc-loadmore-inner {
     flex-direction: column;
     gap: var(--wc-spacing-sm);

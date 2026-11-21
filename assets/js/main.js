@@ -62,7 +62,7 @@
     });
 })();
 
-/* "Load more episodes" (#100 homepage, #23 every paginated list): upgrades the link to the
+/* "Load more" (#100 homepage, #23 every paginated list): upgrades the link to the
    feed's next page (/latest/ for the homepage river, the list's own /page/N/ elsewhere) into
    an in-place load, so the footer and newsletter signup stay reachable. Inserts only posts
    not already on the page (a pinned slot post can reappear in a later batch, #35), moves
@@ -122,12 +122,12 @@
                 firstLink.focus();
             } else if (button.hidden && (viaKeyboard || hadFocus)) {
                 // The button is gone: don't leave focus on a hidden element. Go to the
-                // link beside it (homepage archive, or "Newer episodes"), else the first new card.
+                // link beside it (homepage archive, or "Newer"), else the first new card.
                 const sibling = button.parentElement.querySelector('a[href]:not([data-wc-loadmore])');
                 const fallback = sibling || (added.length && added[0].querySelector('a[href]'));
                 if (fallback) fallback.focus();
             }
-            announce(added.length ? `${added.length} more ${added.length === 1 ? 'episode' : 'episodes'} loaded` : 'No more episodes');
+            announce(added.length ? `${added.length} more loaded` : 'Nothing more to load');
         } catch (e) {
             location.href = href;
         } finally {
