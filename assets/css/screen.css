@@ -285,6 +285,7 @@ body {
     font-weight: 500;
     color: var(--wc-cream);
     text-decoration: none;
+    white-space: nowrap; /* a squeezed label collapses the header (below), never wraps */
     transition: opacity 0.2s ease;
 }
 
@@ -512,6 +513,31 @@ body {
         padding: 12px 16px;
         justify-content: center;
     }
+}
+
+/* Desktop widths where the links would reach the centred logo. The logo is absolutely
+   centred, so the row can't make room for it. The script after the header in
+   navbar.hbs measures the fit and sets .is-nav-collapsed, which switches to the burger
+   menu at desktop logo size. The fit is measured rather than set by a breakpoint, so
+   adding a nav item in Admin can't bring the collision back. */
+.wc-head.is-nav-collapsed .wc-head-nav--left,
+.wc-head.is-nav-collapsed .wc-head-nav--right {
+    display: none;
+}
+
+.wc-head.is-nav-collapsed .wc-burger {
+    display: block;
+}
+
+.wc-head.is-nav-collapsed .wc-head-logo {
+    position: relative;
+    left: auto;
+    transform: none;
+}
+
+.wc-head.is-nav-collapsed .gh-head-inner,
+.wc-head.is-nav-collapsed .wc-head-row {
+    justify-content: center;
 }
 
 @media (max-width: 767px) {

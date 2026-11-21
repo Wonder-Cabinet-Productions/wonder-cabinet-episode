@@ -64,3 +64,46 @@
         </nav>
     </div>
 </header>
+
+{{!-- Collapse the header to the burger whenever the desktop links would come within the
+     Figma link gap (28px) of the absolutely centred logo. Inline, straight after the
+     header, so it runs before first paint. It re-checks on resize and once the web fonts
+     load, since Jost changes the label widths. Without JS the header keeps its CSS
+     layout. Test: tests/nav.browser.js. --}}
+<script>
+(function () {
+    var head = document.getElementById('gh-head');
+    if (!head) return;
+    var left = head.querySelector('.wc-head-nav--left');
+    var right = head.querySelector('.wc-head-nav--right');
+    var logo = head.querySelector('.wc-head-logo');
+    var GAP = 28;
+    var pending = false;
+
+    function visibleRects(nav) {
+        return Array.prototype.filter.call(nav.children, function (el) {
+            return el.getClientRects().length;
+        }).map(function (el) { return el.getBoundingClientRect(); });
+    }
+
+    function fit() {
+        pending = false;
+        head.classList.remove('is-nav-collapsed');
+        if (getComputedStyle(left).display === 'none') return; // mobile CSS already uses the burger
+        var l = logo.getBoundingClientRect();
+        var leftEnd = Math.max.apply(null, visibleRects(left).map(function (r) { return r.right; }).concat(-Infinity));
+        var rightStart = Math.min.apply(null, visibleRects(right).map(function (r) { return r.left; }).concat(Infinity));
+        if (l.left - leftEnd < GAP || rightStart - l.right < GAP) {
+            head.classList.add('is-nav-collapsed');
+        } else {
+            head.classList.remove('is-head-open'); // close the burger menu if the links fit again
+        }
+    }
+
+    fit();
+    window.addEventListener('resize', function () {
+        if (!pending) { pending = true; requestAnimationFrame(fit); }
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
