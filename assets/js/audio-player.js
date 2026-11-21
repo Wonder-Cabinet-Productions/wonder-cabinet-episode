@@ -241,15 +241,19 @@
         // see default.hbs), so read from document.body — NOT documentElement:
         // a custom property set on <body> does not cascade up to <html>.
         // Falls back to WC green so this is a no-op under the default brand.
-        var showAccent = getComputedStyle(document.body)
-            .getPropertyValue('--show-accent').trim() || '#10A544';
+        var bodyStyle = getComputedStyle(document.body);
+        var showAccent = bodyStyle.getPropertyValue('--show-accent').trim() || '#10A544';
+        // Waveform on the accent-coloured card: a pale series accent (#125) sets these dark.
+        // Unset, they resolve to the WC/Luminous look: cream bars, accent progress.
+        var waveColor = bodyStyle.getPropertyValue('--show-wave-color').trim() || CONFIG.waveColor;
+        var waveProgress = bodyStyle.getPropertyValue('--show-wave-progress').trim() || showAccent;
 
         // Create WaveSurfer instance with brand styling, using <audio> backend
         var wavesurfer = WaveSurfer.create({
             container: waveformContainer,
-            waveColor: CONFIG.waveColor,
-            progressColor: showAccent,
-            cursorColor: showAccent,
+            waveColor: waveColor,
+            progressColor: waveProgress,
+            cursorColor: waveProgress,
             cursorWidth: 2,
             barWidth: 3,
             barGap: 2,

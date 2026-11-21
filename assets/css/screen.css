@@ -16,6 +16,7 @@
     /* Brand Colors — Island of Knowledge (derived from theislandofknowledge.com) */
     --iok-accent: #b6d0d8;
     --iok-accent-text: #1a3a44;
+    --iok-accent-dark: #0f242b;   /* deep teal for dark UI and hover text on cream (15.4:1); parallel to --wc-dark-green */
 
     /* Brand Colors — Luminous (finalized — Art & Sons, May 2026; see docs/luminous/brand-guide.md) */
     --luminous-accent: #9A59FF;               /* signature violet — badges/borders/large display only; fails AA as body text on cream (3.84:1) */
@@ -34,6 +35,16 @@
     --show-accent-dark: var(--wc-dark-green);
     --show-accent-button: var(--wc-green-button); /* accent as a fill under WHITE text, also passing as text on cream:
                                                      both need 4.5:1. Closest to --show-accent that does. Read by --comments-accent. */
+    /* Text and controls on the episode player card, whose background is --show-accent.
+       Cream suits a saturated accent (WC green, Luminous violet); a pale series accent sets
+       these dark (#125). The waveform reads --show-wave-color and --show-wave-progress in audio-player.js. */
+    --show-card-text: var(--wc-cream);
+    --show-card-text-rgb: 255, 250, 235;
+    --show-card-hover-ink: var(--wc-black);  /* icon on a hovered service button (filled with card text) */
+    --show-wave-color: rgba(255, 250, 235, 0.4);
+    /* --show-wave-progress deliberately has no default here: declared on :root as
+       var(--show-accent) it would resolve to green and be inherited as green, even on
+       Luminous pages. Unset, audio-player.js falls back to the page's --show-accent. */
     --show-on-accent: var(--wc-black);       /* text/icons sitting ON --show-accent. Black clears AA on both
                                                 page brands: 6.49:1 on #10A544, 5.25:1 on #9A59FF. IoK river
                                                 cards override it (see "Series brands"). Cream fails both
@@ -72,11 +83,23 @@
    from partials/series/registry.hbs. Source order is precedence: a post in two branded
    series takes the LATER block, so luminous stays last.
    ============================================ */
+/* IoK (#125 slice 2): also the body class of its tag landing, and of its episode pages via
+   the registry (post.hbs), so all six tokens are set; a missing one would fall back to WC green.
+   --iok-accent is a placeholder until the producers choose IoK's colour (spec decision 3). */
+body.brand-island-of-knowledge,
 .wc-brand--island-of-knowledge {
     --show-accent: var(--iok-accent);
     --show-accent-text: var(--iok-accent-text);
     --show-accent-text-rgb: 26, 58, 68;      /* --iok-accent-text channels (#1A3A44) */
+    --show-accent-dark: var(--iok-accent-dark);
+    --show-accent-button: var(--iok-accent-text); /* #1A3A44: white on it 12.1:1, on cream 11.6:1 */
     --show-on-accent: var(--iok-accent-text); /* #1A3A44 on #B6D0D8: 7.5:1; matches the IoK slot card */
+    /* Pale accent: dark text and waveform on the player card */
+    --show-card-text: var(--iok-accent-text);
+    --show-card-text-rgb: 26, 58, 68;
+    --show-card-hover-ink: var(--iok-accent);
+    --show-wave-color: rgba(26, 58, 68, 0.3);
+    --show-wave-progress: var(--iok-accent-text);
 }
 
 body.brand-luminous,
@@ -952,6 +975,30 @@ body.wc-landing .wc-brand-band::before {
     color: var(--show-on-accent);
 }
 
+/* Series link on an episode page (#125 slice 2): the same tab, inline above the date, linking
+   to the series landing. Only coloured series within a show get one (registry, series-link). */
+.wc-series-link {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: var(--wc-spacing-xs);
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    /* Black chip, accent text: it sits on the accent-coloured player card and on the cream
+       post header, and every series accent must already read on the site's black. */
+    background-color: var(--wc-black);
+    color: var(--show-accent);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.wc-series-link:hover {
+    opacity: 0.85;
+}
+
 .wc-series-badge + .wc-series-badge {
     display: none; /* a post in two series: one tab, the one matching its colours */
 }
@@ -1581,7 +1628,7 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--wc-cream);
+    color: var(--show-card-text);
     margin-bottom: 0.5rem;
 }
 
@@ -1591,7 +1638,7 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
     font-weight: 700;
     line-height: 1.2;
     text-transform: uppercase;
-    color: var(--wc-cream);
+    color: var(--show-card-text);
     margin: 0 0 0.75rem;
 }
 
@@ -1599,7 +1646,7 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
     font-family: var(--font-heading);
     font-size: 1.5rem; /* Matches episode card excerpt */
     font-style: normal;
-    color: var(--wc-cream);
+    color: var(--show-card-text);
     line-height: 1.5;
     margin: 0 0 1.5rem;
 }
@@ -1660,19 +1707,19 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: rgba(255, 250, 235, 0.25);
-    color: var(--wc-cream);
+    background: rgba(var(--show-card-text-rgb), 0.25);
+    color: var(--show-card-text);
     transition: all 0.2s ease;
 }
 
 .wc-service-icon:hover {
-    background: var(--wc-cream);
-    color: var(--wc-black, #000000);
+    background: var(--show-card-text);
+    color: var(--show-card-hover-ink);
     transform: scale(1.08);
 }
 
 .wc-service-icon:focus-visible {
-    outline: 2px solid var(--wc-cream);
+    outline: 2px solid var(--show-card-text);
     outline-offset: 2px;
 }
 
@@ -1700,7 +1747,7 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
     font-family: var(--font-heading);
     font-size: 0.8rem;
     font-weight: 500;
-    color: rgba(255, 250, 235, 0.6);
+    color: rgba(var(--show-card-text-rgb), 0.6);
     letter-spacing: 0.05em;
     text-align: left;
 }
