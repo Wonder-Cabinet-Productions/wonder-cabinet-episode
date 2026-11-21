@@ -982,7 +982,7 @@ body.wc-landing .wc-brand-band::before {
     align-self: flex-start;
     margin-bottom: var(--wc-spacing-xs);
     font-family: var(--font-heading);
-    font-size: 1.2rem;
+    font-size: 1.1rem; /* matches .wc-highlight-badge */
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
