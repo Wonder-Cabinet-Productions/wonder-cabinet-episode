@@ -2618,27 +2618,8 @@ body.brand-luminous .wc-head-logo-img--luminous {
     text-decoration: underline;
 }
 
-.wc-pagination-prev {
-    text-align: left;
-}
-
-.wc-pagination-next {
-    text-align: right;
-}
-
-.wc-pagination-link.is-disabled {
-    visibility: hidden;
-}
-
-.wc-pagination-count {
-    font-family: var(--font-heading);
-    font-size: 1.6rem;
-    color: var(--wc-cream);
-    opacity: 0.8;
-}
-
-/* Homepage variant — centered single link, no page count */
-.wc-pagination--home .wc-pagination-inner {
+/* Every list ends in a centred "Load more episodes" (#100 homepage, #23 everywhere else) */
+.wc-pagination--loadmore .wc-pagination-inner {
     justify-content: center;
 }
 
@@ -2647,7 +2628,8 @@ body.brand-luminous .wc-head-logo-img--luminous {
     text-align: center;
 }
 
-/* Homepage river: "Load more episodes" button over the "All Wonder Cabinet episodes" link (#100) */
+/* "Load more episodes" button, over the homepage's "All Wonder Cabinet episodes" link (#100)
+   or a page's "Newer episodes" link (#23) */
 .wc-loadmore-inner {
     flex-direction: column;
     gap: var(--wc-spacing-sm);

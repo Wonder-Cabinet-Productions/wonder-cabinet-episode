@@ -10,9 +10,7 @@
    page's <dialog>: the trigger from partials/components/show-about.hbs, plus any other
    link to the same page on this page (nav or footer "About"). A link to a Show About
    page whose dialog isn't on this page just navigates, and without JS or <dialog>
-   support every link just navigates to the page.
-   Kept above pagination(true): that call throws on a single-page list (no element for
-   its IntersectionObserver), and anything after it in this bundle never runs. */
+   support every link just navigates to the page. */
 (function () {
     document.querySelectorAll('[data-wc-about-open]').forEach(function (trigger) {
         const dialog = document.getElementById(trigger.dataset.wcAboutOpen);
@@ -64,12 +62,12 @@
     });
 })();
 
-/* Homepage "Load more episodes" (#100): upgrades the link to the river's next /latest/ page
-   into an in-place load, so the footer and newsletter signup stay reachable. Inserts only
-   posts not already on the page (a pinned slot post can reappear in a later batch, #35),
-   moves focus to the first new card, and announces the count. On any failure it follows
-   the link instead, which is also all that happens without JS.
-   Kept above pagination(true), for the reason given on the Show About block. */
+/* "Load more episodes" (#100 homepage, #23 every paginated list): upgrades the link to the
+   feed's next page (/latest/ for the homepage river, the list's own /page/N/ elsewhere) into
+   an in-place load, so the footer and newsletter signup stay reachable. Inserts only posts
+   not already on the page (a pinned slot post can reappear in a later batch, #35), moves
+   focus to the first new card, and announces the count. On any failure it follows the link
+   instead, which is also all that happens without JS. */
 (function () {
     const button = document.querySelector('[data-wc-loadmore]');
     const river = document.querySelector('[data-wc-river]');
@@ -123,9 +121,11 @@
             if (firstLink) {
                 firstLink.focus();
             } else if (button.hidden && (viaKeyboard || hadFocus)) {
-                // The button is gone: don't leave focus on a hidden element.
-                const archive = button.parentElement.querySelector('a[href]:not([data-wc-loadmore])');
-                if (archive) archive.focus();
+                // The button is gone: don't leave focus on a hidden element. Go to the
+                // link beside it (homepage archive, or "Newer episodes"), else the first new card.
+                const sibling = button.parentElement.querySelector('a[href]:not([data-wc-loadmore])');
+                const fallback = sibling || (added.length && added[0].querySelector('a[href]'));
+                if (fallback) fallback.focus();
             }
             announce(added.length ? `${added.length} more ${added.length === 1 ? 'episode' : 'episodes'} loaded` : 'No more episodes');
         } catch (e) {
@@ -141,7 +141,7 @@
    in post, page and newsletter content (including ones added by hand later) can't carry
    one; this sets it at load for every http(s) link off this site. The production domain
    counts as internal everywhere, so the dev preview treats links to it like the live site
-   does. Kept above pagination(true) for the same reason as the About modal. */
+   does. */
 (function () {
     const INTERNAL_HOSTS = [location.hostname, 'wondercabinetproductions.com'];
     const bare = function (host) { return host.replace(/^www\./, ''); };
@@ -162,8 +162,4 @@
         if (rel.indexOf('noopener') === -1) rel.push('noopener');
         link.rel = rel.join(' ');
     });
-})();
-
-(function () {
-    pagination(true);
 })();
