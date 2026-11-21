@@ -17,9 +17,14 @@
     - slot        → the pinned card for slot `position` (1–3), or nothing.
                     Positions: 1 newsletter (after river card 2), 2 Island of Knowledge
                     (after card 4), 3 Luminous (after card 6).
+    - series-link → on an episode page, a link back to the landing of a coloured series that
+                    lives inside a show (#125). Not Luminous: it's a show with its own nav.
+    card-class also goes on episode pages' <body> (post.hbs), so the series' tokens reach
+    the player, which reads them from document.body.
 --~}}
 {{~#match mode "card-class"}}{{#foreach tags}}{{#match slug "island-of-knowledge"}} wc-brand--island-of-knowledge{{/match}}{{#match slug "luminous"}} wc-brand--luminous{{/match}}{{/foreach}}{{/match~}}
 {{~#match mode "card-badge"}}{{#foreach tags}}{{#match slug "luminous"}}<a class="wc-highlight-badge wc-series-badge" href="/luminous/">{{name}}</a>{{/match}}{{/foreach}}{{#foreach tags}}{{#match slug "island-of-knowledge"}}<a class="wc-highlight-badge wc-series-badge" href="/island-of-knowledge/">{{name}}</a>{{/match}}{{/foreach}}{{/match~}}
+{{~#match mode "series-link"}}{{#foreach tags}}{{#match slug "island-of-knowledge"}}<a class="wc-series-link" href="/island-of-knowledge/">{{name}}</a>{{/match}}{{/foreach}}{{/match~}}
 {{~#match mode "slot"}}
     {{#match position "==" 1}}{{> "series/slot" pinFilter="tag:newsletter+featured:true" slug="newsletter" url="/newsletter/" accentClass="wc-highlight--newsletter" always=true}}{{/match}}
     {{#match position "==" 2}}{{> "series/slot" pinFilter="tag:island-of-knowledge+featured:true" slug="island-of-knowledge" url="/island-of-knowledge/" accentClass="wc-highlight--series" riverSize=riverSize}}{{/match}}

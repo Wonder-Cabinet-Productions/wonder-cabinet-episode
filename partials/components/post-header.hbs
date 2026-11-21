@@ -16,6 +16,7 @@
         </figure>
     {{/if}}
     <div class="gh-inner">
+        {{> "series/registry" mode="series-link"}}
         <span class="wc-post-header-date">{{date published_at format="DD MMM YYYY"}}</span>
         <h1 class="wc-post-header-title">{{title}}</h1>
         {{#if primary_author.name}}

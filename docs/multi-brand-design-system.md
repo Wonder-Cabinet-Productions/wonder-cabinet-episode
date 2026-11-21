@@ -21,15 +21,16 @@ This theme hosts one CMS, one content database, one theme — and N brands selec
 |---|---|---|---|
 | **Wonder Cabinet** | (default / untagged) | **Host brand** | Everything by default. Green, galaxy, cabinet, brackets. |
 | **Luminous** | `tag:luminous` | **Full brand-context** *(in progress — this is the active work)* | A whole page flips: violet accent, eye-icon, wavy bg, dotted dividers, own `/luminous/` collection + templates. |
-| **Island of Knowledge** | `tag:island-of-knowledge` | **Accent-only** | A highlight-zone card within WC pages picks up the IoK steel-blue. No page-level switch, no own templates. |
+| **Island of Knowledge** | `tag:island-of-knowledge` | **Series context** (#125, 2026-11-21) | A series *inside* the WC show. Its tag landing (`components/tag-landing`) and its episode pages take the IoK accent tokens through `body.brand-island-of-knowledge` / `.wc-brand--island-of-knowledge`, but keep all of WC's vocabulary (cabinet, galaxy, footer). Homepage cards and the IoK slot as before. No own templates. The accent is a placeholder until the producers choose. |
 | *(newsletter)* | `tag:newsletter` | **Content-type accent** (not a brand) | Highlight-zone card uses cream accent. Listed here because it shares the same mechanism. |
 
 **Two participation levels, two mechanisms:**
 
-- **Accent-only** — a component-scoped CSS modifier class (`.wc-highlight--{variant}`) swaps that brand's accent into one card. Cheap, additive, no page context. IoK and newsletter live here today.
+- **Accent-only** — a component-scoped CSS modifier class (`.wc-highlight--{variant}`) swaps that brand's accent into one card. Cheap, additive, no page context. The newsletter lives here.
+- **Series context** (between the two) — the series' token block applies to whole pages (its tag landing and its episodes, via `partials/series/registry.hbs`), but the pages stay WC pages: no asset swaps, no own templates. IoK lives here. Spec: `docs/superpowers/specs/2026-11-21-tag-landing-design.md`.
 - **Full brand-context** — a page-level activation sets the active brand once, and *everything downstream* (CSS cascade via `--show-accent*`, asset swaps in partials, audio-player JS) reads from it. Luminous is being promoted to this level (Sprint 2). WC is this level by default.
 
-A brand can graduate from accent-only to full brand-context later (IoK could, if it ever wants its own landing page) — the model supports it without rework.
+A brand can graduate from accent-only to series context to full brand-context. IoK moved from accent-only to series context in #125 without rework.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -90,7 +91,7 @@ Each brand declares its raw palette. Components never read these directly (excep
 |---|---|---|---|---|
 | **WC** | `--wc-green` `#10A544` | `--wc-green-text` `#087834` (5.37:1) | `--show-on-accent` = `var(--wc-black)` (6.49:1 on green) | `--wc-dark-green` `#043013` |
 | **Luminous** | `--luminous-accent` `#9A59FF` | `--luminous-accent-text-on-cream` `#8B4DEB` (4.62:1) | `--luminous-accent-text` = `var(--wc-black)` (5.25:1 on violet) | `--luminous-accent-dark` `#1F0F33` |
-| **IoK** | `--iok-accent` `#b6d0d8` | *(none — accent-only, never used as page text)* | `--iok-accent-text` `#1a3a44` (7.5:1 on blue); also `--show-on-accent` inside `.wc-brand--island-of-knowledge` cards | *(none)* |
+| **IoK** | `--iok-accent` `#b6d0d8` (placeholder) | `--iok-accent-text` `#1a3a44` (11.6:1 on cream) | `--iok-accent-text` `#1a3a44` (7.5:1 on blue), as `--show-on-accent` | `--iok-accent-dark` `#0f242b` (15.4:1 on cream; derived, not in any brand book) |
 
 A fifth show token, `--show-accent-button`, is the button fill: the accent as a fill under white text, which must also pass as text on cream. WC uses `--wc-green-button` `#0D8537` (4.74:1 / 4.55:1). It's for the comment button only, so don't reuse it for other text, since its cream margin is thin. Luminous reuses `--luminous-accent-text-on-cream` `#8B4DEB`. See §4b.
 
@@ -181,12 +182,27 @@ The widget fills its button with the accent and picks white text itself, which t
 |---|---|---|---|
 | Wonder Cabinet | `--wc-green-button` `#0D8537` | 4.74:1 | 4.55:1 |
 | Luminous | `--luminous-accent-text-on-cream` `#8B4DEB` | 4.82:1 | 4.62:1 |
+| Island of Knowledge | `--iok-accent-text` `#1A3A44` | 12.1:1 | 11.6:1 |
 
 `--show-accent-button` is the accent as a fill under white text: the color **closest to the player's signature accent** that passes both checks. It is not `--show-accent-text`. WC's text green `#087834` passes too (5.61 / 5.37), but it's a visibly larger step down from the player than Luminous takes. `#0D8537` keeps `#10A544`'s hue and saturation and lowers lightness only until the cream check passes. The cream margin is thin (4.55), so don't lighten it further.
 
 **Sanctioned exception:** the widget shows each show's button shade, not the signature accent the player draws with (`#10A544` / `#9A59FF`). White on those fails: 3.24:1 / 4.00:1.
 
 The widget runs `mode="light"` on cream. A dark comments surface would need these figures re-checked.
+
+### 4c. Player-card tokens: text and waveform on the accent (#125, 2026-11-21)
+
+The episode player card's background is `--show-accent`. Its text and waveform were hard-wired cream, which works on a saturated accent (WC green, Luminous violet) and fails on a pale one (IoK's placeholder blue, or any light green or gold). They're now tokens:
+
+| Token | `:root` default | IoK |
+|---|---|---|
+| `--show-card-text` | `var(--wc-cream)` | `#1A3A44` (7.5:1 on `#B6D0D8`) |
+| `--show-card-text-rgb` | `255, 250, 235` | `26, 58, 68` |
+| `--show-card-hover-ink` | `var(--wc-black)`: the icon on a hovered service button | `var(--iok-accent)` |
+| `--show-wave-color` | `rgba(255, 250, 235, 0.4)`: unplayed bars, read by `audio-player.js` | `rgba(26, 58, 68, 0.3)` |
+| `--show-wave-progress` | **none** (the player falls back to `--show-accent`) | `#1A3A44` |
+
+`--show-wave-progress` has no `:root` default on purpose. Declared there as `var(--show-accent)`, it would resolve to green on `:root` and be inherited as green, even under `body.brand-luminous` (the same trap as §4b). A new series with a pale accent sets all five; a saturated one sets none.
 
 ---
 
@@ -220,9 +236,9 @@ Before writing CSS, editing a partial, or adding an asset reference, ask in orde
 
 | Element | WC | Luminous | IoK | Handling |
 |---|---|---|---|---|
-| Cabinet illustration (footer) | yes | no | no | Hide under non-WC full-context; WC-only vocabulary. |
+| Cabinet illustration (footer) | yes | no | yes (WC host) | Hide under non-WC full-context; WC-only vocabulary. IoK pages are WC pages in series context, so they keep it. |
 | Bracket corner ornaments | yes | no | no | WC-only ornament. Luminous CTAs use a flat violet button, no corners. |
-| Galaxy / cosmic imagery | yes | no | no | WC-only visual vocabulary. Never add to Luminous. |
+| Galaxy / cosmic imagery | yes | no | yes (WC host) | WC-only visual vocabulary. Never add to Luminous. IoK's tag landing and episodes keep WC's galaxy (series context). |
 | Wavy organic SVG | no | yes | no | Luminous-only hero. |
 | Dotted line separator | no | yes | no | Luminous-only divider (WC uses the wave divider). |
 | Eye-icon motif | no | yes | no | Luminous-only iconography. |

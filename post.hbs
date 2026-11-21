@@ -2,6 +2,10 @@
 
 {{#post}}
 
+{{!-- A coloured series' episodes take its colours (#125 slice 2). On <body>, because the
+     player reads --show-accent from document.body. --}}
+{{#contentFor "body_class"}}{{> "series/registry" mode="card-class"}}{{/contentFor}}
+
 <main id="main-content" class="gh-main wc-episode-page wc-audio-unresolved{{#has tag="#no-audio"}} wc-no-audio{{/has}}">
     {{!-- Audio Player Hero - shown for posts WITH audio --}}
     {{> "audio-player-hero"}}

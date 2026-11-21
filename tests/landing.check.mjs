@@ -2,7 +2,7 @@
 // Spec: docs/superpowers/specs/2026-11-21-tag-landing-design.md. Server-rendered markup only.
 // Needs dev seeded (IoK tag with art + description + Show About page; a plain `test-plain` tag).
 // Run: node tests/landing.check.mjs   (WC_BASE to point elsewhere)
-import { fetchHtml, assert, report } from './lib/site.mjs';
+import { fetchHtml, contentApi, assert, report } from './lib/site.mjs';
 
 const platforms = (html) => [...html.matchAll(/data-wc-platform="([a-z-]+)"/g)].map((m) => m[1]);
 const bodyClass = (html) => (html.match(/<body class="([^"]*)"/) || [])[1] || '';
@@ -39,6 +39,18 @@ for (const path of ['/', '/luminous/']) {
     const marked = platforms(html);
     assert(links > 0 && marked.length === links, `${path}: all ${links} listen links platform-marked (got ${marked})`);
     assert(/data-wc-about-open=/.test(html), `${path}: About button still there`);
+}
+
+// Slice 2: a coloured series' episode pages take its colours, and link back to the series
+{
+    const iok = (await contentApi('posts', { filter: 'tag:island-of-knowledge', limit: 1, fields: 'url' })).posts[0];
+    const plain = (await contentApi('posts', { filter: 'tag:wonder-cabinet+tag:-island-of-knowledge+tag:-luminous', limit: 1, fields: 'url' })).posts[0];
+    const iokHtml = await fetchHtml(new URL(iok.url).pathname);
+    const plainHtml = await fetchHtml(new URL(plain.url).pathname);
+    assert(/\bwc-brand--island-of-knowledge\b/.test(bodyClass(iokHtml)), `IoK episode: body carries the series class (${bodyClass(iokHtml)})`);
+    assert(/<a class="wc-series-link" href="\/island-of-knowledge\/">/.test(iokHtml), 'IoK episode: links to the series landing');
+    assert(!/wc-brand--island-of-knowledge/.test(bodyClass(plainHtml)), 'plain WC episode: no series class');
+    assert(!/wc-series-link/.test(plainHtml), 'plain WC episode: no series link');
 }
 
 report('landing');

@@ -21,6 +21,7 @@
 
             {{!-- Episode info and player --}}
             <div class="wc-audio-hero-content">
+                {{> "series/registry" mode="series-link"}}
                 <span class="wc-audio-hero-date">{{date published_at format="DD MMM YYYY"}}</span>
                 <h1 class="wc-audio-hero-title">{{title}}</h1>
                 {{#if custom_excerpt}}
