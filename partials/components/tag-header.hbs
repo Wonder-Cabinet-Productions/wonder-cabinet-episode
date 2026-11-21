@@ -1,7 +1,7 @@
 {{!--
     Wonder Cabinet Tag Archive Header
     Hero section with galaxy background for tag pages
-    Supports optional feature_image for series artwork
+    Supports optional feature_image for series artwork, which then replaces the text title
 --}}
 
 <section class="wc-tag-hero{{#if feature_image}} has-feature-image{{/if}}">
@@ -9,12 +9,17 @@
         <img src="{{asset "images/bg-galaxy-spiral-1200w-2x.webp"}}" alt="" class="wc-tag-hero-galaxy" aria-hidden="true">
     </div>
     <div class="wc-tag-hero-content gh-inner">
+        {{!-- The hero names the tag exactly once (#125). With art (usually a wordmark logo)
+             the art is the h1 and its alt text carries the name; without art the name
+             prints as text. Templates using this partial don't repeat the name above
+             their list. --}}
         {{#if feature_image}}
-            <div class="wc-tag-hero-image">
+            <h1 class="wc-tag-hero-image">
                 <img src="{{img_url feature_image size="m"}}" alt="{{name}}">
-            </div>
+            </h1>
+        {{else}}
+            <h1 class="wc-tag-hero-title">{{name}}</h1>
         {{/if}}
-        <h1 class="wc-tag-hero-title">{{name}}</h1>
         {{#if description}}
             <p class="wc-tag-hero-description">{{description}}</p>
         {{else}}

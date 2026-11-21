@@ -2314,7 +2314,11 @@ body.post-template.brand-luminous .wc-has-audio .wc-audio-hero-wrapper::before {
 /* Feature Image in Hero */
 .wc-tag-hero-image {
     max-width: 300px;
-    margin-bottom: var(--wc-spacing-lg);
+    margin: 0 0 var(--wc-spacing-lg);
+}
+
+.wc-tag-hero-image:last-child {
+    margin-bottom: 0; /* art with no description below it */
 }
 
 .wc-tag-hero-image img {
@@ -2516,6 +2520,7 @@ body.brand-luminous .wc-head-logo-img--luminous {
     .wc-tag-hero {
         min-height: 30vh;
         padding: var(--wc-spacing-lg) var(--wc-spacing-md);
+        margin-bottom: var(--wc-spacing-md); /* the full-bleed first card no longer has a list heading above it */
     }
 
     .wc-tag-hero-description {

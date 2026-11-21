@@ -8,15 +8,6 @@
         {{> "components/series-info"}}
     {{/tag}}
 
-    {{!-- Section Header --}}
-    {{#tag}}
-    <section class="wc-episodes-header gh-outer">
-        <div class="gh-inner">
-            <h2 class="wc-section-heading">{{name}}{{#if ../pagination.total}} <span class="wc-episode-count">({{../pagination.total}} available)</span>{{/if}}</h2>
-        </div>
-    </section>
-    {{/tag}}
-
     {{> "components/list" layout="simple" count="all" showExcerpt=true showPublishedAt=true hasPagination=true}}
 
     {{> "components/pagination"}}
